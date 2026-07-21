@@ -1,0 +1,9 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/backend/venv/bin/python",
+  "python.terminal.activateEnvironment": true,
+  "python-envs.defaultEnvManager": "ms-python.python:venv",
+  "code-runner.executorMap": {
+    "python": "${workspaceFolder}/backend/venv/bin/python -u"
+},
+"python-envs.pythonProjects": []
+}
