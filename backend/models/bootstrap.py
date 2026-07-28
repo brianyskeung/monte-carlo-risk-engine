@@ -16,4 +16,18 @@ class HistoricalBootstrapModel(BaseSimulationModel):
         self.daily_returns = daily_returns
     
     def generate_path(self, forecasted_days: int) -> np.ndarray:
-        pass 
+        """
+        Generates a simulated path of returns for the specified number of days.
+        """
+        # get the number of available historical days
+        num_historical_days = self.daily_returns.shape[0]
+
+        # randomly sample row indices with replacement
+        random_indices = np.random.choice(
+            num_historical_days, 
+            size=forecasted_days, 
+            replace=True
+        )
+
+        # return randomly indexed daily returns
+        return self.daily_returns[random_indices]
