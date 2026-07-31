@@ -1,15 +1,29 @@
-import yfinance as yf
 import numpy as np
-import pandas as pd
 
-# runs the monte carlo simulation using selected ticke
-def monte_carlo_sim(
-    portfolio: dict[str, float] =  {"NVDA": 1.0},
-    initial_capital: float = 10000.0,
-    target_goal: float = 11000.0,
-    downside_limit: float = 8500.0,
-    forecasted_days: int = 252,
-    num_simulations: int = 1000
-) -> dict:
-    
-   pass
+
+class SimulationEngine:
+    def __init__(self, model):
+        self.model = model
+
+    def run(self, weights: dict[str, float], num_simulations: int, forecasted_days: int) -> np.ndarray:
+        # validate ticker coverage
+        for ticker in self.model.tickers:
+            if ticker not in weights:
+                raise ValueError(f"missing weight allocation for ticker: {ticker}")
+
+        # construct ordered weights array matching model column sequence
+        weights_array = np.array([weights[ticker] for ticker in self.model.tickers], dtype=float)
+
+        # validate weights sum to 1.0
+        if not np.isclose(np.sum(weights_array), 1.0):
+            raise ValueError(f"portfolio weights must sum to 1.0, got {np.sum(weights_array)}")
+
+        # allocate matrix for simulation paths shape: (num_simulations, forecasted_days)
+        portfolio_paths = np.empty((num_simulations, forecasted_days))
+
+        # run matrix dot product across paths
+        for i in range(num_simulations):
+            path = self.model.generate_path(forecasted_days=forecasted_days)
+            portfolio_paths[i] = path @ weights_array
+
+        return portfolio_paths

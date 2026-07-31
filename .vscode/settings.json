@@ -5,5 +5,10 @@
   "code-runner.executorMap": {
     "python": "${workspaceFolder}/backend/venv/bin/python -u"
 },
-"python-envs.pythonProjects": []
+"python-envs.pythonProjects": [],
+"python.testing.pytestArgs": [
+    "backend"
+],
+"python.testing.unittestEnabled": false,
+"python.testing.pytestEnabled": true
 }
