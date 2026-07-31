@@ -21,7 +21,7 @@ class SimulationEngine:
         # allocate matrix for simulation paths shape: (num_simulations, forecasted_days)
         portfolio_paths = np.empty((num_simulations, forecasted_days))
 
-        # run matrix dot product across paths
+        # run matrix dot product across paths (note: major bottleneck right now, use numPY)
         for i in range(num_simulations):
             path = self.model.generate_path(forecasted_days=forecasted_days)
             portfolio_paths[i] = path @ weights_array
