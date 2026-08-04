@@ -1,18 +1,15 @@
-import { useState } from 'react'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Shell from "./components/layout/Shell";
+import Simulate from "./pages/Simulate";
 
-
-function App() {
-
+export default function App() {
   return (
-    <>
-    <section>
-      <p>test</p>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+    <BrowserRouter>
+      <Shell>
+        <Routes>
+          <Route path="/" element={<Simulate />} />
+        </Routes>
+      </Shell>
+    </BrowserRouter>
+  );
 }
-
-export default App
