@@ -1,4 +1,6 @@
+import os
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from schemas import SimulationRequest
 from data import get_historical_returns
 from engine import SimulationEngine
@@ -6,6 +8,22 @@ from models import HistoricalBootstrapModel
 from metrics import calculate_portfolio_metrics
 
 app = FastAPI(title="Monte Carlo Risk Engine API")
+
+origins = [
+    "http://localhost:5173",
+]
+
+prod_origin = os.getenv("FRONTEND_URL")
+if prod_origin:
+    origins.append(prod_origin)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/api/simulate")
 def run_simulation(request: SimulationRequest):

@@ -5,6 +5,7 @@ beautifulsoup4==4.15.0
 certifi==2026.6.17
 cffi==2.1.0
 charset-normalizer==3.4.9
+click==8.4.2
 curl_cffi==0.15.0
 fastapi==0.141.1
 h11==0.16.0
@@ -40,5 +41,6 @@ truststore==0.10.4
 typing-inspection==0.4.2
 typing_extensions==4.16.0
 urllib3==2.7.0
+uvicorn==0.52.1
 websockets==16.1.1
 yfinance==1.5.1
