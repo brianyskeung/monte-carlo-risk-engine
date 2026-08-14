@@ -27,3 +27,6 @@ class SimulationEngine:
             portfolio_paths[i] = path @ weights_array
 
         return portfolio_paths
+    
+
+    

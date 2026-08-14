@@ -36,7 +36,7 @@ class HistoricalBootstrapModel(BaseSimulationModel):
         Generates a simulated path of returns for the specified number of days.
         """
 
-        # get the number of available historical days
+        # get the number of available historical days (TODO: Make this customizable)
         num_historical_days = self.daily_returns.shape[0]
 
         # randomly sample row indices with replacement
@@ -48,3 +48,5 @@ class HistoricalBootstrapModel(BaseSimulationModel):
 
         # return randomly indexed daily returns
         return self.daily_returns[random_indices]
+    
+ 
