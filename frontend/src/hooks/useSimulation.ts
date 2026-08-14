@@ -9,7 +9,7 @@ export function useSimulation() {
   const [results, setResults] = useState<any | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSimulate = async (e?: SubmitEvent) => {
+  const handleSimulate = async (e?: React.SyntheticEvent) => {
     if (e) e.preventDefault();
     setIsSimulating(true);
     setErrorMessage(null);
