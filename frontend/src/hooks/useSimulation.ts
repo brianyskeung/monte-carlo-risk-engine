@@ -1,12 +1,15 @@
 import { useState } from "react";
 import axios from "axios";
+import type { Allocation, SimulationResults } from "../types";
 
 export function useSimulation() {
-  const [tickers, setTickers] = useState("SPY, QQQ");
-  const [weights, setWeights] = useState("0.6, 0.4");
+  const [allocations, setAllocations] = useState<Allocation[]>([
+    { ticker: "SPY", weight: 60 },
+    { ticker: "QQQ", weight: 40 },
+  ]);
   const [days, setDays] = useState(252);
   const [isSimulating, setIsSimulating] = useState(false);
-  const [results, setResults] = useState<any | null>(null);
+  const [results, setResults] = useState<SimulationResults | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleSimulate = async (e?: React.SyntheticEvent) => {
@@ -15,13 +18,10 @@ export function useSimulation() {
     setErrorMessage(null);
 
     try {
-      const tickerArray = tickers.split(",").map((t) => t.trim().toUpperCase());
-      const weightArray = weights.split(",").map((w) => parseFloat(w.trim()));
-
-      const weightsDict: Record<string, number> = {};
-      tickerArray.forEach((ticker, index) => {
-        weightsDict[ticker] = weightArray[index];
-      });
+      const tickerArray = allocations.map(({ ticker }) => ticker);
+      const weightsDict = Object.fromEntries(
+        allocations.map(({ ticker, weight }) => [ticker, weight / 100]),
+      );
 
       const payload = {
         tickers: tickerArray,
@@ -48,10 +48,8 @@ export function useSimulation() {
   };
 
   return {
-    tickers,
-    setTickers,
-    weights,
-    setWeights,
+    allocations,
+    setAllocations,
     days,
     setDays,
     isSimulating,
