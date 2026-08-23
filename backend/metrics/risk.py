@@ -12,11 +12,11 @@ def calculate_portfolio_metrics(daily_return_paths: np.ndarray) -> dict:
 
     # extract total final values 
     terminal_values = cumulative_paths[:, -1]
-    final_returns = final_values - 1.0
+    final_returns = terminal_values - 1.0
     
     # compute tail risk metrics
-    terminal_var_95 = float(np.percentile(final_values, 5))
-    terminal_cvar_95 = float(np.mean(final_values[final_values <= terminal_var_95]))
+    terminal_var_95 = float(np.percentile(terminal_values, 5))
+    terminal_cvar_95 = float(np.mean(terminal_values[terminal_values <= terminal_var_95]))
 
     loss_var_95 = 1.0 - terminal_var_95
     loss_cvar_95 = 1.0 - terminal_cvar_95
@@ -31,7 +31,7 @@ def calculate_portfolio_metrics(daily_return_paths: np.ndarray) -> dict:
 
     return {
         "summary": {
-            "expected_terminal_value": float(np.mean(final_values)),
+            "expected_terminal_value": float(np.mean(terminal_values)),
             "expected_return": float(np.mean(final_returns)),
             "loss_var_95": float(loss_var_95),
             "loss_cvar_95": float(loss_cvar_95),
