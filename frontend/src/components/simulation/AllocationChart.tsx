@@ -1,7 +1,7 @@
 import { PieChart, Pie, Tooltip, ResponsiveContainer } from "recharts";
 import type { Allocation } from "../../types";
 
-const colors = ["#059669", "#3B82F6", "#E11D48", "#F59E0B", "#8B5CF6"];
+const colors = ["#059669", "#3B82F6", "#E11D48", "#F59E0B", "#8B5CF6"]; // TODO: Adjust
 
 export function AllocationPieChart({
   allocations,

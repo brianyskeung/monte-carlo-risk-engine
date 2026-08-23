@@ -59,3 +59,53 @@ def test_engine_invalid_weight_sum_raises_error(bootstrap_model):
         engine.run(weights=invalid_weights, num_simulations=10, forecasted_days=5)
 
     assert "must sum to 1.0" in str(exc_info.value)
+
+@pytest.mark.parametrize("invalid_weight", [-0.1, -1.0])
+def test_engine_negative_weight_raises_error(bootstrap_model, invalid_weight):
+    engine = SimulationEngine(model=bootstrap_model)
+
+    with pytest.raises(ValueError, match="cannot be negative"):
+        engine.run(
+            weights={"AAPL": invalid_weight, "MSFT": 1.0 - invalid_weight},
+            num_simulations=10,
+            forecasted_days=5,
+        )
+
+
+@pytest.mark.parametrize("invalid_weight", [np.nan, np.inf, -np.inf])
+def test_engine_non_finite_weight_raises_error(bootstrap_model, invalid_weight):
+    engine = SimulationEngine(model=bootstrap_model)
+
+    with pytest.raises(ValueError, match="must be finite"):
+        engine.run(
+            weights={"AAPL": invalid_weight, "MSFT": 0.5},
+            num_simulations=10,
+            forecasted_days=5,
+        )
+
+
+def test_engine_zero_weight_is_allowed(bootstrap_model):
+    engine = SimulationEngine(model=bootstrap_model)
+
+    paths = engine.run(
+        weights={"AAPL": 0.0, "MSFT": 1.0},
+        num_simulations=10,
+        forecasted_days=5,
+    )
+
+    assert paths.shape == (10, 5)
+
+
+def test_engine_extra_ticker_is_rejected(bootstrap_model):
+    engine = SimulationEngine(model=bootstrap_model)
+
+    with pytest.raises(ValueError, match="unexpected ticker"):
+        engine.run(
+            weights={
+                "AAPL": 0.5,
+                "MSFT": 0.4,
+                "SPY": 0.1,
+            },
+            num_simulations=10,
+            forecasted_days=5,
+        )

@@ -36,10 +36,19 @@ export default function Allocator({
               required
             >
               <option value="">Select asset</option>
-              <option value="SPY">SPY</option>
-              <option value="QQQ">QQQ</option>
-              <option value="AAPL">AAPL</option>
-              <option value="MSFT">MSFT</option>
+
+              {["SPY", "QQQ", "AAPL", "MSFT"].map((ticker) => (
+                <option
+                  key={ticker}
+                  value={ticker}
+                  disabled={allocations.some(
+                    (item, itemIndex) =>
+                      itemIndex !== index && item.ticker === ticker,
+                  )}
+                >
+                  {ticker}
+                </option>
+              ))}
             </select>
 
             <input

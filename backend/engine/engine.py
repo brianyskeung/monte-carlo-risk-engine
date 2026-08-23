@@ -11,6 +11,12 @@ class SimulationEngine:
             if ticker not in weights:
                 raise ValueError(f"missing weight allocation for ticker: {ticker}")
 
+        # reject weights for tickers not present in the model
+        unexpected_tickers = set(weights) - set(self.model.tickers)
+
+        if unexpected_tickers:
+         raise ValueError(f"unexpected ticker allocation: {sorted(unexpected_tickers)}")
+
         # construct ordered weights array matching model column sequence
         weights_array = np.array([weights[ticker] for ticker in self.model.tickers], dtype=float)
         if not np.all(np.isfinite(weights_array)):
