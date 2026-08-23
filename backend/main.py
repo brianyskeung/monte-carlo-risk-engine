@@ -10,7 +10,7 @@ from metrics import calculate_portfolio_metrics
 app = FastAPI(title="Monte Carlo Risk Engine API")
 
 origins = [
-    "http://localhost:5173",
+    "http://localhost:5175",
 ]
 
 prod_origin = os.getenv("FRONTEND_URL")

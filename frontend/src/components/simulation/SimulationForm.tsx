@@ -1,6 +1,7 @@
 import Card from "../../components/ui/Card";
 import Allocator from "./Allocator";
 import type { Allocation } from "../../types";
+import AllocationPieChart from "./AllocationChart";
 
 interface SimulationFormProps {
   allocations: Allocation[];
@@ -23,20 +24,21 @@ export default function SimulationForm({
 }: SimulationFormProps) {
   return (
     <Card title="Portfolio Configuration">
-      {errorMessage && (
-        <div className="mb-5 flex items-start gap-3 bg-red-50 border border-red-100 px-4 py-3 rounded-lg">
-          <div>
-            <h3 className="text-sm font-semibold text-red-800 mb-0.5">
-              Simulation Failed
-            </h3>
-            <p className="text-sm text-red-600 leading-relaxed">
-              {errorMessage}
-            </p>
-          </div>
-        </div>
-      )}
-
       <form onSubmit={onSubmit} className="space-y-4">
+        <AllocationPieChart allocations={allocations} />
+        {errorMessage && (
+          <div className="mb-5 flex items-start gap-3 bg-red-50 border border-red-100 px-4 py-3 rounded-lg">
+            <div>
+              <h3 className="text-sm font-semibold text-red-800 mb-0.5">
+                Simulation Failed
+              </h3>
+              <p className="text-sm text-red-600 leading-relaxed">
+                {errorMessage}
+              </p>
+            </div>
+          </div>
+        )}
+
         <Allocator allocations={allocations} setAllocations={setAllocations} />
 
         <div>

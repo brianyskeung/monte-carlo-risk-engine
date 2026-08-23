@@ -2,9 +2,11 @@ import type { Allocation } from "../../types";
 
 export default function Allocator({
   allocations,
+
   setAllocations,
 }: {
   allocations: Allocation[];
+
   setAllocations: (allocations: Allocation[]) => void;
 }) {
   return (
@@ -22,34 +24,23 @@ export default function Allocator({
       <div className="space-y-2">
         {allocations.map((allocation, index) => (
           <div key={index} className="flex gap-2">
-            <select
+            <input
+              type="text"
               value={allocation.ticker}
               onChange={(event) => {
                 const updatedAllocations = [...allocations];
+
                 updatedAllocations[index] = {
                   ...updatedAllocations[index],
-                  ticker: event.target.value,
+                  ticker: event.target.value.toUpperCase(),
                 };
+
                 setAllocations(updatedAllocations);
               }}
+              placeholder="Ticker"
               className="flex-1 bg-bg border border-black/10 rounded-lg px-3 py-2 text-sm"
               required
-            >
-              <option value="">Select asset</option>
-
-              {["SPY", "QQQ", "AAPL", "MSFT"].map((ticker) => (
-                <option
-                  key={ticker}
-                  value={ticker}
-                  disabled={allocations.some(
-                    (item, itemIndex) =>
-                      itemIndex !== index && item.ticker === ticker,
-                  )}
-                >
-                  {ticker}
-                </option>
-              ))}
-            </select>
+            />
 
             <input
               type="number"
@@ -58,10 +49,13 @@ export default function Allocator({
               value={allocation.weight}
               onChange={(event) => {
                 const updatedAllocations = [...allocations];
+
                 updatedAllocations[index] = {
                   ...updatedAllocations[index],
+
                   weight: Number(event.target.value),
                 };
+
                 setAllocations(updatedAllocations);
               }}
               className="w-24 bg-bg border border-black/10 rounded-lg px-3 py-2 text-sm"
