@@ -11,11 +11,15 @@ def calculate_portfolio_metrics(daily_return_paths: np.ndarray) -> dict:
     cumulative_paths = np.cumprod(1.0 + daily_return_paths, axis=1)
 
     # extract total final values 
-    final_values = cumulative_paths[:, -1]
-
+    terminal_values = cumulative_paths[:, -1]
+    final_returns = final_values - 1.0
+    
     # compute tail risk metrics
-    var_95 = float(np.percentile(final_values, 5))
-    cvar_95 = float(np.mean(final_values[final_values <= var_95]))
+    terminal_var_95 = float(np.percentile(final_values, 5))
+    terminal_cvar_95 = float(np.mean(final_values[final_values <= terminal_var_95]))
+
+    loss_var_95 = 1.0 - terminal_var_95
+    loss_cvar_95 = 1.0 - terminal_cvar_95
 
     # compute daily percentile trajectories
     df = pd.DataFrame(cumulative_paths)
@@ -27,10 +31,10 @@ def calculate_portfolio_metrics(daily_return_paths: np.ndarray) -> dict:
 
     return {
         "summary": {
-            "expected_return": float(np.mean(final_values)),
-            "median_return": float(np.median(final_values)),
-            "value_at_risk_95": var_95,
-            "conditional_var_95": cvar_95,
+            "expected_terminal_value": float(np.mean(final_values)),
+            "expected_return": float(np.mean(final_returns)),
+            "loss_var_95": float(loss_var_95),
+            "loss_cvar_95": float(loss_cvar_95),
         },
         "percentile_paths": percentiles_df.to_dict(orient="records"),
     }

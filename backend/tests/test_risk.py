@@ -52,28 +52,28 @@ def test_accumulation_trajectories(fixed_daily_returns):
 
 
 def test_terminal_risk_metrics(fixed_daily_returns):
-    # verifies expected returns, medians, and tail risk on the final day
+    # verifies expected returns, terminal values, and tail risk on the final day
     results = calculate_portfolio_metrics(fixed_daily_returns)
     summary = results["summary"]
+
+    expected_final_values = np.array([1.019898, 0.9999, 1.029588])
     
-    expected_final_values = [1.019898, 0.9999, 1.029588]
+    expected_mean_terminal = np.mean(expected_final_values)
+    expected_mean_return = expected_mean_terminal - 1.0
     
-    # mean return
-    expected_mean = np.mean(expected_final_values)
-    assert pytest.approx(summary["expected_return"], abs=1e-4) == expected_mean
+    assert pytest.approx(summary["expected_terminal_value"], abs=1e-4) == expected_mean_terminal
+    assert pytest.approx(summary["expected_return"], abs=1e-4) == expected_mean_return
     
-    # median return
-    expected_median = np.median(expected_final_values)
-    assert pytest.approx(summary["median_return"], abs=1e-4) == expected_median
+    terminal_var = np.percentile(expected_final_values, 5)
+    expected_loss_var = 1.0 - terminal_var
     
-    # VaR 95
-    expected_var = np.percentile(expected_final_values, 5)
-    assert pytest.approx(summary["value_at_risk_95"], abs=1e-4) == expected_var
+    assert pytest.approx(summary["loss_var_95"], abs=1e-4) == expected_loss_var
     
-    # CVaR 95
-    cvar_mask = np.array(expected_final_values) <= expected_var
-    expected_cvar = np.mean(np.array(expected_final_values)[cvar_mask])
-    assert pytest.approx(summary["conditional_var_95"], abs=1e-4) == expected_cvar
+    cvar_mask = expected_final_values <= terminal_var
+    terminal_cvar = np.mean(expected_final_values[cvar_mask])
+    expected_loss_cvar = 1.0 - terminal_cvar
+    
+    assert pytest.approx(summary["loss_cvar_95"], abs=1e-4) == expected_loss_cvar
 
 
 def test_percentile_ordering(fixed_daily_returns):
