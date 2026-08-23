@@ -13,7 +13,12 @@ class SimulationEngine:
 
         # construct ordered weights array matching model column sequence
         weights_array = np.array([weights[ticker] for ticker in self.model.tickers], dtype=float)
+        if not np.all(np.isfinite(weights_array)):
+            raise ValueError("portfolio weights must be finite")
 
+        if np.any(weights_array < 0):
+            raise ValueError("portfolio weights cannot be negative")
+        
         # validate weights sum to 1.0
         if not np.isclose(np.sum(weights_array), 1.0):
             raise ValueError(f"portfolio weights must sum to 1.0, got {np.sum(weights_array)}")

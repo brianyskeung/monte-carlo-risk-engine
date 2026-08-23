@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import axios from 'axios';
+import { useState } from "react";
+import axios from "axios";
 
 export function useSimulation() {
   const [tickers, setTickers] = useState("SPY, QQQ");
@@ -15,28 +15,30 @@ export function useSimulation() {
     setErrorMessage(null);
 
     try {
-      const tickerArray = tickers.split(",").map(t => t.trim().toUpperCase());
-      const weightArray = weights.split(",").map(w => parseFloat(w.trim()));
+      const tickerArray = tickers.split(",").map((t) => t.trim().toUpperCase());
+      const weightArray = weights.split(",").map((w) => parseFloat(w.trim()));
 
       const weightsDict: Record<string, number> = {};
       tickerArray.forEach((ticker, index) => {
-        weightsDict[ticker] = weightArray[index] || 1.0; 
+        weightsDict[ticker] = weightArray[index];
       });
 
       const payload = {
         tickers: tickerArray,
         weights: weightsDict,
         forecasted_days: days,
-        num_simulations: 1000 
+        num_simulations: 1000,
       };
 
       const apiUrl = "http://localhost:8000"; // TODO: Update URL & env
       const response = await axios.post(`${apiUrl}/api/simulate`, payload);
-      
+
       setResults(response.data.data);
     } catch (error: any) {
       if (error.response) {
-        setErrorMessage(error.response.data.detail || "Simulation failed due to bad inputs.");
+        setErrorMessage(
+          error.response.data.detail || "Simulation failed due to bad inputs.",
+        );
       } else {
         setErrorMessage("Error. Please ensure the backend server is running.");
       }
@@ -46,12 +48,15 @@ export function useSimulation() {
   };
 
   return {
-    tickers, setTickers,
-    weights, setWeights,
-    days, setDays,
+    tickers,
+    setTickers,
+    weights,
+    setWeights,
+    days,
+    setDays,
     isSimulating,
     results,
     errorMessage,
-    handleSimulate
+    handleSimulate,
   };
 }
