@@ -2,10 +2,11 @@ import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from schemas import SimulationRequest
-from data import get_historical_returns
+from data import get_historical_returns, get_quote_types
 from engine import SimulationEngine
 from models import HistoricalBootstrapModel
 from metrics import calculate_portfolio_metrics
+
 
 app = FastAPI(title="Monte Carlo Risk Engine API")
 
@@ -29,6 +30,7 @@ app.add_middleware(
 def run_simulation(request: SimulationRequest):
     # download market data
     daily_returns_df = get_historical_returns(request.tickers)
+    quote_types = get_quote_types(request.tickers)
 
     # initialize model using values matrix & ticker sequence
     model = HistoricalBootstrapModel(
@@ -54,5 +56,6 @@ def run_simulation(request: SimulationRequest):
 
     return {
         "status": "success",
-        "data": results
+        "data": results,
+        "quote_types": quote_types,
     }
