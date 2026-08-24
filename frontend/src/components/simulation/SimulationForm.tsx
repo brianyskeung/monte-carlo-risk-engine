@@ -1,7 +1,9 @@
 import Card from "../../components/ui/Card";
+import { useState } from "react";
 import Allocator from "./Allocator";
-import type { Allocation } from "../../types";
+import type { Allocation, SimulationResults } from "../../types";
 import AllocationPieChart from "./AllocationChart";
+import PortfolioSummary from "../portfolio/PortfolioSummary";
 
 interface SimulationFormProps {
   allocations: Allocation[];
@@ -11,6 +13,7 @@ interface SimulationFormProps {
   isSimulating: boolean;
   errorMessage: string | null;
   onSubmit: (e: React.SyntheticEvent) => void;
+  results: SimulationResults | null;
 }
 
 export default function SimulationForm({
@@ -21,7 +24,9 @@ export default function SimulationForm({
   isSimulating,
   errorMessage,
   onSubmit,
+  results,
 }: SimulationFormProps) {
+  const [editorOpen, setEditorOpen] = useState(false);
   return (
     <Card title="Portfolio Configuration">
       <form onSubmit={onSubmit} className="space-y-4">
@@ -39,7 +44,30 @@ export default function SimulationForm({
           </div>
         )}
 
-        <Allocator allocations={allocations} setAllocations={setAllocations} />
+        <PortfolioSummary
+          allocations={allocations}
+          quoteTypes={results?.quote_types ?? {}}
+          onEdit={() => setEditorOpen(true)}
+        />
+
+        {editorOpen && (
+          <div className="fixed inset-0 z-50 overflow-y-auto bg-bg p-6">
+            <div className="mx-auto max-w-2xl">
+              <button
+                type="button"
+                onClick={() => setEditorOpen(false)}
+                className="mb-6 text-sm text-text-muted"
+              >
+                Close editor
+              </button>
+
+              <Allocator
+                allocations={allocations}
+                setAllocations={setAllocations}
+              />
+            </div>
+          </div>
+        )}
 
         <div>
           <label className="block text-xs font-medium text-text-muted mb-1.5">

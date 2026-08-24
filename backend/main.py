@@ -7,11 +7,10 @@ from engine import SimulationEngine
 from models import HistoricalBootstrapModel
 from metrics import calculate_portfolio_metrics
 
-
 app = FastAPI(title="Monte Carlo Risk Engine API")
 
 origins = [
-    "http://localhost:5175",
+    "http://localhost:5173",
 ]
 
 prod_origin = os.getenv("FRONTEND_URL")
@@ -26,6 +25,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.post("/api/simulate")
 def run_simulation(request: SimulationRequest):
     # download market data
@@ -34,8 +34,7 @@ def run_simulation(request: SimulationRequest):
 
     # initialize model using values matrix & ticker sequence
     model = HistoricalBootstrapModel(
-        daily_returns=daily_returns_df.values,
-        tickers=list(daily_returns_df.columns)
+        daily_returns=daily_returns_df.values, tickers=list(daily_returns_df.columns)
     )
 
     # instantiate simulation engine
@@ -46,16 +45,16 @@ def run_simulation(request: SimulationRequest):
         simulated_paths = engine.run(
             weights=request.weights,
             num_simulations=request.num_simulations,
-            forecasted_days=request.forecasted_days
+            forecasted_days=request.forecasted_days,
         )
     except ValueError as e:
-        
+
         raise HTTPException(status_code=400, detail=str(e))
-    
+
     results = calculate_portfolio_metrics(simulated_paths)
+    results["quote_types"] = quote_types
 
     return {
         "status": "success",
         "data": results,
-        "quote_types": quote_types,
     }

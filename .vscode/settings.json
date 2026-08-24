@@ -1,14 +1,12 @@
 {
   "python.defaultInterpreterPath": "${workspaceFolder}/backend/venv/bin/python",
-  "python.terminal.activateEnvironment": true,
+  "python.terminal.activateEnvironment": false,
   "python-envs.defaultEnvManager": "ms-python.python:venv",
   "code-runner.executorMap": {
     "python": "${workspaceFolder}/backend/venv/bin/python -u"
-},
-"python-envs.pythonProjects": [],
-"python.testing.pytestArgs": [
-    "backend"
-],
-"python.testing.unittestEnabled": false,
-"python.testing.pytestEnabled": true
+  },
+  "python-envs.pythonProjects": [],
+  "python.testing.pytestArgs": ["backend"],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
 }

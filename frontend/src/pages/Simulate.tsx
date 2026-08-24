@@ -36,6 +36,7 @@ export default function Simulate() {
             isSimulating={isSimulating}
             errorMessage={errorMessage}
             onSubmit={handleSimulate}
+            results={results}
           />
         </div>
 

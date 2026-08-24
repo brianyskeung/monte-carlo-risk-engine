@@ -23,4 +23,5 @@ export interface SimulationSummary {
 export interface SimulationResults {
   summary: SimulationSummary;
   percentile_paths: PathData[];
+  quote_types: Record<string, string>;
 }
