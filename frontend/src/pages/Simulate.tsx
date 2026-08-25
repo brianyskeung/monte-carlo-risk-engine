@@ -9,6 +9,8 @@ export default function Simulate() {
     setAllocations,
     days,
     setDays,
+    lookbackPeriod,
+    setLookbackPeriod,
     isSimulating,
     results,
     errorMessage,
@@ -36,6 +38,8 @@ export default function Simulate() {
             setAllocations={setAllocations}
             days={days}
             setDays={setDays}
+            lookbackPeriod={lookbackPeriod}
+            setLookbackPeriod={setLookbackPeriod}
             isSimulating={isSimulating}
             errorMessage={errorMessage}
             onSubmit={handleSimulate}

@@ -36,7 +36,7 @@ def get_assets_endpoint(tickers: list[str] = Query(...)):
 @app.post("/api/simulate")
 def run_simulation(request: SimulationRequest):
     # download market data
-    daily_returns_df = get_historical_returns(request.tickers)
+    daily_returns_df = get_historical_returns(request.tickers, period = request.lookback_period)
 
     # initialize model using values matrix & ticker sequence
     model = HistoricalBootstrapModel(

@@ -12,6 +12,8 @@ interface SimulationFormProps {
   errorMessage: string | null;
   onSubmit: (e: React.SyntheticEvent) => void;
   assets: AssetInfoMap;
+  lookbackPeriod: string;
+  setLookbackPeriod: (period: string) => void;
 }
 
 export default function SimulationForm({
@@ -23,6 +25,8 @@ export default function SimulationForm({
   errorMessage,
   onSubmit,
   assets,
+  lookbackPeriod,
+  setLookbackPeriod,
 }: SimulationFormProps) {
   return (
     <Card title="Portfolio Configuration">
@@ -59,6 +63,27 @@ export default function SimulationForm({
             required
             min="1"
           />
+        </div>
+
+        <div>
+          <label className="block text-xs font-medium text-text-muted mb-1.5">
+            Historical Lookback
+          </label>
+
+          <select
+            value={lookbackPeriod}
+            onChange={(event) => setLookbackPeriod(event.target.value)}
+            className="w-full bg-bg border border-black/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-mint transition-colors"
+          >
+            <option value="1mo">1 month</option>
+            <option value="3mo">3 months</option>
+            <option value="6mo">6 months</option>
+            <option value="1y">1 year</option>
+            <option value="2y">2 years</option>
+            <option value="5y">5 years</option>
+            <option value="10y">10 years</option>
+            <option value="max">Maximum available</option>
+          </select>
         </div>
 
         <button

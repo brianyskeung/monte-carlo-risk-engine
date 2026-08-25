@@ -35,7 +35,10 @@ class HistoricalBootstrapModel(BaseSimulationModel):
         """
         Generates a simulated path of returns for the specified number of days.
         """
-
+        
+        if forecasted_days <= 0:
+            raise ValueError("forecasted_days must be greater than 0")
+        
         # get the number of available historical days (TODO: Make this customizable)
         num_historical_days = self.daily_returns.shape[0]
 

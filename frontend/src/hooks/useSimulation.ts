@@ -11,6 +11,7 @@ export function useSimulation() {
   const [isSimulating, setIsSimulating] = useState(false);
   const [results, setResults] = useState<SimulationResults | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [lookbackPeriod, setLookbackPeriod] = useState("5y");
 
   const handleSimulate = async (e?: React.SyntheticEvent) => {
     if (e) e.preventDefault();
@@ -26,6 +27,7 @@ export function useSimulation() {
       const payload = {
         tickers: tickerArray,
         weights: weightsDict,
+        lookback_period: lookbackPeriod,
         forecasted_days: days,
         num_simulations: 1000,
       };
@@ -52,6 +54,8 @@ export function useSimulation() {
     setAllocations,
     days,
     setDays,
+    lookbackPeriod,
+    setLookbackPeriod,
     isSimulating,
     results,
     errorMessage,
