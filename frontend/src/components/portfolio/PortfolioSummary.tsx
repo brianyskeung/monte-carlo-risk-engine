@@ -1,16 +1,19 @@
 import type { Allocation, AssetInfoMap } from "../../types";
+import PortfolioEditor from "./PortfolioEditor";
+import { useState } from "react";
 
 type PortfolioSummaryProps = {
   allocations: Allocation[];
   assets: AssetInfoMap;
-  onEdit: () => void;
+  onSave: (allocations: Allocation[]) => void;
 };
 
 export default function PortfolioSummary({
   allocations,
   assets,
-  onEdit,
+  onSave,
 }: PortfolioSummaryProps) {
+  const [editorOpen, setEditorOpen] = useState(false);
   const exposureByType = allocations.reduce<Record<string, number>>(
     (summary, allocation) => {
       const type = assets[allocation.ticker]?.quote_type ?? "OTHER";
@@ -28,12 +31,23 @@ export default function PortfolioSummary({
 
         <button
           type="button"
-          onClick={onEdit}
-          className="text-sm text-mint hover:"
+          onClick={() => setEditorOpen(true)}
+          className="text-sm text-mint"
         >
           Edit portfolio
         </button>
       </div>
+
+      {editorOpen && (
+        <PortfolioEditor
+          allocations={allocations}
+          onSave={(updatedAllocations) => {
+            onSave(updatedAllocations);
+            setEditorOpen(false);
+          }}
+          onClose={() => setEditorOpen(false)}
+        />
+      )}
 
       <div className="mt-4 space-y-2">
         {Object.entries(exposureByType).map(([type, weight]) => (
