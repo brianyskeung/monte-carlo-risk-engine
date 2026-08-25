@@ -1,6 +1,7 @@
 import { useSimulation } from "../hooks/useSimulation";
 import SimulationForm from "../components/simulation/SimulationForm";
 import DistributionResults from "../components/simulation/DistributionResults";
+import { useAssets } from "../hooks/useAssets.ts";
 
 export default function Simulate() {
   const {
@@ -13,6 +14,8 @@ export default function Simulate() {
     errorMessage,
     handleSimulate,
   } = useSimulation();
+
+  const assets = useAssets(allocations.map(({ ticker }) => ticker));
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -36,7 +39,7 @@ export default function Simulate() {
             isSimulating={isSimulating}
             errorMessage={errorMessage}
             onSubmit={handleSimulate}
-            results={results}
+            assets={assets}
           />
         </div>
 

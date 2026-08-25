@@ -31,14 +31,35 @@ def get_historical_returns(tickers: list[str], period: str = "5y") -> pd.DataFra
     return daily_returns
 
 
-def get_quote_types(tickers: list[str]) -> dict[str, str]:
-    result_dict = {}
+def get_asset_info(tickers: list[str]) -> dict[str, dict]:
+    assets = {}
 
-    for ticker in tickers:
+    for raw_ticker in tickers:
+        ticker = raw_ticker.strip().upper()
 
-        quote_type = yf.Ticker(ticker).info.get("quoteType", "UNKNOWN")
-        if quote_type == "EQUITY":
-            quote_type = "STOCK"
-        result_dict[ticker] = quote_type
+        try:
+            info = yf.Ticker(ticker).info
+            quote_type = info.get("quoteType")
 
-    return result_dict
+            if quote_type == "EQUITY":
+                quote_type = "STOCK"
+
+            assets[ticker] = {
+                "symbol": ticker,
+                "short_name": info.get("shortName"),
+                "quote_type": quote_type or "UNKNOWN",
+                "exchange": info.get("exchange"),
+                "currency": info.get("currency"),
+                "is_valid": bool(quote_type),
+            }
+        except Exception:
+            assets[ticker] = {
+                "symbol": ticker,
+                "short_name": None,
+                "quote_type": "UNKNOWN",
+                "exchange": None,
+                "currency": None,
+                "is_valid": False,
+            }
+
+    return assets

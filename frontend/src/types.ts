@@ -23,5 +23,15 @@ export interface SimulationSummary {
 export interface SimulationResults {
   summary: SimulationSummary;
   percentile_paths: PathData[];
-  quote_types: Record<string, string>;
 }
+
+export interface AssetInfo {
+  symbol: string;
+  short_name: string | null;
+  quote_type: string;
+  exchange: string | null;
+  currency: string | null;
+  is_valid: boolean;
+}
+
+export type AssetInfoMap = Record<string, AssetInfo>;

@@ -1,8 +1,8 @@
 import os
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from schemas import SimulationRequest
-from data import get_historical_returns, get_quote_types
+from data import get_asset_info, get_historical_returns
 from engine import SimulationEngine
 from models import HistoricalBootstrapModel
 from metrics import calculate_portfolio_metrics
@@ -26,11 +26,17 @@ app.add_middleware(
 )
 
 
+@app.get("/api/assets")
+def get_assets_endpoint(tickers: list[str] = Query(...)):
+    return {
+        "assets": get_asset_info(tickers),
+    }
+
+
 @app.post("/api/simulate")
 def run_simulation(request: SimulationRequest):
     # download market data
     daily_returns_df = get_historical_returns(request.tickers)
-    quote_types = get_quote_types(request.tickers)
 
     # initialize model using values matrix & ticker sequence
     model = HistoricalBootstrapModel(
@@ -52,7 +58,6 @@ def run_simulation(request: SimulationRequest):
         raise HTTPException(status_code=400, detail=str(e))
 
     results = calculate_portfolio_metrics(simulated_paths)
-    results["quote_types"] = quote_types
 
     return {
         "status": "success",

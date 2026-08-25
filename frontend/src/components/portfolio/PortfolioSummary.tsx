@@ -1,19 +1,19 @@
-import type { Allocation } from "../../types";
+import type { Allocation, AssetInfoMap } from "../../types";
 
 type PortfolioSummaryProps = {
   allocations: Allocation[];
-  quoteTypes: Record<string, string>;
+  assets: AssetInfoMap;
   onEdit: () => void;
 };
 
 export default function PortfolioSummary({
   allocations,
-  quoteTypes,
+  assets,
   onEdit,
 }: PortfolioSummaryProps) {
   const exposureByType = allocations.reduce<Record<string, number>>(
     (summary, allocation) => {
-      const type = quoteTypes[allocation.ticker] ?? "OTHER";
+      const type = assets[allocation.ticker]?.quote_type ?? "OTHER";
 
       summary[type] = (summary[type] ?? 0) + allocation.weight;
       return summary;

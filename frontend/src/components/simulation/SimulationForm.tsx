@@ -1,7 +1,7 @@
 import Card from "../../components/ui/Card";
 import { useState } from "react";
 import Allocator from "./Allocator";
-import type { Allocation, SimulationResults } from "../../types";
+import type { Allocation, AssetInfoMap } from "../../types";
 import AllocationPieChart from "./AllocationChart";
 import PortfolioSummary from "../portfolio/PortfolioSummary";
 
@@ -13,7 +13,7 @@ interface SimulationFormProps {
   isSimulating: boolean;
   errorMessage: string | null;
   onSubmit: (e: React.SyntheticEvent) => void;
-  results: SimulationResults | null;
+  assets: AssetInfoMap;
 }
 
 export default function SimulationForm({
@@ -24,7 +24,7 @@ export default function SimulationForm({
   isSimulating,
   errorMessage,
   onSubmit,
-  results,
+  assets,
 }: SimulationFormProps) {
   const [editorOpen, setEditorOpen] = useState(false);
   return (
@@ -46,7 +46,7 @@ export default function SimulationForm({
 
         <PortfolioSummary
           allocations={allocations}
-          quoteTypes={results?.quote_types ?? {}}
+          assets={assets}
           onEdit={() => setEditorOpen(true)}
         />
 
