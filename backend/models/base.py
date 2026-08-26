@@ -15,3 +15,15 @@ class BaseSimulationModel(ABC):
         Must return 2D np.ndarray of shape: (forecasted_days, num_assets)
         """
         pass 
+    
+    def generate_paths(
+        self,
+        num_simulations: int,
+        forecasted_days: int,
+    ) -> np.ndarray:
+        """
+        generates daily return percentages for a multiple simulated paths.
+        
+        Must return 3D np.ndarray of shape: (num_simulations, forecasted_days, num_assets)
+        """
+        pass

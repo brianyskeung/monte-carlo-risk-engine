@@ -52,4 +52,19 @@ class HistoricalBootstrapModel(BaseSimulationModel):
         # return randomly indexed daily returns
         return self.daily_returns[random_indices]
     
+    
+    def generate_paths(
+    self,
+    num_simulations: int,
+    forecasted_days: int,
+    ) -> np.ndarray:
+        random_indices = np.random.choice(
+            self.daily_returns.shape[0],
+            size=(num_simulations, forecasted_days),
+            replace=True,
+        )
+
+        # Shape: (num_simulations, forecasted_days, num_assets)
+        return self.daily_returns[random_indices]
+    
  

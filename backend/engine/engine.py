@@ -28,16 +28,19 @@ class SimulationEngine:
         # validate weights sum to 1.0
         if not np.isclose(np.sum(weights_array), 1.0):
             raise ValueError(f"portfolio weights must sum to 1.0, got {np.sum(weights_array)}")
-
-        # allocate matrix for simulation paths shape: (num_simulations, forecasted_days)
-        portfolio_paths = np.empty((num_simulations, forecasted_days))
-
-        # run matrix dot product across paths (note: major bottleneck right now, use numPY)
-        for i in range(num_simulations):
-            path = self.model.generate_path(forecasted_days=forecasted_days)
-            portfolio_paths[i] = path @ weights_array
-
-        return portfolio_paths
+        
+        import time
+        
+        start = time.perf_counter()
+        
+        # run matrix dot product across paths 
+        paths = self.model.generate_paths(
+            num_simulations=num_simulations,
+            forecasted_days=forecasted_days)
+        
+        elapsed_seconds = time.perf_counter() - start
+        print(f"Simulation took {elapsed_seconds:.4f} seconds")
+        return paths @ weights_array
     
 
     
