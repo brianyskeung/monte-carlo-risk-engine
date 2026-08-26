@@ -12,7 +12,7 @@ an interactive risk analytics tool designed to model multi-asset portfolio traje
 - **correlated bootstrapping:** resamples historical daily returns across all assets on the exact same days. this keeps the real-world correlation between your assets intact.
 - **risk metrics:** calculates expected terminal value, 95% value-at-risk (var), and conditional var (cvar / expected shortfall).
 - **percentile paths:** generates p5 to p95 fan-charts so you can visualize the spread of best and worst-case scenarios.
-- **ticker validation:** checks if a ticker is real and grabs its quote type (etf, crypto, stock) for the frontend.
+- **ticker validation:** checks if a ticker is real and grabs its basic info for the frontend.
 
 ---
 
