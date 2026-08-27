@@ -6,6 +6,7 @@ from data import get_asset_info, get_historical_returns
 from engine import SimulationEngine
 from models import HistoricalBootstrapModel
 from metrics import calculate_portfolio_metrics
+import time
 
 app = FastAPI(title="Monte Carlo Risk Engine API")
 
@@ -45,7 +46,9 @@ def run_simulation(request: SimulationRequest):
 
     # instantiate simulation engine
     engine = SimulationEngine(model=model)
-
+    
+    # start time counter
+    start = time.perf_counter()
     # execute simulation and catch engine validation errors
     try:
         simulated_paths = engine.run(
@@ -56,10 +59,12 @@ def run_simulation(request: SimulationRequest):
     except ValueError as e:
 
         raise HTTPException(status_code=400, detail=str(e))
-
+    
+    simulation_time_ms = (time.perf_counter() - start) * 1000
     results = calculate_portfolio_metrics(simulated_paths)
 
     return {
         "status": "success",
         "data": results,
+        "time": simulation_time_ms
     }

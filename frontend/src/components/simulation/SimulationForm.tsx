@@ -1,6 +1,6 @@
 import Card from "../../components/ui/Card";
 import type { Allocation, AssetInfoMap } from "../../types";
-import AllocationPieChart from "./AllocationChart";
+import AllocationPieChart from "../portfolio/AllocationChart";
 import PortfolioSummary from "../portfolio/PortfolioSummary";
 
 interface SimulationFormProps {
@@ -14,6 +14,8 @@ interface SimulationFormProps {
   assets: AssetInfoMap;
   lookbackPeriod: string;
   setLookbackPeriod: (period: string) => void;
+  numSimulations: number;
+  setNumSimulations: (value: number) => void;
 }
 
 export default function SimulationForm({
@@ -27,6 +29,8 @@ export default function SimulationForm({
   assets,
   lookbackPeriod,
   setLookbackPeriod,
+  numSimulations,
+  setNumSimulations,
 }: SimulationFormProps) {
   return (
     <Card title="Portfolio Configuration">
@@ -84,6 +88,20 @@ export default function SimulationForm({
             <option value="10y">10 years</option>
             <option value="max">Maximum available</option>
           </select>
+        </div>
+
+        <div>
+          <label className="block text-xs font-medium text-text-muted mb-1.5">
+            Number of Simulations
+          </label>
+          <input
+            type="number"
+            value={numSimulations}
+            onChange={(e) => setNumSimulations(Number(e.target.value))}
+            className="w-full bg-bg border border-black/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-mint transition-colors"
+            required
+            min="1"
+          />
         </div>
 
         <button

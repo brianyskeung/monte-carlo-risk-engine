@@ -15,6 +15,9 @@ export default function Simulate() {
     results,
     errorMessage,
     handleSimulate,
+    numSimulations,
+    setNumSimulations,
+    simulationTime,
   } = useSimulation();
 
   const assets = useAssets(allocations.map(({ ticker }) => ticker));
@@ -44,11 +47,16 @@ export default function Simulate() {
             errorMessage={errorMessage}
             onSubmit={handleSimulate}
             assets={assets}
+            numSimulations={numSimulations}
+            setNumSimulations={setNumSimulations}
           />
         </div>
 
         <div className="lg:col-span-2 space-y-6">
-          <DistributionResults results={results} />
+          <DistributionResults
+            results={results}
+            simulationTime={simulationTime}
+          />
         </div>
       </div>
     </div>

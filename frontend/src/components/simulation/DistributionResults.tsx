@@ -4,22 +4,34 @@ import type { SimulationResults } from "../../types";
 
 interface DistributionResultsProps {
   results: SimulationResults | null;
+  simulationTime: number | null;
 }
 
 export default function DistributionResults({
   results,
+  simulationTime,
 }: DistributionResultsProps) {
   return (
     <Card
-      title="Distribution Paths"
+      title=""
       className="text-sm font-semibold text-stone-800 uppercase tracking-wider"
     >
+      <div className="flex justify-between items-center text-sm font-medium text-text-muted mb-4">
+        <h3>Distribution Paths</h3>
+        <span>
+          {results ? `${results.percentile_paths.length} Days Forecast` : ""}
+        </span>
+      </div>
+
       {results ? (
         <>
           <SimulationChart data={results.percentile_paths} />
-          <div className="mt-3 flex justify-between items-center text-xs text-text-muted font-normal normal-case">
+
+          <div className="mt-3 flex justify-between text-xs text-text-muted font-normal normal-case">
             <span>Model Type: Historical Bootstrap</span>
-            <span>{results.percentile_paths.length} Days Forecast</span>
+            {simulationTime !== null && (
+              <span>Simulation Time: {simulationTime.toFixed(2)} ms</span>
+            )}
           </div>
         </>
       ) : (

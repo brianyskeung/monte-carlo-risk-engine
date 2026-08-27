@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import { useState } from "react";
 import type { Allocation } from "../../types";
-import Allocator from "../simulation/Allocator";
+import Allocator from "./Allocator";
 
 type PortfolioEditorProps = {
   allocations: Allocation[];
