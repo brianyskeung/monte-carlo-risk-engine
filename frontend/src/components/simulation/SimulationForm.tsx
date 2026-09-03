@@ -1,4 +1,5 @@
 import Card from "../../components/ui/Card";
+import { ChevronDown } from "lucide-react";
 import type { Allocation, AssetInfoMap } from "../../types";
 import AllocationPieChart from "../portfolio/AllocationChart";
 import PortfolioSummary from "../portfolio/PortfolioSummary";
@@ -74,20 +75,27 @@ export default function SimulationForm({
             Historical Lookback
           </label>
 
-          <select
-            value={lookbackPeriod}
-            onChange={(event) => setLookbackPeriod(event.target.value)}
-            className="w-full bg-bg border border-black/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-mint transition-colors"
-          >
-            <option value="1mo">1 month</option>
-            <option value="3mo">3 months</option>
-            <option value="6mo">6 months</option>
-            <option value="1y">1 year</option>
-            <option value="2y">2 years</option>
-            <option value="5y">5 years</option>
-            <option value="10y">10 years</option>
-            <option value="max">Maximum available</option>
-          </select>
+          <div className="relative">
+            <select
+              value={lookbackPeriod}
+              onChange={(event) => setLookbackPeriod(event.target.value)}
+              className="w-full appearance-none bg-bg border border-black/10 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:border-mint transition-colors"
+            >
+              <option value="1mo">1 month</option>
+              <option value="3mo">3 months</option>
+              <option value="6mo">6 months</option>
+              <option value="1y">1 year</option>
+              <option value="2y">2 years</option>
+              <option value="5y">5 years</option>
+              <option value="10y">10 years</option>
+              <option value="max">Maximum available</option>
+            </select>
+            <ChevronDown
+              size={16}
+              aria-hidden="true"
+              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-text-primary"
+            />
+          </div>
         </div>
 
         <div>

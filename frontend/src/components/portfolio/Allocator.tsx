@@ -1,3 +1,4 @@
+import { Trash2 } from "lucide-react";
 import type { Allocation } from "../../types";
 
 export default function Allocator({
@@ -9,6 +10,24 @@ export default function Allocator({
 
   setAllocations: (allocations: Allocation[]) => void;
 }) {
+  const updateWeight = (index: number, nextWeight: number) => {
+    const otherWeight = allocations.reduce(
+      (sum, allocation, allocationIndex) =>
+        allocationIndex === index ? sum : sum + allocation.weight,
+      0,
+    );
+    const maximumWeight = Math.max(0, 100 - otherWeight);
+    const weight = Math.min(Math.max(0, nextWeight), maximumWeight);
+    const updatedAllocations = [...allocations];
+
+    updatedAllocations[index] = {
+      ...updatedAllocations[index],
+      weight,
+    };
+
+    setAllocations(updatedAllocations);
+  };
+
   return (
     <div className="rounded-2xl border border-black/5 bg-white/45 p-4">
       <div className="mb-3 flex items-center justify-between">
@@ -46,25 +65,70 @@ export default function Allocator({
             />
 
             <input
+              type="range"
+              min="0"
+              max={Math.max(
+                0,
+                100 -
+                  allocations.reduce(
+                    (sum, currentAllocation, allocationIndex) =>
+                      allocationIndex === index
+                        ? sum
+                        : sum + currentAllocation.weight,
+                    0,
+                  ),
+              )}
+              step="1"
+              value={allocation.weight}
+              onChange={(event) =>
+                updateWeight(index, Number(event.target.value))
+              }
+              aria-label={`${allocation.ticker || "Asset"} allocation weight`}
+              className="min-w-20 flex-1 cursor-pointer accent-mint"
+            />
+
+            <input
               type="number"
               min="0"
-              max="100"
+              max={Math.max(
+                0,
+                100 -
+                  allocations.reduce(
+                    (sum, currentAllocation, allocationIndex) =>
+                      allocationIndex === index
+                        ? sum
+                        : sum + currentAllocation.weight,
+                    0,
+                  ),
+              )}
               value={allocation.weight === 0 ? "" : allocation.weight}
               onChange={(event) => {
-                const updatedAllocations = [...allocations];
-
-                updatedAllocations[index] = {
-                  ...updatedAllocations[index],
-
-                  weight:
-                    event.target.value === "" ? 0 : Number(event.target.value),
-                };
-
-                setAllocations(updatedAllocations);
+                const nextWeight =
+                  event.target.value === "" ? 0 : Number(event.target.value);
+                updateWeight(
+                  index,
+                  Number.isFinite(nextWeight) ? nextWeight : 0,
+                );
               }}
               className="w-24 rounded-lg border-0 bg-bg/70 px-2.5 py-2 text-right text-sm outline-none focus:ring-2 focus:ring-mint/20"
               required
             />
+
+            <button
+              type="button"
+              onClick={() =>
+                setAllocations(
+                  allocations.filter(
+                    (_, allocationIndex) => allocationIndex !== index,
+                  ),
+                )
+              }
+              className="cursor-pointer rounded-lg p-2 text-text-muted transition-colors hover:bg-rose-50 hover:text-coral"
+              title={`Remove ${allocation.ticker || "asset"}`}
+              aria-label={`Remove ${allocation.ticker || "asset"}`}
+            >
+              <Trash2 size={16} />
+            </button>
           </div>
         ))}
       </div>
