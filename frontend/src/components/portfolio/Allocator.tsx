@@ -23,7 +23,10 @@ export default function Allocator({
 
       <div className="space-y-2.5">
         {allocations.map((allocation, index) => (
-          <div key={index} className="flex gap-2 rounded-xl bg-white/70 p-1.5 shadow-sm ring-1 ring-black/5">
+          <div
+            key={index}
+            className="flex gap-2 rounded-xl bg-white/70 p-1.5 shadow-sm ring-1 ring-black/5"
+          >
             <input
               type="text"
               value={allocation.ticker}
@@ -46,14 +49,15 @@ export default function Allocator({
               type="number"
               min="0"
               max="100"
-              value={allocation.weight}
+              value={allocation.weight === 0 ? "" : allocation.weight}
               onChange={(event) => {
                 const updatedAllocations = [...allocations];
 
                 updatedAllocations[index] = {
                   ...updatedAllocations[index],
 
-                  weight: Number(event.target.value),
+                  weight:
+                    event.target.value === "" ? 0 : Number(event.target.value),
                 };
 
                 setAllocations(updatedAllocations);

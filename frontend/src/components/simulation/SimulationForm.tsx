@@ -61,7 +61,7 @@ export default function SimulationForm({
           </label>
           <input
             type="number"
-            value={days}
+            value={days === 0 ? "" : days}
             onChange={(e) => setDays(Number(e.target.value))}
             className="w-full bg-bg border border-black/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-mint transition-colors"
             required
@@ -96,7 +96,7 @@ export default function SimulationForm({
           </label>
           <input
             type="number"
-            value={numSimulations}
+            value={numSimulations === 0 ? "" : numSimulations}
             onChange={(e) => setNumSimulations(Number(e.target.value))}
             className="w-full bg-bg border border-black/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-mint transition-colors"
             required

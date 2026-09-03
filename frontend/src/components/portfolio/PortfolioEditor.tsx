@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Allocation } from "../../types";
 import Allocator from "./Allocator";
 
@@ -16,6 +16,15 @@ export default function PortfolioEditor({
 }: PortfolioEditorProps) {
   const [draftAllocations, setDraftAllocations] =
     useState<Allocation[]>(allocations);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/20 p-4 backdrop-blur-md sm:p-6">
