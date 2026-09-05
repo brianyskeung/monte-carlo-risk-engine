@@ -33,7 +33,7 @@ export default function PortfolioEditor({
         role="dialog"
         aria-modal="true"
         aria-labelledby="portfolio-editor-title"
-        className="relative mx-auto mt-[5vh] max-w-2xl overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-5 shadow-2xl shadow-slate-900/15 backdrop-blur-2xl sm:mt-[10vh] sm:p-8"
+        className="relative mx-auto mt-0 flex max-h-[calc(100dvh-2rem)] w-full max-w-4xl flex-col overflow-y-auto rounded-3xl border border-white/70 bg-white/80 p-5 shadow-2xl shadow-slate-900/15 backdrop-blur-2xl sm:mt-0 sm:p-8"
       >
         <ModalHeader
           title="Portfolio Allocation"

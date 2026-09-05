@@ -17,13 +17,13 @@ export default function AllocationRow({
   onRemove,
 }: AllocationRowProps) {
   return (
-    <div className="flex gap-2 rounded-xl bg-white/70 p-1.5 shadow-sm ring-1 ring-black/5">
+    <div className="grid grid-cols-[minmax(4.5rem,1fr)_minmax(4rem,1.25fr)_3.75rem_auto] items-center gap-1 rounded-xl bg-white/70 p-1.5 shadow-sm ring-1 ring-black/5">
       <input
         type="text"
         value={allocation.ticker}
         onChange={(event) => onTickerChange(event.target.value.toUpperCase())}
         placeholder="Ticker"
-        className="min-w-0 flex-1 rounded-lg border-0 bg-transparent px-2.5 py-2 text-sm outline-none placeholder:text-text-muted/60 focus:ring-2 focus:ring-mint/20"
+        className="min-w-0 rounded-lg border-0 bg-transparent px-2 py-2 text-sm outline-none placeholder:text-text-muted/60 focus:ring-2 focus:ring-mint/20"
         required
       />
 
@@ -35,7 +35,7 @@ export default function AllocationRow({
         value={allocation.weight}
         onChange={(event) => onWeightChange(Number(event.target.value))}
         aria-label={`${allocation.ticker || "Asset"} allocation weight`}
-        className="min-w-20 flex-1 cursor-pointer accent-mint"
+        className="min-w-0 w-full cursor-pointer accent-mint"
       />
 
       <input
@@ -48,7 +48,7 @@ export default function AllocationRow({
             event.target.value === "" ? 0 : Number(event.target.value);
           onWeightChange(Number.isFinite(nextWeight) ? nextWeight : 0);
         }}
-        className="w-24 rounded-lg border-0 bg-bg/70 px-2.5 py-2 text-right text-sm outline-none focus:ring-2 focus:ring-mint/20"
+        className="w-full rounded-lg border-0 bg-bg/70 px-2 py-2 text-right text-sm outline-none focus:ring-2 focus:ring-mint/20"
         required
       />
 
