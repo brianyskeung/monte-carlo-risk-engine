@@ -89,7 +89,7 @@ export default function SimulationChart({
       <div
         className={
           isFullscreen
-            ? "mx-auto h-[52vh] min-h-[18rem] max-h-[34rem] w-full max-w-6xl pb-4 md:h-[60vh]"
+            ? "mx-auto h-[52vh] min-h-72 max-h-136 w-full max-w-6xl pb-4 md:h-[60vh]"
             : "h-full w-full pb-4"
         }
       >
