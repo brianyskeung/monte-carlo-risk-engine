@@ -40,10 +40,33 @@ def test_successful_simulation(mock_get_returns, mock_market_data):
     json_data = response.json()
     
     assert json_data["status"] == "success"
-    assert len(json_data["data"]["models"]) == 1
-    assert json_data["data"]["models"][0]["model_id"] == "historical_bootstrap"
-    assert "summary" in json_data["data"]["models"][0]
-    assert "percentile_paths" in json_data["data"]["models"][0]
+    models = json_data["data"]["models"]
+    assert [model["model_id"] for model in models] == [
+        "historical_bootstrap",
+        "geometric_brownian_motion",
+    ]
+    assert all("summary" in model for model in models)
+    assert all("percentile_paths" in model for model in models)
+
+
+@patch("main.get_historical_returns")
+def test_simulation_can_select_one_model(mock_get_returns, mock_market_data):
+    mock_get_returns.return_value = mock_market_data
+
+    payload = {
+        "tickers": ["SPY", "QQQ"],
+        "weights": {"SPY": 0.6, "QQQ": 0.4},
+        "models": ["geometric_brownian_motion"],
+        "num_simulations": 10,
+        "forecasted_days": 5,
+    }
+
+    response = client.post("/api/simulate", json=payload)
+
+    assert response.status_code == 200
+    assert [
+        model["model_id"] for model in response.json()["data"]["models"]
+    ] == ["geometric_brownian_motion"]
 
 
 @patch("main.get_historical_returns")
