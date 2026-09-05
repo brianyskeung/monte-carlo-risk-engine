@@ -9,10 +9,12 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Maximize2, Minimize2 } from "lucide-react";
-import type { PathData } from "../../types";
+import type { PathData, SimulationSummary } from "../../types";
+import AdvancedStats from "./models/AdvancedStats";
 
 interface SimulationChartProps {
   data: PathData[];
+  summary: SimulationSummary;
 }
 
 const CompactTooltip = ({ active, payload, label }: any) => {
@@ -59,7 +61,10 @@ const CompactTooltip = ({ active, payload, label }: any) => {
 {
   /* Main Chart Component */
 }
-export default function SimulationChart({ data }: SimulationChartProps) {
+export default function SimulationChart({
+  data,
+  summary,
+}: SimulationChartProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   if (!data || data.length === 0) return null;
@@ -81,7 +86,13 @@ export default function SimulationChart({ data }: SimulationChartProps) {
         {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
       </button>
 
-      <div className="grow w-full h-full pb-4">
+      <div
+        className={
+          isFullscreen
+            ? "mx-auto h-[52vh] min-h-[18rem] max-h-[34rem] w-full max-w-6xl pb-4 md:h-[60vh]"
+            : "h-full w-full pb-4"
+        }
+      >
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data}
@@ -169,6 +180,10 @@ export default function SimulationChart({ data }: SimulationChartProps) {
           </LineChart>
         </ResponsiveContainer>
       </div>
+
+      {isFullscreen && (
+        <AdvancedStats summary={summary} percentilePaths={data} />
+      )}
     </div>
   );
 }

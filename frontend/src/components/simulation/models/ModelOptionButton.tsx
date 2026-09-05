@@ -20,7 +20,7 @@ export default function ModelOptionButton({
     <button
       type="button"
       onClick={() => onToggle(modelId)}
-      className={`flex w-full items-start gap-3 rounded-xl p-1.5 text-left shadow-sm ring-1 transition-colors ${
+      className={`hover:cursor-pointer flex w-full items-start gap-3 rounded-xl p-1.5 text-left shadow-sm ring-1 transition-colors ${
         isSelected
           ? "bg-emerald-50/80 ring-mint/35"
           : "bg-white/70 ring-black/5 hover:bg-white"
