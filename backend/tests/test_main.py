@@ -40,8 +40,10 @@ def test_successful_simulation(mock_get_returns, mock_market_data):
     json_data = response.json()
     
     assert json_data["status"] == "success"
-    assert "summary" in json_data["data"]
-    assert "percentile_paths" in json_data["data"]
+    assert len(json_data["data"]["models"]) == 1
+    assert json_data["data"]["models"][0]["model_id"] == "historical_bootstrap"
+    assert "summary" in json_data["data"]["models"][0]
+    assert "percentile_paths" in json_data["data"]["models"][0]
 
 
 @patch("main.get_historical_returns")

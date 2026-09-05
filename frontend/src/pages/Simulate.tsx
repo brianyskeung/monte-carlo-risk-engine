@@ -17,7 +17,6 @@ export default function Simulate() {
     handleSimulate,
     numSimulations,
     setNumSimulations,
-    simulationTime,
   } = useSimulation();
 
   const assets = useAssets(allocations.map(({ ticker }) => ticker));
@@ -55,7 +54,6 @@ export default function Simulate() {
         <div className="lg:col-span-2 space-y-6">
           <DistributionResults
             results={results}
-            simulationTime={simulationTime}
           />
         </div>
       </div>

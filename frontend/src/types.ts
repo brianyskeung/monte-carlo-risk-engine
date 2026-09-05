@@ -20,9 +20,16 @@ export interface SimulationSummary {
   loss_cvar_95: number;
 }
 
-export interface SimulationResults {
+export interface ModelResult {
+  model_id: string;
+  display_name: string;
   summary: SimulationSummary;
   percentile_paths: PathData[];
+  simulation_time_ms: number;
+}
+
+export interface SimulationResults {
+  models: ModelResult[];
 }
 
 export interface AssetInfo {

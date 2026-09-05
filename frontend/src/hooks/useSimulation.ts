@@ -13,7 +13,6 @@ export function useSimulation() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [lookbackPeriod, setLookbackPeriod] = useState("5y");
   const [numSimulations, setNumSimulations] = useState<number>(1000);
-  const [simulationTime, setSimulationTime] = useState<number | null>(null);
 
   const handleSimulate = async (e?: React.SyntheticEvent) => {
     if (e) e.preventDefault();
@@ -38,7 +37,6 @@ export function useSimulation() {
       const response = await axios.post(`${apiUrl}/api/simulate`, payload);
 
       setResults(response.data.data);
-      setSimulationTime(response.data.time);
     } catch (error: any) {
       if (error.response) {
         setErrorMessage(
@@ -65,6 +63,5 @@ export function useSimulation() {
     handleSimulate,
     numSimulations,
     setNumSimulations,
-    simulationTime,
   };
 }

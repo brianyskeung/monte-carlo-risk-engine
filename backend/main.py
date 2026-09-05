@@ -61,10 +61,19 @@ def run_simulation(request: SimulationRequest):
         raise HTTPException(status_code=400, detail=str(e))
     
     simulation_time_ms = (time.perf_counter() - start) * 1000
-    results = calculate_portfolio_metrics(simulated_paths)
+    metrics = calculate_portfolio_metrics(simulated_paths)
+    results = {
+        "models": [
+            {
+                "model_id": "historical_bootstrap",
+                "display_name": "Historical Bootstrap",
+                **metrics,
+                "simulation_time_ms": simulation_time_ms,
+            }
+        ]
+    }
 
     return {
         "status": "success",
         "data": results,
-        "time": simulation_time_ms
     }
