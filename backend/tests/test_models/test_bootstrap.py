@@ -85,3 +85,13 @@ def test_bootstrap_resampled_values_exist(dummy_returns):
         # verify each row exists somewhere in the dummy_returns matrix
         matches = np.isclose(dummy_returns, row).all(axis=1)
         assert np.any(matches)
+
+
+def test_bootstrap_rejects_invalid_generation_parameters(dummy_returns):
+    model = HistoricalBootstrapModel(dummy_returns)
+
+    with pytest.raises(ValueError, match="num_simulations"):
+        model.generate_paths(num_simulations=0, forecasted_days=10)
+
+    with pytest.raises(ValueError, match="forecasted_days"):
+        model.generate_paths(num_simulations=10, forecasted_days=0)

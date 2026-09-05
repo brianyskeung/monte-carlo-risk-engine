@@ -19,25 +19,14 @@ class HistoricalBootstrapModel(BaseSimulationModel):
         if self.daily_returns.ndim != 2:
             raise ValueError(f"daily_returns must be a 2D array, got shape {self.daily_returns.shape}")
 
-        num_assets = self.daily_returns.shape[1]
-
-        # ticker assignment & validation
-        if tickers is None:
-            self.tickers = [f"ASSET_{i}" for i in range(num_assets)]
-        else:
-            if len(tickers) != num_assets:
-                raise ValueError(
-                    f"ticker count ({len(tickers)}) does not match asset column count ({num_assets})"
-                )
-            self.tickers = list(tickers)
+        super().__init__(self.daily_returns.shape[1], tickers)
 
     def generate_path(self, forecasted_days: int) -> np.ndarray:
         """
         Generates a simulated path of returns for the specified number of days.
         """
         
-        if forecasted_days <= 0:
-            raise ValueError("forecasted_days must be greater than 0")
+        self.validate_forecasted_days(forecasted_days)
         
         # get the number of available historical days (TODO: Make this customizable)
         num_historical_days = self.daily_returns.shape[0]
@@ -58,6 +47,9 @@ class HistoricalBootstrapModel(BaseSimulationModel):
     num_simulations: int,
     forecasted_days: int,
     ) -> np.ndarray:
+        self.validate_num_simulations(num_simulations)
+        self.validate_forecasted_days(forecasted_days)
+
         random_indices = np.random.choice(
             self.daily_returns.shape[0],
             size=(num_simulations, forecasted_days),
