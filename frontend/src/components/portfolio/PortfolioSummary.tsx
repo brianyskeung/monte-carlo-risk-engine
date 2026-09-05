@@ -32,7 +32,7 @@ export default function PortfolioSummary({
         <button
           type="button"
           onClick={() => setEditorOpen(true)}
-          className="text-sm text-mint"
+          className="text-sm text-mint hover:cursor-pointer hover:underline"
         >
           Edit portfolio
         </button>
