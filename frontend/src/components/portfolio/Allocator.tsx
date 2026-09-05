@@ -1,4 +1,5 @@
 import type { Allocation } from "../../types";
+import SectionHeader from "../ui/SectionHeader";
 import AllocationRow from "./AllocationRow";
 
 export default function Allocator({
@@ -45,15 +46,10 @@ export default function Allocator({
 
   return (
     <div className="rounded-2xl border border-black/5 bg-white/45 p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <label className="text-xs font-semibold uppercase tracking-wider text-text-muted">
-          Portfolio Allocation
-        </label>
-
-        <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold tabular-nums text-emerald-700">
-          {allocations.reduce((sum, allocation) => sum + allocation.weight, 0)}%
-        </span>
-      </div>
+      <SectionHeader
+        label="Portfolio Allocation"
+        value={`${allocations.reduce((sum, allocation) => sum + allocation.weight, 0)}%`}
+      />
 
       <div className="space-y-2.5">
         {allocations.map((allocation, index) => (

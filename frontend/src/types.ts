@@ -3,6 +3,8 @@ export interface Allocation {
   weight: number;
 }
 
+export type ModelId = "historical_bootstrap" | "geometric_brownian_motion";
+
 export interface PathData {
   day: number;
   p5: number;
@@ -21,7 +23,7 @@ export interface SimulationSummary {
 }
 
 export interface ModelResult {
-  model_id: string;
+  model_id: ModelId;
   display_name: string;
   summary: SimulationSummary;
   percentile_paths: PathData[];

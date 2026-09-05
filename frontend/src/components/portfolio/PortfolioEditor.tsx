@@ -1,6 +1,6 @@
-import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Allocation } from "../../types";
+import ModalHeader from "../ui/ModalHeader";
 import Allocator from "./Allocator";
 
 type PortfolioEditorProps = {
@@ -35,24 +35,13 @@ export default function PortfolioEditor({
         aria-labelledby="portfolio-editor-title"
         className="relative mx-auto mt-[5vh] max-w-2xl overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-5 shadow-2xl shadow-slate-900/15 backdrop-blur-2xl sm:mt-[10vh] sm:p-8"
       >
-        <div className="mb-8 flex items-start justify-between gap-4">
-          <h2
-            id="portfolio-editor-title"
-            className="font-display text-2xl font-semibold tracking-tight text-mint"
-          >
-            Portfolio Allocation
-          </h2>
-
-          <button
-            type="button"
-            onClick={onClose}
-            className="cursor-pointer rounded-full border border-black/5 bg-white/70 p-2 text-text-muted transition-colors hover:bg-white hover:text-text-primary"
-            title="Close portfolio editor"
-            aria-label="Close portfolio editor"
-          >
-            <X size={18} />
-          </button>
-        </div>
+        <ModalHeader
+          title="Portfolio Allocation"
+          titleId="portfolio-editor-title"
+          onClose={onClose}
+          closeLabel="Close portfolio editor"
+          titleClassName="font-display text-2xl font-semibold tracking-tight text-mint"
+        />
 
         <Allocator
           allocations={draftAllocations}

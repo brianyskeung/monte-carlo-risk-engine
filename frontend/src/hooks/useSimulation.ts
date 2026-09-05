@@ -1,6 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
-import type { Allocation, SimulationResults } from "../types";
+import type { Allocation, ModelId, SimulationResults } from "../types";
+
+const DEFAULT_MODELS: ModelId[] = ["historical_bootstrap"];
 
 export function useSimulation() {
   const [allocations, setAllocations] = useState<Allocation[]>([
@@ -13,6 +15,8 @@ export function useSimulation() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [lookbackPeriod, setLookbackPeriod] = useState("5y");
   const [numSimulations, setNumSimulations] = useState<number>(1000);
+  const [selectedModels, setSelectedModels] =
+    useState<ModelId[]>(DEFAULT_MODELS);
 
   const handleSimulate = async (e?: React.SyntheticEvent) => {
     if (e) e.preventDefault();
@@ -28,6 +32,7 @@ export function useSimulation() {
       const payload = {
         tickers: tickerArray,
         weights: weightsDict,
+        models: selectedModels,
         lookback_period: lookbackPeriod,
         forecasted_days: days,
         num_simulations: numSimulations,
@@ -63,5 +68,7 @@ export function useSimulation() {
     handleSimulate,
     numSimulations,
     setNumSimulations,
+    selectedModels,
+    setSelectedModels,
   };
 }
