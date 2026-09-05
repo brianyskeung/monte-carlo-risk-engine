@@ -5,6 +5,16 @@ from pydantic import BaseModel, Field
 class SimulationRequest(BaseModel):
     tickers: list[str] = Field(..., description="List of ticker symbols")
     weights: dict[str, float] = Field(..., description="Portfolio weights per ticker")
+    models: list[Literal[
+        "historical_bootstrap",
+        "geometric_brownian_motion",
+    ]] = Field(
+        default_factory=lambda: [
+            "historical_bootstrap",
+            "geometric_brownian_motion",
+        ],
+        description="Simulation models to run",
+    )
     lookback_period: Literal[
         "1mo",
         "3mo",

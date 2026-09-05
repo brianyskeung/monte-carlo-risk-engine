@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from schemas import SimulationRequest
 from data import get_asset_info, get_historical_returns
 from engine import SimulationEngine
-from models import HistoricalBootstrapModel
+from models import HistoricalBootstrapModel, GeometricBrownianMotionModel
 from metrics import calculate_portfolio_metrics
 import time
 
@@ -40,7 +40,7 @@ def run_simulation(request: SimulationRequest):
     daily_returns_df = get_historical_returns(request.tickers, period = request.lookback_period)
 
     # initialize model using values matrix & ticker sequence
-    model = HistoricalBootstrapModel(
+    model = GeometricBrownianMotionModel(
         daily_returns=daily_returns_df.values, tickers=list(daily_returns_df.columns)
     )
 
