@@ -23,16 +23,19 @@ export default function AdvancedStats({
           <AdvancedStatItem
             label="Expected Return"
             value={formatPercent(summary.expected_return)}
+            tone={getTone(summary.expected_return)}
           />
         </div>
 
         <AdvancedStatItem
           label="VaR 95%"
           value={formatPercent(summary.loss_var_95)}
+          tone={getTone(summary.loss_var_95)}
         />
         <AdvancedStatItem
           label="CVaR 95%"
           value={formatPercent(summary.loss_cvar_95)}
+          tone={getTone(summary.loss_cvar_95)}
         />
 
         {terminalPercentiles && (
@@ -40,26 +43,32 @@ export default function AdvancedStats({
             <AdvancedStatItem
               label="Median"
               value={formatPercent(terminalPercentiles.p50)}
+              tone={getTone(terminalPercentiles.p50)}
             />
             <AdvancedStatItem
               label="Mean"
               value={formatPercent(terminalPercentiles.mean)}
+              tone={getTone(terminalPercentiles.mean)}
             />
             <AdvancedStatItem
               label="5th Percentile"
               value={formatPercent(terminalPercentiles.p5)}
+              tone={getTone(terminalPercentiles.p5)}
             />
             <AdvancedStatItem
               label="25th Percentile"
               value={formatPercent(terminalPercentiles.p25)}
+              tone={getTone(terminalPercentiles.p25)}
             />
             <AdvancedStatItem
               label="75th Percentile"
               value={formatPercent(terminalPercentiles.p75)}
+              tone={getTone(terminalPercentiles.p75)}
             />
             <AdvancedStatItem
               label="95th Percentile"
               value={formatPercent(terminalPercentiles.p95)}
+              tone={getTone(terminalPercentiles.p95)}
             />
           </>
         )}
@@ -69,5 +78,13 @@ export default function AdvancedStats({
 }
 
 function formatPercent(value: number) {
-  return `${(value * 100).toFixed(2)}%`;
+  const percent = value * 100;
+  const sign = percent > 0 ? "+" : "";
+  return `${sign}${percent.toFixed(2)}%`;
+}
+
+function getTone(value: number): "positive" | "negative" | "neutral" {
+  if (value > 0) return "positive";
+  if (value < 0) return "negative";
+  return "neutral";
 }

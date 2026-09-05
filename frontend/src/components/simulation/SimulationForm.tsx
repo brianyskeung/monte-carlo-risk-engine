@@ -36,7 +36,7 @@ export default function SimulationForm({
   return (
     <Card title="Portfolio Configuration">
       <form onSubmit={onSubmit} className="space-y-4">
-        <AllocationPieChart allocations={allocations} />
+        <AllocationPieChart allocations={allocations} assets={assets} />
         {errorMessage && (
           <div className="mb-5 flex items-start gap-3 bg-red-50 border border-red-100 px-4 py-3 rounded-lg">
             <div>
