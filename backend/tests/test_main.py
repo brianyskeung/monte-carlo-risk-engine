@@ -84,4 +84,31 @@ def test_bad_request_invalid_weights(mock_get_returns, mock_market_data):
     response = client.post("/api/simulate", json=payload)
     
     assert response.status_code == 400
-    assert "portfolio weights must sum to 1.0" in response.json()["detail"]
+    assert "Portfolio allocation must reach 100%" in response.json()["detail"]
+
+
+def test_empty_portfolio_is_rejected():
+    response = client.post(
+        "/api/simulate",
+        json={"tickers": [], "weights": {}},
+    )
+
+    assert response.status_code == 422
+
+
+@patch("main.get_historical_returns")
+def test_unavailable_ticker_returns_bad_request(mock_get_returns):
+    mock_get_returns.side_effect = ValueError(
+        "Unknown or unavailable ticker(s): NOT-A-TICKER"
+    )
+
+    response = client.post(
+        "/api/simulate",
+        json={
+            "tickers": ["NOT-A-TICKER"],
+            "weights": {"NOT-A-TICKER": 1.0},
+        },
+    )
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Unknown or unavailable ticker(s): NOT-A-TICKER"

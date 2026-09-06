@@ -37,7 +37,12 @@ def get_assets_endpoint(tickers: list[str] = Query(...)):
 @app.post("/api/simulate")
 def run_simulation(request: SimulationRequest):
     # download market data
-    daily_returns_df = get_historical_returns(request.tickers, period = request.lookback_period)
+    try:
+        daily_returns_df = get_historical_returns(
+            request.tickers, period=request.lookback_period
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
     model_types = {
         "historical_bootstrap": (

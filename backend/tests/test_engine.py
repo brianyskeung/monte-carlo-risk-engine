@@ -58,7 +58,7 @@ def test_engine_invalid_weight_sum_raises_error(bootstrap_model):
     with pytest.raises(ValueError) as exc_info:
         engine.run(weights=invalid_weights, num_simulations=10, forecasted_days=5)
 
-    assert "must sum to 1.0" in str(exc_info.value)
+    assert "Portfolio allocation must reach 100%" in str(exc_info.value)
 
 @pytest.mark.parametrize("invalid_weight", [-0.1, -1.0])
 def test_engine_negative_weight_raises_error(bootstrap_model, invalid_weight):

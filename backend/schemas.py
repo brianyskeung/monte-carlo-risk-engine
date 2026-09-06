@@ -3,8 +3,12 @@ from pydantic import BaseModel, Field
 
 
 class SimulationRequest(BaseModel):
-    tickers: list[str] = Field(..., description="List of ticker symbols")
-    weights: dict[str, float] = Field(..., description="Portfolio weights per ticker")
+    tickers: list[str] = Field(
+        ..., min_length=1, description="List of ticker symbols"
+    )
+    weights: dict[str, float] = Field(
+        ..., min_length=1, description="Portfolio weights per ticker"
+    )
     models: list[Literal[
         "historical_bootstrap",
         "geometric_brownian_motion",

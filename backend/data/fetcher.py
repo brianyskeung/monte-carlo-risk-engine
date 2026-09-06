@@ -13,7 +13,9 @@ def get_historical_returns(tickers: list[str], period: str = "5y") -> pd.DataFra
 
     # safety check if the download fails
     if data.empty:
-        raise ValueError("Failed to download market data.")
+        raise ValueError(
+            f"No market data found for ticker(s): {', '.join(tickers)}"
+        )
 
     # extract Adjusted Close prices
     if len(tickers) == 1:
@@ -22,11 +24,28 @@ def get_historical_returns(tickers: list[str], period: str = "5y") -> pd.DataFra
     else:
         prices = data["Close"]
 
+    missing_tickers = [ticker for ticker in tickers if ticker not in prices.columns]
+    if missing_tickers:
+        raise ValueError(
+            f"Unknown or unavailable ticker(s): {', '.join(missing_tickers)}"
+        )
+
+    unavailable_tickers = [
+        ticker for ticker in tickers if prices[ticker].dropna().empty
+    ]
+    if unavailable_tickers:
+        raise ValueError(
+            f"Unknown or unavailable ticker(s): {', '.join(unavailable_tickers)}"
+        )
+
     # sort columns into the order of the requested tickers
     prices = prices[tickers]
 
     # calculate daily percentage returns and drop the first row
     daily_returns = prices.pct_change().dropna()
+
+    if daily_returns.empty:
+        raise ValueError("No overlapping historical data found for the selected tickers.")
 
     return daily_returns
 

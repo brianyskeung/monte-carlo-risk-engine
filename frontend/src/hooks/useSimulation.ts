@@ -1,14 +1,38 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import type { Allocation, ModelId, SimulationResults } from "../types";
 
 const DEFAULT_MODELS: ModelId[] = ["historical_bootstrap"];
+const PORTFOLIO_STORAGE_KEY = "monte-carlo-risk-engine:portfolio";
+
+function loadSavedAllocations(): Allocation[] {
+  const defaultAllocations: Allocation[] = [];
+
+  try {
+    const saved = localStorage.getItem(PORTFOLIO_STORAGE_KEY);
+    if (!saved) return defaultAllocations;
+
+    const parsed = JSON.parse(saved);
+    if (
+      !Array.isArray(parsed) ||
+      parsed.some(
+        (allocation) =>
+          typeof allocation?.ticker !== "string" ||
+          typeof allocation?.weight !== "number",
+      )
+    ) {
+      return defaultAllocations;
+    }
+
+    return parsed;
+  } catch {
+    return defaultAllocations;
+  }
+}
 
 export function useSimulation() {
-  const [allocations, setAllocations] = useState<Allocation[]>([
-    { ticker: "SPY", weight: 60 },
-    { ticker: "QQQ", weight: 40 },
-  ]);
+  const [allocations, setAllocations] =
+    useState<Allocation[]>(loadSavedAllocations);
   const [days, setDays] = useState(252);
   const [isSimulating, setIsSimulating] = useState(false);
   const [results, setResults] = useState<SimulationResults | null>(null);
@@ -18,8 +42,20 @@ export function useSimulation() {
   const [selectedModels, setSelectedModels] =
     useState<ModelId[]>(DEFAULT_MODELS);
 
+  useEffect(() => {
+    localStorage.setItem(PORTFOLIO_STORAGE_KEY, JSON.stringify(allocations));
+  }, [allocations]);
+
   const handleSimulate = async (e?: React.SyntheticEvent) => {
     if (e) e.preventDefault();
+
+    if (allocations.length === 0) {
+      setErrorMessage(
+        "Add at least one asset to your portfolio before running a simulation.",
+      );
+      return;
+    }
+
     setIsSimulating(true);
     setErrorMessage(null);
 
