@@ -1,10 +1,14 @@
+import type { AssetInfoMap } from "../../types";
+
 interface PortfolioTooltipProps {
   active?: boolean;
+  assets: AssetInfoMap;
   payload?: Array<{
     payload: {
       ticker?: string;
       assetName?: string;
       assetType?: string;
+      assetSector?: string;
       weight?: number;
     };
   }>;
@@ -12,13 +16,17 @@ interface PortfolioTooltipProps {
 
 export default function PortfolioTooltip({
   active,
+  assets,
   payload,
 }: PortfolioTooltipProps) {
   if (!active || !payload?.length) return null;
 
   const item = payload[0].payload;
+  const normalizedTicker = item.ticker?.trim().toUpperCase();
+  const asset = normalizedTicker ? assets[normalizedTicker] : undefined;
   const securityName = item.assetName || item.ticker || "Unknown security";
   const securityType = item.assetType || "Unknown type";
+  const sector = item.assetSector || asset?.sector;
   const weight = Number(item.weight ?? 0);
 
   return (
@@ -38,6 +46,11 @@ export default function PortfolioTooltip({
           <span className="font-medium text-stone-700">Type:</span>{" "}
           {securityType}
         </p>
+        {sector && (
+          <p className="wrap-break-words leading-snug">
+            <span className="font-medium text-stone-700">Sector:</span> {sector}
+          </p>
+        )}
         <p>
           <span className="font-medium text-stone-700">
             Portfolio percentage:

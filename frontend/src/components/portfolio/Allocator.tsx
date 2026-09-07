@@ -45,13 +45,13 @@ export default function Allocator({
   };
 
   return (
-    <div className="rounded-2xl border border-black/5 bg-white/45 p-4">
+    <div className="flex min-h-0 flex-col rounded-2xl border border-black/5 bg-white/45 p-4">
       <SectionHeader
         label="Portfolio Allocation"
         value={`${allocations.reduce((sum, allocation) => sum + allocation.weight, 0)}%`}
       />
 
-      <div className="grid max-h-[min(34rem,52vh)] grid-cols-1 gap-2.5 overflow-y-auto px-1 pb-1 sm:grid-cols-2">
+      <div className="grid min-h-0 max-h-[min(34rem,52vh)] grid-cols-1 gap-2.5 overflow-y-auto px-1 pb-1 sm:grid-cols-2">
         {allocations.map((allocation, index) => (
           <AllocationRow
             key={index}

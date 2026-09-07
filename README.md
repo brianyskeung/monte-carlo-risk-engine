@@ -13,6 +13,8 @@ an interactive risk analytics tool designed to model multi-asset portfolio traje
 - **risk metrics:** calculates expected terminal value, 95% value-at-risk (var), and conditional var (cvar / expected shortfall).
 - **percentile paths:** generates p5 to p95 fan-charts so you can visualize the spread of best and worst-case scenarios.
 - **ticker validation:** checks if a ticker is real and grabs its basic info for the frontend.
+- **asset metadata:** provides quote type, industry, sector, exchange, currency, and validity information for each ticker.
+- **local portfolio saving:** saves the current allocation list in the browser and restores it after refresh.
 
 ---
 
@@ -56,14 +58,16 @@ monte-carlo-risk-engine/
 
 runs the monte carlo simulation based on your requested weights and timeframe.
 
+The frontend starts with an empty portfolio. Add at least one asset before running a simulation. Portfolio allocations are saved locally in the browser under the `monte-carlo-risk-engine:portfolio` storage key.
+
 - **request body**
 
 ```json
 {
-  "tickers": ["SPY", "QQQ"],
+  "tickers": ["SPY", "NVDA"],
   "weights": {
     "SPY": 0.6,
-    "QQQ": 0.4
+    "NVDA": 0.4
   },
   "lookback_period": "5y",
   "forecasted_days": 252,
@@ -77,30 +81,37 @@ runs the monte carlo simulation based on your requested weights and timeframe.
 {
   "status": "success",
   "data": {
-    "summary": {
-      "expected_terminal_value": 1.1084,
-      "expected_return": 0.1084,
-      "loss_var_95": 0.1421,
-      "loss_cvar_95": 0.2018
-    },
-    "percentile_paths": [
+    "models": [
       {
-        "day": 1,
-        "p5": 1.0,
-        "p25": 1.0,
-        "p50": 1.0,
-        "p75": 1.0,
-        "p95": 1.0,
-        "mean": 1.0
-      },
-      {
-        "day": 2,
-        "p5": 0.998,
-        "p25": 1.002,
-        "p50": 1.004,
-        "p75": 1.007,
-        "p95": 1.012,
-        "mean": 1.005
+        "model_id": "historical_bootstrap",
+        "display_name": "Historical Bootstrap",
+        "summary": {
+          "expected_terminal_value": 1.1084,
+          "expected_return": 0.1084,
+          "loss_var_95": 0.1421,
+          "loss_cvar_95": 0.2018
+        },
+        "percentile_paths": [
+          {
+            "day": 1,
+            "p5": 0.98,
+            "p25": 0.995,
+            "p50": 1.002,
+            "p75": 1.01,
+            "p95": 1.025,
+            "mean": 1.003
+          },
+          {
+            "day": 2,
+            "p5": 0.97,
+            "p25": 0.99,
+            "p50": 1.005,
+            "p75": 1.018,
+            "p95": 1.04,
+            "mean": 1.007
+          }
+        ],
+        "simulation_time_ms": 12.5
       }
     ]
   }
@@ -115,14 +126,14 @@ grabs the security information used for ui tags and basic validation.
 
 - **query parameters**
 
-| parameter | type       | required | description                                                          |
-| :-------- | :--------- | :------- | :------------------------------------------------------------------- |
-| `tickers` | `string[]` | yes      | repeat the key for each ticker, for example ?tickers=SPY&tickers=QQQ |
+| parameter | type       | required | description                                                           |
+| :-------- | :--------- | :------- | :-------------------------------------------------------------------- |
+| `tickers` | `string[]` | yes      | repeat the key for each ticker, for example ?tickers=SPY&tickers=NVDA |
 
 - **example request**
 
 ```http
-GET /api/assets?tickers=SPY&tickers=QQQ&tickers=BTC-USD HTTP/1.1
+GET /api/assets?tickers=SPY&tickers=NVDA&tickers=BTC-USD HTTP/1.1
 Host: localhost:8000
 Accept: application/json
 ```
@@ -136,14 +147,18 @@ Accept: application/json
       "symbol": "SPY",
       "short_name": "SPDR S&P 500 ETF Trust",
       "quote_type": "ETF",
+      "industry": null,
+      "sector": "Financial Services",
       "exchange": "NYQ",
       "currency": "USD",
       "is_valid": true
     },
-    "QQQ": {
-      "symbol": "QQQ",
-      "short_name": "Invesco QQQ Trust",
-      "quote_type": "ETF",
+    "NVDA": {
+      "symbol": "NVDA",
+      "short_name": "NVIDIA Corporation",
+      "quote_type": "STOCK",
+      "industry": "Semiconductors",
+      "sector": "Technology",
       "exchange": "NMS",
       "currency": "USD",
       "is_valid": true
@@ -152,6 +167,8 @@ Accept: application/json
       "symbol": "BTC-USD",
       "short_name": "Bitcoin USD",
       "quote_type": "CRYPTOCURRENCY",
+      "industry": null,
+      "sector": null,
       "exchange": "CCC",
       "currency": "USD",
       "is_valid": true
@@ -199,7 +216,7 @@ npm run dev
 
 ```bash
 cd backend
-pytest -v
+python -m pytest -v
 ```
 
 ---

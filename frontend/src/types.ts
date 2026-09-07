@@ -38,6 +38,7 @@ export interface AssetInfo {
   symbol: string;
   short_name: string | null;
   quote_type: string;
+  sector: string | null;
   exchange: string | null;
   currency: string | null;
   is_valid: boolean;

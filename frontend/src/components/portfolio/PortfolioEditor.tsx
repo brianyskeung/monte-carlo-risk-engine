@@ -1,21 +1,41 @@
 import { useEffect, useState } from "react";
-import type { Allocation } from "../../types";
+import type { Allocation, AssetInfoMap } from "../../types";
 import ModalHeader from "../ui/ModalHeader";
 import Allocator from "./Allocator";
+import PortfolioDetails from "./PortfolioDetails";
+import { useAssets } from "../../hooks/useAssets";
+import { validatePortfolioAllocations } from "../../utils/portfolioValidation";
 
 type PortfolioEditorProps = {
   allocations: Allocation[];
+  assets: AssetInfoMap;
   onSave: (allocations: Allocation[]) => void;
   onClose: () => void;
 };
 
 export default function PortfolioEditor({
   allocations,
+  assets,
   onSave,
   onClose,
 }: PortfolioEditorProps) {
   const [draftAllocations, setDraftAllocations] =
     useState<Allocation[]>(allocations);
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const draftAssets = useAssets(
+    draftAllocations.map((allocation) => allocation.ticker),
+  );
+
+  const handleSave = () => {
+    const error = validatePortfolioAllocations(draftAllocations);
+    if (error) {
+      setValidationError(error);
+      return;
+    }
+
+    setValidationError(null);
+    onSave(draftAllocations);
+  };
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -27,13 +47,13 @@ export default function PortfolioEditor({
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/20 p-4 backdrop-blur-md sm:p-6">
+    <div className="fixed inset-0 z-50 overflow-hidden bg-slate-950/20 p-4 backdrop-blur-md sm:p-6">
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_right,rgba(5,150,105,0.16),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(59,130,246,0.12),transparent_32%)]" />
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="portfolio-editor-title"
-        className="relative mx-auto mt-0 flex max-h-[calc(100dvh-2rem)] w-full max-w-4xl flex-col overflow-y-auto rounded-3xl border border-white/70 bg-white/80 p-5 shadow-2xl shadow-slate-900/15 backdrop-blur-2xl sm:mt-0 sm:p-8"
+        className="relative mx-auto mt-0 flex max-h-[calc(100dvh-2rem)] w-full max-w-5xl flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-5 shadow-2xl shadow-slate-900/15 backdrop-blur-2xl sm:mt-0 sm:p-8"
       >
         <ModalHeader
           title="Portfolio Allocation"
@@ -43,14 +63,30 @@ export default function PortfolioEditor({
           titleClassName="font-display text-2xl font-semibold tracking-tight text-mint"
         />
 
-        <Allocator
-          allocations={draftAllocations}
-          setAllocations={setDraftAllocations}
-        />
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(15rem,0.65fr)]">
+          <Allocator
+            allocations={draftAllocations}
+            setAllocations={setDraftAllocations}
+          />
+
+          <PortfolioDetails
+            allocations={draftAllocations}
+            assets={{ ...assets, ...draftAssets }}
+          />
+        </div>
+
+        {validationError && (
+          <p
+            role="alert"
+            className="mt-5 rounded-lg border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700"
+          >
+            {validationError}
+          </p>
+        )}
 
         <button
           type="button"
-          onClick={() => onSave(draftAllocations)}
+          onClick={handleSave}
           className="mt-8 w-full cursor-pointer rounded-xl bg-mint px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-900/10 transition-all hover:-translate-y-0.5 hover:bg-emerald-700"
         >
           Save changes

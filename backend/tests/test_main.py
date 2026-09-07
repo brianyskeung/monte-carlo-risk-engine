@@ -112,3 +112,26 @@ def test_unavailable_ticker_returns_bad_request(mock_get_returns):
 
     assert response.status_code == 400
     assert response.json()["detail"] == "Unknown or unavailable ticker(s): NOT-A-TICKER"
+
+
+@patch("main.get_asset_info")
+def test_assets_include_industry_and_sector(mock_get_asset_info):
+    mock_get_asset_info.return_value = {
+        "AAPL": {
+            "symbol": "AAPL",
+            "short_name": "Apple Inc.",
+            "quote_type": "STOCK",
+            "industry": "Consumer Electronics",
+            "sector": "Technology",
+            "exchange": "NMS",
+            "currency": "USD",
+            "is_valid": True,
+        }
+    }
+
+    response = client.get("/api/assets", params={"tickers": ["AAPL"]})
+
+    assert response.status_code == 200
+    asset = response.json()["assets"]["AAPL"]
+    assert asset["industry"] == "Consumer Electronics"
+    assert asset["sector"] == "Technology"

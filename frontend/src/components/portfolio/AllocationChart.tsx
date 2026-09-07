@@ -21,7 +21,9 @@ export default function AllocationPieChart({
   const chartData = [...allocations]
     .sort((a, b) => Number(b.weight) - Number(a.weight))
     .map((allocation) => {
-      const asset = assets[allocation.ticker];
+      const asset =
+        assets[allocation.ticker] ??
+        assets[allocation.ticker.trim().toUpperCase()];
       const weight = Number(allocation.weight ?? 0);
       const normalizedWeight = Math.max(0, Math.min(1, weight / 100));
       const colorIndex = Math.min(
@@ -34,6 +36,7 @@ export default function AllocationPieChart({
         fill: baseColors[colorIndex],
         assetName: asset?.short_name || allocation.ticker || "Unknown security",
         assetType: asset?.quote_type || "Unknown type",
+        assetSector: asset?.sector || undefined,
       };
     });
 
@@ -48,7 +51,7 @@ export default function AllocationPieChart({
           outerRadius={90}
           paddingAngle={2}
         />
-        <Tooltip content={<PortfolioTooltip />} />
+        <Tooltip content={<PortfolioTooltip assets={assets} />} />
       </PieChart>
     </ResponsiveContainer>
   );

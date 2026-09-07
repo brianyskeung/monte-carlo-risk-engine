@@ -27,7 +27,9 @@ export default function PortfolioSummary({
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium">Portfolio Exposure</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
+          Portfolio Exposure
+        </h3>
 
         <button
           type="button"
@@ -41,6 +43,7 @@ export default function PortfolioSummary({
       {editorOpen && (
         <PortfolioEditor
           allocations={allocations}
+          assets={assets}
           onSave={(updatedAllocations) => {
             onSave(updatedAllocations);
             setEditorOpen(false);
@@ -49,11 +52,13 @@ export default function PortfolioSummary({
         />
       )}
 
-      <div className="mt-4 space-y-2">
+      <div className="mt-2 space-y-2">
         {Object.entries(exposureByType).map(([type, weight]) => (
           <div key={type} className="flex justify-between text-sm">
-            <span>{type}</span>
-            <span>{weight.toFixed(1)}%</span>
+            <span className="text-text-muted">{type}</span>
+            <span className="font-semibold text-stone-500">
+              {weight.toFixed(1)}%
+            </span>
           </div>
         ))}
       </div>
