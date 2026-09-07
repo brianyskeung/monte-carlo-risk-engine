@@ -61,7 +61,7 @@ export default function PortfolioDetails({
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
             Sector investment
           </p>
-          <div className="mt-3 space-y-2">
+          <div className="mt-3 space-y-2 max-h-[min(34rem,52vh)] overflow-y-auto pr-1">
             {Object.entries(sectorDetails).map(([sector, details]) => (
               <div
                 key={sector}
