@@ -29,6 +29,11 @@ export default function Simulate() {
 
   const assets = useAssets(allocations.map(({ ticker }) => ticker));
 
+  const openSavedRun = (run: SavedRunDetail) => {
+    setSavedRun(run);
+    setSelectedModels(run.models);
+  };
+
   return (
     <div className="max-w-none space-y-6">
       <div>
@@ -82,7 +87,7 @@ export default function Simulate() {
             </Card>
           </div>
 
-          <RunHistoryCard onOpen={setSavedRun} refreshKey={lastRunId} />
+            <RunHistoryCard onOpen={openSavedRun} refreshKey={lastRunId} />
         </div>
       </div>
     </div>

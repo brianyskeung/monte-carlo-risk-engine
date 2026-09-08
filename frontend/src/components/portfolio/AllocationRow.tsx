@@ -38,19 +38,30 @@ export default function AllocationRow({
         className="min-w-0 w-full cursor-pointer accent-mint"
       />
 
-      <input
-        type="number"
-        min="0"
-        max={maximumWeight}
-        value={allocation.weight === 0 ? "" : allocation.weight}
-        onChange={(event) => {
-          const nextWeight =
-            event.target.value === "" ? 0 : Number(event.target.value);
-          onWeightChange(Number.isFinite(nextWeight) ? nextWeight : 0);
-        }}
-        className="w-full rounded-lg border-0 bg-bg/70 px-2 py-2 text-right text-sm outline-none focus:ring-2 focus:ring-mint/20"
-        required
-      />
+      <div className="relative flex items-center">
+        <input
+          type="number"
+          min="0"
+          max={maximumWeight}
+          value={allocation.weight === 0 ? "" : allocation.weight}
+          placeholder="0"
+          onChange={(event) => {
+            const nextWeight =
+              event.target.value === "" ? 0 : Number(event.target.value);
+            onWeightChange(Number.isFinite(nextWeight) ? nextWeight : 0);
+          }}
+          className="w-full rounded-lg border-0 bg-bg/70 py-2 pl-1 pr-6 text-right text-sm outline-none placeholder:text-text-muted/50 focus:ring-2 focus:ring-mint/20 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+          required
+        />
+
+        <span
+          className={`pointer-events-none absolute right-2 text-xs transition-colors ${
+            allocation.weight > 0 ? "text-text-primary" : "text-text-muted/60"
+          }`}
+        >
+          %
+        </span>
+      </div>
 
       <button
         type="button"
