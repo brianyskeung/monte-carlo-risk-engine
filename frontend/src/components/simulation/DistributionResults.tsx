@@ -15,10 +15,7 @@ export default function DistributionResults({
   onChange,
 }: DistributionResultsProps) {
   return (
-    <Card
-      title=""
-      className="text-sm font-semibold text-stone-800 uppercase tracking-wider"
-    >
+    <Card className="text-sm font-semibold text-stone-800 uppercase tracking-wider">
       <div className="flex justify-between items-center text-sm font-medium text-text-muted mb-4">
         <h3>Distribution Paths</h3>
         <ModelSelector selectedModels={selectedModels} onChange={onChange} />
