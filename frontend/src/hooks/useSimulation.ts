@@ -30,7 +30,7 @@ function loadSavedAllocations(): Allocation[] {
   }
 }
 
-export function useSimulation() {
+export default function useSimulation() {
   const [allocations, setAllocations] =
     useState<Allocation[]>(loadSavedAllocations);
   const [days, setDays] = useState(252);

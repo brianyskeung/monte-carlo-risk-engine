@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import type { Allocation, AssetInfoMap } from "../../types";
 import ModalHeader from "../ui/ModalHeader";
+import AllocationPieChart from "./AllocationChart";
 import Allocator from "./Allocator";
 import PortfolioDetails from "./PortfolioDetails";
-import { useAssets } from "../../hooks/useAssets";
+import useAssets from "../../hooks/useAssets";
 import { validatePortfolioAllocations } from "../../utils/portfolioValidation";
 
 type PortfolioEditorProps = {
@@ -47,13 +48,24 @@ export default function PortfolioEditor({
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-slate-950/20 p-4 backdrop-blur-md sm:p-6">
+    <div className="fixed inset-0 z-50 flex gap-6 overflow-hidden bg-slate-950/20 p-4 backdrop-blur-md sm:p-6 justify-center items-start">
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_right,rgba(5,150,105,0.16),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(59,130,246,0.12),transparent_32%)]" />
+      <div className="relative hidden max-h-[calc(100dvh-2rem)] w-full flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-5 shadow-2xl shadow-slate-900/15 backdrop-blur-2xl lg:flex lg:w-1/3 sm:p-8">
+        <h2 className="font-display text-xl font-semibold tracking-tight text-mint">
+          Allocation Chart
+        </h2>
+        <div className="mt-4 flex-1">
+          <AllocationPieChart
+            allocations={draftAllocations}
+            assets={{ ...assets, ...draftAssets }}
+          />
+        </div>
+      </div>
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="portfolio-editor-title"
-        className="relative mx-auto mt-0 flex max-h-[calc(100dvh-2rem)] w-full max-w-5xl flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-5 shadow-2xl shadow-slate-900/15 backdrop-blur-2xl sm:mt-0 sm:p-8"
+        className="relative flex max-h-[calc(100dvh-2rem)] w-full lg:w-2/3 max-w-5xl flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-5 shadow-2xl shadow-slate-900/15 backdrop-blur-2xl sm:p-8"
       >
         <ModalHeader
           title="Portfolio Allocation"

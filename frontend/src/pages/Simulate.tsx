@@ -1,8 +1,8 @@
-import { useSimulation } from "../hooks/useSimulation";
+import useSimulation from "../hooks/useSimulation";
 import SimulationForm from "../components/simulation/SimulationForm";
 import DistributionResults from "../components/simulation/DistributionResults";
 import ModelSelector from "../components/simulation/models/ModelSelector.tsx";
-import { useAssets } from "../hooks/useAssets.ts";
+import useAssets from "../hooks/useAssets.ts";
 
 export default function Simulate() {
   const {

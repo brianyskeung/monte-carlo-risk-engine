@@ -51,7 +51,7 @@ export default function Allocator({
         value={`${allocations.reduce((sum, allocation) => sum + allocation.weight, 0)}%`}
       />
 
-      <div className="grid min-h-0 max-h-[min(34rem,52vh)] grid-cols-1 gap-2.5 overflow-y-auto px-1 pb-1 sm:grid-cols-2">
+      <div className="grid min-h-0 max-h-[min(38rem,68vh)] grid-cols-1 gap-2.5 overflow-y-auto px-1 pb-1 sm:grid-cols-2">
         {allocations.map((allocation, index) => (
           <AllocationRow
             key={index}

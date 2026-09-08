@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import type { AssetInfoMap } from "../types";
 
-export function useAssets(tickers: string[]) {
+export default function useAssets(tickers: string[]) {
   const [assets, setAssets] = useState<AssetInfoMap>({});
 
   const tickerKey = tickers
