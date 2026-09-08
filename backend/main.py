@@ -6,6 +6,7 @@ from data import get_asset_info, get_historical_returns
 from engine import SimulationEngine
 from models import HistoricalBootstrapModel, GeometricBrownianMotionModel
 from metrics import calculate_portfolio_metrics
+from database import delete_run, get_run, list_runs, save_run
 import time
 
 app = FastAPI(title="Monte Carlo Risk Engine API")
@@ -90,7 +91,29 @@ def run_simulation(request: SimulationRequest):
             }
         )
 
+    run_id = save_run(request, results)
     return {
         "status": "success",
+        "run_id": run_id,
         "data": results,
     }
+
+
+@app.get("/api/runs")
+def get_runs(limit: int = Query(25, ge=1, le=100), offset: int = Query(0, ge=0)):
+    return list_runs(limit, offset)
+
+
+@app.get("/api/runs/{run_id}")
+def get_run_endpoint(run_id: int):
+    run = get_run(run_id)
+    if run is None:
+        raise HTTPException(status_code=404, detail="Simulation run not found")
+    return run
+
+
+@app.delete("/api/runs/{run_id}")
+def delete_run_endpoint(run_id: int):
+    if not delete_run(run_id):
+        raise HTTPException(status_code=404, detail="Simulation run not found")
+    return {"status": "success"}

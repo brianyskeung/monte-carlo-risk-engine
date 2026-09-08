@@ -50,6 +50,38 @@ def test_successful_simulation(mock_get_returns, mock_market_data):
 
 
 @patch("main.get_historical_returns")
+def test_completed_runs_can_be_listed_loaded_and_deleted(
+    mock_get_returns, mock_market_data, monkeypatch, tmp_path
+):
+    monkeypatch.setenv("SIMULATION_DB_PATH", str(tmp_path / "runs.sqlite3"))
+    mock_get_returns.return_value = mock_market_data
+    payload = {
+        "tickers": ["SPY", "QQQ"],
+        "weights": {"SPY": 0.6, "QQQ": 0.4},
+        "models": ["historical_bootstrap"],
+        "num_simulations": 10,
+        "forecasted_days": 5,
+    }
+
+    simulation = client.post("/api/simulate", json=payload)
+    assert simulation.status_code == 200
+    run_id = simulation.json()["run_id"]
+
+    history = client.get("/api/runs")
+    assert history.status_code == 200
+    assert history.json()["total"] == 1
+    assert history.json()["runs"][0]["id"] == run_id
+
+    saved_run = client.get(f"/api/runs/{run_id}")
+    assert saved_run.status_code == 200
+    assert saved_run.json()["tickers"] == ["SPY", "QQQ"]
+    assert len(saved_run.json()["data"]["models"][0]["percentile_paths"]) == 5
+
+    assert client.delete(f"/api/runs/{run_id}").status_code == 200
+    assert client.get(f"/api/runs/{run_id}").status_code == 404
+
+
+@patch("main.get_historical_returns")
 def test_simulation_can_select_one_model(mock_get_returns, mock_market_data):
     mock_get_returns.return_value = mock_market_data
 

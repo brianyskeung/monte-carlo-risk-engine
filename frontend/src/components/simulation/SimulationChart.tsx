@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   LineChart,
   Line,
@@ -68,6 +68,15 @@ export default function SimulationChart({
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   if (!data || data.length === 0) return null;
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsFullscreen(false);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isFullscreen]);
 
   return (
     <div

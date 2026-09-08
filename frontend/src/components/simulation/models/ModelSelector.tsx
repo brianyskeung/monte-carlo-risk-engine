@@ -18,7 +18,10 @@ export default function ModelSelector({
       <button
         type="button"
         onClick={() => setSelectorOpen(true)}
-        className="inline-flex items-center gap-2 rounded-lg border border-black/10 bg-white px-3 py-2 text-sm font-medium text-text-primary transition-colors hover:border-mint hover:text-mint hover:cursor-pointer"
+        className="inline-flex items-center gap-2 rounded-lg 
+        border border-black/10 bg-white px-3 py-2 text-sm font-medium
+         text-text-primary transition-colors focus:border-mint focus:text-mint
+          hover:border-mint hover:text-mint hover:cursor-pointer"
       >
         <span>Models</span>
         <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs tabular-nums text-emerald-700">

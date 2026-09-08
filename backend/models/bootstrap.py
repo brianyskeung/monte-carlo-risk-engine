@@ -28,7 +28,7 @@ class HistoricalBootstrapModel(BaseSimulationModel):
         
         self.validate_forecasted_days(forecasted_days)
         
-        # get the number of available historical days (TODO: Make this customizable)
+        # get the number of available historical days
         num_historical_days = self.daily_returns.shape[0]
 
         # randomly sample row indices with replacement

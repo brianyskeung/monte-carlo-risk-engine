@@ -41,6 +41,7 @@ export default function useSimulation() {
   const [numSimulations, setNumSimulations] = useState<number>(1000);
   const [selectedModels, setSelectedModels] =
     useState<ModelId[]>(DEFAULT_MODELS);
+  const [lastRunId, setLastRunId] = useState<number | null>(null);
 
   useEffect(() => {
     localStorage.setItem(PORTFOLIO_STORAGE_KEY, JSON.stringify(allocations));
@@ -78,6 +79,7 @@ export default function useSimulation() {
       const response = await axios.post(`${apiUrl}/api/simulate`, payload);
 
       setResults(response.data.data);
+      setLastRunId(response.data.run_id);
     } catch (error: any) {
       if (error.response) {
         setErrorMessage(
@@ -106,5 +108,6 @@ export default function useSimulation() {
     setNumSimulations,
     selectedModels,
     setSelectedModels,
+    lastRunId,
   };
 }

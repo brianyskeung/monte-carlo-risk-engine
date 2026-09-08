@@ -15,6 +15,7 @@ an interactive risk analytics tool designed to model multi-asset portfolio traje
 - **ticker validation:** checks if a ticker is real and grabs its basic info for the frontend.
 - **asset metadata:** provides quote type, industry, sector, exchange, currency, and validity information for each ticker.
 - **local portfolio saving:** saves the current allocation list in the browser and restores it after refresh.
+- **run history:** automatically saves completed simulations locally and lets you reopen their metrics and percentile charts.
 
 ---
 
@@ -35,6 +36,7 @@ monte-carlo-risk-engine/
 ├── backend/
 │   ├── main.py              # fastapi app & route endpoints
 │   ├── schemas.py           # pydantic models for validation
+│   ├── database.py          # SQLite-backed completed simulation history
 │   ├── data/
 │   │   └── fetcher.py       # yfinance data fetching & quote lookups
 │   ├── engine/
@@ -117,6 +119,20 @@ The frontend starts with an empty portfolio. Add at least one asset before runni
   }
 }
 ```
+
+---
+
+#### saved runs
+
+Every successful `post /api/simulate` response includes a `run_id` and is stored in a local SQLite database at `backend/data/simulation_runs.sqlite3`. The database is excluded from Git. Set `SIMULATION_DB_PATH` to place it elsewhere.
+
+| endpoint | purpose |
+| :--- | :--- |
+| `get /api/runs?limit=25&offset=0` | list saved runs, newest first |
+| `get /api/runs/{run_id}` | load one run's inputs, metrics, and percentile paths |
+| `delete /api/runs/{run_id}` | permanently delete a saved run |
+
+The frontend exposes these in the **Saved runs** card beside the distribution results.
 
 ---
 

@@ -34,6 +34,21 @@ export interface SimulationResults {
   models: ModelResult[];
 }
 
+export interface SavedRun {
+  id: number;
+  created_at: string;
+  tickers: string[];
+  weights: Record<string, number>;
+  models: ModelId[];
+  lookback_period: string;
+  forecasted_days: number;
+  num_simulations: number;
+}
+
+export interface SavedRunDetail extends SavedRun {
+  data: SimulationResults;
+}
+
 export interface AssetInfo {
   symbol: string;
   short_name: string | null;

@@ -1,0 +1,187 @@
+"""Persistence for completed simulation runs.
+
+The database is intentionally kept behind this small module so the API does
+not depend on an ORM and a future database migration remains straightforward.
+"""
+
+import json
+import os
+import sqlite3
+from contextlib import contextmanager
+from pathlib import Path
+from typing import Any, Iterator
+
+
+DEFAULT_DATABASE_PATH = Path(__file__).parent / "data" / "simulation_runs.sqlite3"
+
+
+def _database_path() -> Path:
+    return Path(os.getenv("SIMULATION_DB_PATH", DEFAULT_DATABASE_PATH))
+
+
+@contextmanager
+def get_connection() -> Iterator[sqlite3.Connection]:
+    path = _database_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    connection = sqlite3.connect(path)
+    connection.row_factory = sqlite3.Row
+    connection.execute("PRAGMA foreign_keys = ON")
+    try:
+        yield connection
+        connection.commit()
+    except Exception:
+        connection.rollback()
+        raise
+    finally:
+        connection.close()
+
+
+def initialize_database() -> None:
+    with get_connection() as connection:
+        connection.executescript(
+            """
+            CREATE TABLE IF NOT EXISTS simulation_runs (
+                id INTEGER PRIMARY KEY,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                tickers_json TEXT NOT NULL,
+                weights_json TEXT NOT NULL,
+                models_json TEXT NOT NULL,
+                lookback_period TEXT NOT NULL,
+                forecasted_days INTEGER NOT NULL,
+                num_simulations INTEGER NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS run_models (
+                id INTEGER PRIMARY KEY,
+                run_id INTEGER NOT NULL REFERENCES simulation_runs(id) ON DELETE CASCADE,
+                model_id TEXT NOT NULL,
+                display_name TEXT NOT NULL,
+                expected_terminal_value REAL NOT NULL,
+                expected_return REAL NOT NULL,
+                loss_var_95 REAL NOT NULL,
+                loss_cvar_95 REAL NOT NULL,
+                simulation_time_ms REAL NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS run_percentile_paths (
+                run_model_id INTEGER NOT NULL REFERENCES run_models(id) ON DELETE CASCADE,
+                day INTEGER NOT NULL,
+                p5 REAL NOT NULL,
+                p25 REAL NOT NULL,
+                p50 REAL NOT NULL,
+                p75 REAL NOT NULL,
+                p95 REAL NOT NULL,
+                mean REAL NOT NULL,
+                PRIMARY KEY (run_model_id, day)
+            );
+            CREATE INDEX IF NOT EXISTS idx_simulation_runs_created_at
+                ON simulation_runs(created_at DESC);
+            CREATE INDEX IF NOT EXISTS idx_run_models_run_id ON run_models(run_id);
+            """
+        )
+
+
+def save_run(request: Any, results: dict[str, Any]) -> int:
+    """Save one successful request and all chart data atomically."""
+    initialize_database()
+    with get_connection() as connection:
+        cursor = connection.execute(
+            """
+            INSERT INTO simulation_runs (
+                tickers_json, weights_json, models_json, lookback_period,
+                forecasted_days, num_simulations
+            ) VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                json.dumps(request.tickers),
+                json.dumps(request.weights, sort_keys=True),
+                json.dumps(request.models),
+                request.lookback_period,
+                request.forecasted_days,
+                request.num_simulations,
+            ),
+        )
+        run_id = cursor.lastrowid
+
+        for model in results["models"]:
+            summary = model["summary"]
+            model_cursor = connection.execute(
+                """
+                INSERT INTO run_models (
+                    run_id, model_id, display_name, expected_terminal_value,
+                    expected_return, loss_var_95, loss_cvar_95, simulation_time_ms
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    run_id, model["model_id"], model["display_name"],
+                    summary["expected_terminal_value"], summary["expected_return"],
+                    summary["loss_var_95"], summary["loss_cvar_95"],
+                    model["simulation_time_ms"],
+                ),
+            )
+            connection.executemany(
+                """
+                INSERT INTO run_percentile_paths
+                    (run_model_id, day, p5, p25, p50, p75, p95, mean)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                [
+                    (model_cursor.lastrowid, point["day"], point["p5"], point["p25"],
+                     point["p50"], point["p75"], point["p95"], point["mean"])
+                    for point in model["percentile_paths"]
+                ],
+            )
+    return int(run_id)
+
+
+def list_runs(limit: int, offset: int) -> dict[str, Any]:
+    initialize_database()
+    with get_connection() as connection:
+        total = connection.execute("SELECT COUNT(*) FROM simulation_runs").fetchone()[0]
+        rows = connection.execute(
+            """
+            SELECT id, created_at, tickers_json, weights_json, models_json,
+                   lookback_period, forecasted_days, num_simulations
+            FROM simulation_runs ORDER BY id DESC LIMIT ? OFFSET ?
+            """,
+            (limit, offset),
+        ).fetchall()
+    return {"total": total, "runs": [_serialize_run(row) for row in rows]}
+
+
+def get_run(run_id: int) -> dict[str, Any] | None:
+    initialize_database()
+    with get_connection() as connection:
+        run = connection.execute("SELECT * FROM simulation_runs WHERE id = ?", (run_id,)).fetchone()
+        if run is None:
+            return None
+        models = connection.execute("SELECT * FROM run_models WHERE run_id = ? ORDER BY id", (run_id,)).fetchall()
+        result_models = []
+        for model in models:
+            points = connection.execute(
+                "SELECT day, p5, p25, p50, p75, p95, mean FROM run_percentile_paths WHERE run_model_id = ? ORDER BY day",
+                (model["id"],),
+            ).fetchall()
+            result_models.append(
+                {
+                    "model_id": model["model_id"], "display_name": model["display_name"],
+                    "summary": {key: model[key] for key in ("expected_terminal_value", "expected_return", "loss_var_95", "loss_cvar_95")},
+                    "simulation_time_ms": model["simulation_time_ms"],
+                    "percentile_paths": [dict(point) for point in points],
+                }
+            )
+    return {**_serialize_run(run), "data": {"models": result_models}}
+
+
+def delete_run(run_id: int) -> bool:
+    initialize_database()
+    with get_connection() as connection:
+        cursor = connection.execute("DELETE FROM simulation_runs WHERE id = ?", (run_id,))
+    return cursor.rowcount == 1
+
+
+def _serialize_run(row: sqlite3.Row) -> dict[str, Any]:
+    return {
+        "id": row["id"], "created_at": row["created_at"],
+        "tickers": json.loads(row["tickers_json"]), "weights": json.loads(row["weights_json"]),
+        "models": json.loads(row["models_json"]), "lookback_period": row["lookback_period"],
+        "forecasted_days": row["forecasted_days"], "num_simulations": row["num_simulations"],
+    }
