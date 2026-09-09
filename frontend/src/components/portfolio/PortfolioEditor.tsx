@@ -75,7 +75,7 @@ export default function PortfolioEditor({
           titleClassName="font-display text-2xl font-semibold tracking-tight text-mint"
         />
 
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(15rem,0.65fr)]">
+        <div className="grid min-h-0 flex-1 gap-5 overflow-y-auto pb-1 lg:grid-cols-[minmax(0,1.35fr)_minmax(15rem,0.65fr)]">
           <Allocator
             allocations={draftAllocations}
             setAllocations={setDraftAllocations}

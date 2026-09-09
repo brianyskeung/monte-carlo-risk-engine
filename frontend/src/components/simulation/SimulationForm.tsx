@@ -34,7 +34,11 @@ export default function SimulationForm({
   return (
     <Card title="Portfolio Configuration">
       <form onSubmit={onSubmit} className="space-y-4">
-        <AllocationPieChart allocations={allocations} assets={assets} />
+        <AllocationPieChart
+          allocations={allocations}
+          assets={assets}
+          showLegend={false}
+        />
 
         <PortfolioSummary
           allocations={allocations}

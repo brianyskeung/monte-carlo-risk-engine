@@ -14,9 +14,11 @@ const baseColors = [
 export default function AllocationPieChart({
   allocations,
   assets,
+  showLegend = true,
 }: {
   allocations: Allocation[];
   assets: AssetInfoMap;
+  showLegend?: boolean;
 }) {
   const chartData = [...allocations]
     .sort((a, b) => Number(b.weight) - Number(a.weight))
@@ -41,18 +43,47 @@ export default function AllocationPieChart({
     });
 
   return (
-    <ResponsiveContainer width="100%" height={240}>
-      <PieChart>
-        <Pie
-          data={chartData}
-          dataKey="weight"
-          nameKey="ticker"
-          innerRadius={60}
-          outerRadius={90}
-          paddingAngle={2}
-        />
-        <Tooltip content={<PortfolioTooltip assets={assets} />} />
-      </PieChart>
-    </ResponsiveContainer>
+    <div>
+      <ResponsiveContainer width="100%" height={240}>
+        <PieChart>
+          <Pie
+            data={chartData}
+            dataKey="weight"
+            nameKey="ticker"
+            innerRadius={60}
+            outerRadius={90}
+            paddingAngle={2}
+          />
+          <Tooltip content={<PortfolioTooltip assets={assets} />} />
+        </PieChart>
+      </ResponsiveContainer>
+
+      {showLegend && chartData.length > 0 && (
+        <ul className="mt-3 space-y-1.5 text-sm">
+          {chartData.map((item) => (
+            <li
+              key={item.ticker}
+              className="flex items-center justify-between gap-3"
+            >
+              <span className="flex min-w-0 items-center gap-2">
+                <span
+                  className="h-2.5 w-2.5 shrink-0 rounded-full"
+                  style={{ backgroundColor: item.fill }}
+                />
+                <span className="truncate text-text-primary">
+                  {item.assetName}
+                  {item.assetName !== item.ticker && item.ticker && (
+                    <span className="text-text-muted"> ({item.ticker})</span>
+                  )}
+                </span>
+              </span>
+              <span className="shrink-0 font-semibold text-text-muted">
+                {Number(item.weight ?? 0).toFixed(1)}%
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
