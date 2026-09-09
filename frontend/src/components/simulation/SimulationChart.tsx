@@ -6,6 +6,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
+  ReferenceLine,
   ResponsiveContainer,
 } from "recharts";
 import { Maximize2, Minimize2 } from "lucide-react";
@@ -26,7 +27,7 @@ const CompactTooltip = ({ active, payload, label }: any) => {
         </p>
         <div className="flex flex-col gap-1.5 text-[10px] ">
           {payload.map((entry: any, index: number) => {
-            const percentValue = (entry.value - 1) * 100;
+            const percentValue = entry.value * 100;
             const isPositive = percentValue >= 0;
             return (
               <div
@@ -124,12 +125,12 @@ export default function SimulationChart({
             />
             <YAxis
               type="number"
-              domain={["auto", "auto"]}
               tick={{ fontSize: 11, fill: "#a8a29e" }}
               axisLine={false}
               tickLine={false}
-              tickFormatter={(value) => `${((value - 1) * 100).toFixed(0)}%`}
+              tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
             />
+            <ReferenceLine y={0} stroke="#a8a29e" strokeWidth={1.5} />
 
             <Tooltip
               content={<CompactTooltip />}

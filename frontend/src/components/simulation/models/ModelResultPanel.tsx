@@ -13,7 +13,7 @@ export default function ModelResultPanel({ model }: ModelResultPanelProps) {
           {model.display_name}
         </h4>
         <span className="text-xs font-normal text-text-muted">
-          {model.percentile_paths.length} Days
+          {model.summary.forecasted_days} Days
         </span>
       </div>
 

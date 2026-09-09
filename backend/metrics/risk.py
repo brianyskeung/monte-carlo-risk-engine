@@ -29,12 +29,24 @@ def calculate_portfolio_metrics(daily_return_paths: np.ndarray) -> dict:
     percentiles_df["mean"] = df.mean(axis=0).values
     percentiles_df["day"] = range(1, len(percentiles_df) + 1)
 
+    # express percentiles as net returns 
+    return_columns = ["p5", "p25", "p50", "p75", "p95", "mean"]
+    percentiles_df[return_columns] = percentiles_df[return_columns] - 1.0
+
+    # anchor every path at day 0 / 0% 
+    baseline = pd.DataFrame([{
+        "p5": 0.0, "p25": 0.0, "p50": 0.0, "p75": 0.0, "p95": 0.0,
+        "mean": 0.0, "day": 0,
+    }])
+    percentile_paths = pd.concat([baseline, percentiles_df], ignore_index=True)
+
     return {
         "summary": {
             "expected_terminal_value": float(np.mean(terminal_values)),
             "expected_return": float(np.mean(final_returns)),
             "loss_var_95": float(loss_var_95),
             "loss_cvar_95": float(loss_cvar_95),
+            "forecasted_days": daily_return_paths.shape[1],
         },
-        "percentile_paths": percentiles_df.to_dict(orient="records"),
+        "percentile_paths": percentile_paths.to_dict(orient="records"),
     }

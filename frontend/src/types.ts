@@ -20,6 +20,7 @@ export interface SimulationSummary {
   expected_return: number;
   loss_var_95: number;
   loss_cvar_95: number;
+  forecasted_days: number;
 }
 
 export interface ModelResult {

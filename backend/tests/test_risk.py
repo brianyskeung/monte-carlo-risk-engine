@@ -21,13 +21,13 @@ def test_output_structure(fixed_daily_returns):
     assert "percentile_paths" in results
 
     paths = results["percentile_paths"]
-    
+
     # 3 days of forecasted returns should yield 3 days of chart data
-    assert len(paths) == 3
-    
-    # Check that day indexing starts at 1 and correctly increments
-    assert paths[0]["day"] == 1
-    assert paths[2]["day"] == 3
+    assert len(paths) == 4
+
+    # Check that a day-0 baseline is prepended and days increment from there
+    assert paths[0]["day"] == 0
+    assert paths[3]["day"] == 3
 
     # Check that keys are present in the day dictionaries
     expected_keys = {"day", "p5", "p25", "p50", "p75", "p95", "mean"}
@@ -38,17 +38,23 @@ def test_accumulation_trajectories(fixed_daily_returns):
     # verifies accurate compounding
     results = calculate_portfolio_metrics(fixed_daily_returns)
     paths = results["percentile_paths"]
-    
+
+    # Day 0 baseline: every path starts at the same 0% return origin
+    assert pytest.approx(paths[0]["mean"], abs=1e-4) == 0.0
+    assert pytest.approx(paths[0]["p5"], abs=1e-4) == 0.0
+    assert pytest.approx(paths[0]["p95"], abs=1e-4) == 0.0
+
     # Day 1 values: [1.01, 1.00, 0.98]
-    # Expected mean = (1.01 + 1.00 + 0.98) / 3 = 0.99666...
-    assert pytest.approx(paths[0]["mean"], abs=1e-4) == 0.9967
-    
-    # Day 2 values: 
+    # Expected mean wealth = (1.01 + 1.00 + 0.98) / 3 = 0.99666...
+    # percentile_paths reports net return, i.e. wealth - 1
+    assert pytest.approx(paths[1]["mean"], abs=1e-4) == 0.9967 - 1.0
+
+    # Day 2 values:
     # Sim 1: 1.01 * 1.02 = 1.0302
     # Sim 2: 1.00 * 0.99 = 0.99
     # Sim 3: 0.98 * 1.03 = 1.0094
-    # Expected mean = (1.0302 + 0.99 + 1.0094) / 3 = 1.009866...
-    assert pytest.approx(paths[1]["mean"], abs=1e-4) == 1.0099
+    # Expected mean wealth = (1.0302 + 0.99 + 1.0094) / 3 = 1.009866...
+    assert pytest.approx(paths[2]["mean"], abs=1e-4) == 1.0099 - 1.0
 
 
 def test_terminal_risk_metrics(fixed_daily_returns):
@@ -74,6 +80,10 @@ def test_terminal_risk_metrics(fixed_daily_returns):
     expected_loss_cvar = 1.0 - terminal_cvar
     
     assert pytest.approx(summary["loss_cvar_95"], abs=1e-4) == expected_loss_cvar
+
+    # forecasted_days reflects the actual simulated horizon (3), not the
+    # 4 chart points that include the day-0 baseline anchor
+    assert summary["forecasted_days"] == 3
 
 
 def test_percentile_ordering(fixed_daily_returns):

@@ -1,5 +1,10 @@
 import type { PathData, SimulationSummary } from "../../../types";
 import AdvancedStatItem from "./AdvancedStatItem";
+import {
+  formatPercent,
+  formatLossPercent,
+  getReturnTone,
+} from "../../../utils/formatting";
 
 interface AdvancedStatsProps {
   summary: SimulationSummary;
@@ -21,21 +26,21 @@ export default function AdvancedStats({
       <div className="mt-3 grid grid-cols-1 gap-x-8 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <AdvancedStatItem
-            label="Expected Return"
+            label="Expected Return (Mean)"
             value={formatPercent(summary.expected_return)}
-            tone={getTone(summary.expected_return)}
+            tone={getReturnTone(summary.expected_return)}
           />
         </div>
 
         <AdvancedStatItem
-          label="VaR 95%"
-          value={formatPercent(summary.loss_var_95)}
-          tone={getTone(summary.loss_var_95)}
+          label="VaR 95% (5th Percentile)"
+          value={formatLossPercent(summary.loss_var_95)}
+          tone={getReturnTone(-summary.loss_var_95)}
         />
         <AdvancedStatItem
           label="CVaR 95%"
-          value={formatPercent(summary.loss_cvar_95)}
-          tone={getTone(summary.loss_cvar_95)}
+          value={formatLossPercent(summary.loss_cvar_95)}
+          tone={getReturnTone(-summary.loss_cvar_95)}
         />
 
         {terminalPercentiles && (
@@ -43,48 +48,26 @@ export default function AdvancedStats({
             <AdvancedStatItem
               label="Median"
               value={formatPercent(terminalPercentiles.p50)}
-              tone={getTone(terminalPercentiles.p50)}
-            />
-            <AdvancedStatItem
-              label="Mean"
-              value={formatPercent(terminalPercentiles.mean)}
-              tone={getTone(terminalPercentiles.mean)}
-            />
-            <AdvancedStatItem
-              label="5th Percentile"
-              value={formatPercent(terminalPercentiles.p5)}
-              tone={getTone(terminalPercentiles.p5)}
+              tone={getReturnTone(terminalPercentiles.p50)}
             />
             <AdvancedStatItem
               label="25th Percentile"
               value={formatPercent(terminalPercentiles.p25)}
-              tone={getTone(terminalPercentiles.p25)}
+              tone={getReturnTone(terminalPercentiles.p25)}
             />
             <AdvancedStatItem
               label="75th Percentile"
               value={formatPercent(terminalPercentiles.p75)}
-              tone={getTone(terminalPercentiles.p75)}
+              tone={getReturnTone(terminalPercentiles.p75)}
             />
             <AdvancedStatItem
               label="95th Percentile"
               value={formatPercent(terminalPercentiles.p95)}
-              tone={getTone(terminalPercentiles.p95)}
+              tone={getReturnTone(terminalPercentiles.p95)}
             />
           </>
         )}
       </div>
     </section>
   );
-}
-
-function formatPercent(value: number) {
-  const percent = value * 100;
-  const sign = percent > 0 ? "+" : "";
-  return `${sign}${percent.toFixed(2)}%`;
-}
-
-function getTone(value: number): "positive" | "negative" | "neutral" {
-  if (value > 0) return "positive";
-  if (value < 0) return "negative";
-  return "neutral";
 }
