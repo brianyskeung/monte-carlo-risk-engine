@@ -56,8 +56,8 @@ export default function RunHistoryCard({
   };
 
   return (
-    <div className="h-112.5 w-full 2xl:relative 2xl:h-full">
-      <aside className="flex h-full w-full flex-col rounded-2xl bg-surface p-5 2xl:absolute 2xl:inset-0">
+    <div className="relative h-full w-full">
+      <aside className="absolute inset-0 flex h-full w-full flex-col rounded-2xl bg-surface p-5">
         <div className="mb-4 flex shrink-0 items-center justify-between">
           <h3 className="uppercase tracking-wider text-sm font-medium text-text-muted">
             Saved runs

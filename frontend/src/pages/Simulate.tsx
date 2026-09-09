@@ -48,8 +48,8 @@ export default function Simulate() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
-        <div className="xl:col-span-3 space-y-6">
+      <div className="grid grid-cols-[4fr_9fr_3fr] gap-6">
+        <div className="space-y-6 min-w-0">
           <SimulationForm
             allocations={allocations}
             setAllocations={setAllocations}
@@ -69,25 +69,25 @@ export default function Simulate() {
           />
         </div>
 
-        <div className="xl:col-span-9 grid grid-cols-1 gap-6 2xl:grid-cols-[minmax(0,1fr)_19rem]">
-          <div className="flex flex-col space-y-6">
-            <DistributionResults
-              results={savedRun?.data ?? results}
-              selectedModels={selectedModels}
-              onChange={setSelectedModels}
-            />
+        <div className="flex flex-col space-y-6 min-w-0">
+          <DistributionResults
+            results={savedRun?.data ?? results}
+            selectedModels={selectedModels}
+            onChange={setSelectedModels}
+          />
 
-            <Card
-              title=""
-              className="text-sm font-semibold text-stone-800 uppercase tracking-wider flex-1"
-            >
-              <div className="flex justify-between items-center text-sm font-medium text-text-muted mb-4">
-                <h3>Summary Statistics</h3>
-              </div>
-            </Card>
-          </div>
+          <Card
+            title=""
+            className="text-sm font-semibold text-stone-800 uppercase tracking-wider"
+          >
+            <div className="flex justify-between items-center text-sm font-medium text-text-muted mb-4">
+              <h3>Summary Statistics</h3>
+            </div>
+          </Card>
+        </div>
 
-            <RunHistoryCard onOpen={openSavedRun} refreshKey={lastRunId} />
+        <div className="min-w-0">
+          <RunHistoryCard onOpen={openSavedRun} refreshKey={lastRunId} />
         </div>
       </div>
     </div>

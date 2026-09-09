@@ -22,7 +22,9 @@ export default function DistributionResults({
       </div>
 
       {results && results.models.length > 0 ? (
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <div
+          className={`grid gap-6 ${results.models.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}
+        >
           {results.models.map((model) => (
             <ModelResultPanel key={model.model_id} model={model} />
           ))}
