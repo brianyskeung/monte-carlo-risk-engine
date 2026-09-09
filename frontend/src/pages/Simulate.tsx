@@ -58,7 +58,6 @@ export default function Simulate() {
             lookbackPeriod={lookbackPeriod}
             setLookbackPeriod={setLookbackPeriod}
             isSimulating={isSimulating}
-            errorMessage={errorMessage}
             onSubmit={(event) => {
               setSavedRun(null);
               handleSimulate(event);
@@ -74,6 +73,7 @@ export default function Simulate() {
             results={savedRun?.data ?? results}
             selectedModels={selectedModels}
             onChange={setSelectedModels}
+            errorMessage={savedRun ? null : errorMessage}
           />
 
           <Card

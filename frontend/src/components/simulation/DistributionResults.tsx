@@ -7,12 +7,14 @@ interface DistributionResultsProps {
   results: SimulationResults | null;
   selectedModels: ModelId[];
   onChange: (models: ModelId[]) => void;
+  errorMessage?: string | null;
 }
 
 export default function DistributionResults({
   results,
   selectedModels,
   onChange,
+  errorMessage,
 }: DistributionResultsProps) {
   return (
     <Card className="text-sm font-semibold text-stone-800 uppercase tracking-wider">
@@ -30,7 +32,19 @@ export default function DistributionResults({
           ))}
         </div>
       ) : (
-        <div className="flex-1 flex items-center justify-center border-2 border-dashed border-black/5 rounded-xl bg-bg/50 mt-2 min-h-95">
+        <div className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-black/5 rounded-xl bg-bg/50 mt-2 min-h-95">
+          {errorMessage && (
+            <div className="mb-5 flex items-start gap-3 bg-red-50 border border-red-100 px-4 py-3 rounded-lg">
+              <div>
+                <h3 className="text-sm font-semibold text-red-800 mb-0.5">
+                  Simulation Failed
+                </h3>
+                <p className="text-sm text-red-600 leading-relaxed">
+                  {errorMessage}
+                </p>
+              </div>
+            </div>
+          )}
           <span className="text-sm text-text-muted">
             Run a simulation to generate risk distributions
           </span>

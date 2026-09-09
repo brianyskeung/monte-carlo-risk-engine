@@ -10,7 +10,6 @@ interface SimulationFormProps {
   days: number;
   setDays: (days: number) => void;
   isSimulating: boolean;
-  errorMessage: string | null;
   onSubmit: (e: React.SyntheticEvent) => void;
   assets: AssetInfoMap;
   lookbackPeriod: string;
@@ -25,7 +24,6 @@ export default function SimulationForm({
   days,
   setDays,
   isSimulating,
-  errorMessage,
   onSubmit,
   assets,
   lookbackPeriod,
@@ -37,18 +35,6 @@ export default function SimulationForm({
     <Card title="Portfolio Configuration">
       <form onSubmit={onSubmit} className="space-y-4">
         <AllocationPieChart allocations={allocations} assets={assets} />
-        {errorMessage && (
-          <div className="mb-5 flex items-start gap-3 bg-red-50 border border-red-100 px-4 py-3 rounded-lg">
-            <div>
-              <h3 className="text-sm font-semibold text-red-800 mb-0.5">
-                Simulation Failed
-              </h3>
-              <p className="text-sm text-red-600 leading-relaxed">
-                {errorMessage}
-              </p>
-            </div>
-          </div>
-        )}
 
         <PortfolioSummary
           allocations={allocations}
