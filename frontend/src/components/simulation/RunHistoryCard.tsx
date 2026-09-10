@@ -1,7 +1,11 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { Maximize2 } from "lucide-react";
 import type { SavedRun, SavedRunDetail } from "../../types";
 import ScrollArea from "../ui/ScrollArea";
+import RunDetailsModal from "./RunDetailsModal";
+import SavedRunsModal from "./SavedRunsModal";
+import SavedRunListItem from "./SavedRunListItem";
 
 const API_URL = "http://localhost:8000";
 
@@ -10,16 +14,14 @@ interface RunHistoryCardProps {
   refreshKey: number | null;
 }
 
-function formatDate(value: string) {
-  return new Date(`${value.replace(" ", "T")}Z`).toLocaleString();
-}
-
 export default function RunHistoryCard({
   onOpen,
   refreshKey,
 }: RunHistoryCardProps) {
   const [runs, setRuns] = useState<SavedRun[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [detailsRun, setDetailsRun] = useState<SavedRun | null>(null);
+  const [isListModalOpen, setIsListModalOpen] = useState(false);
 
   const loadRuns = async () => {
     try {
@@ -64,10 +66,15 @@ export default function RunHistoryCard({
             Saved runs
           </h3>
           <button
-            className="text-xs font-medium text-mint transition-colors hover:text-emerald-600 focus:outline-none focus:underline"
-            onClick={() => void loadRuns()}
+            className="rounded-md p-1 text-text-muted transition-colors hover:text-mint focus:outline-none"
+            onClick={() => {
+              setIsListModalOpen(true);
+              void loadRuns();
+            }}
+            title="Search and filter saved runs"
+            aria-label="Search and filter saved runs"
           >
-            Refresh
+            <Maximize2 size={14} />
           </button>
         </div>
 
@@ -80,45 +87,40 @@ export default function RunHistoryCard({
         ) : (
           <ScrollArea className="flex-1 min-h-0 space-y-3">
             {runs.map((run) => (
-              <article
+              <SavedRunListItem
                 key={run.id}
-                className="group relative flex flex-col rounded-xl border border-black/5 bg-white p-3 shadow-sm transition-all hover:border-black/15 hover:shadow-md"
-              >
-                <button
-                  className="w-full text-left focus:outline-none"
-                  onClick={() => void openRun(run.id)}
-                >
-                  <p className="truncate font-medium text-text-primary transition-colors group-hover:text-mint">
-                    {run.name || run.tickers.join(" · ")}
-                  </p>
-                  {run.name && (
-                    <p className="mt-0.5 truncate text-xs text-text-muted">
-                      {run.tickers.join(" · ")}
-                    </p>
-                  )}
-                  <p className="mt-1.5 text-xs text-text-muted">
-                    {formatDate(run.created_at)}
-                  </p>
-                  <p className="mt-1 text-xs font-medium text-text-muted">
-                    {run.num_simulations.toLocaleString()} paths ·{" "}
-                    {run.forecasted_days} days
-                  </p>
-                </button>
-
-                <button
-                  className="absolute bottom-3 right-3 text-xs font-medium text-coral opacity-0 transition-opacity hover:underline focus:underline focus:opacity-100 group-hover:opacity-100"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    void removeRun(run.id);
-                  }}
-                >
-                  Delete
-                </button>
-              </article>
+                run={run}
+                onOpen={() => void openRun(run.id)}
+                onMaximize={() => setDetailsRun(run)}
+                onDelete={() => void removeRun(run.id)}
+              />
             ))}
           </ScrollArea>
         )}
       </aside>
+
+      {isListModalOpen && (
+        <SavedRunsModal
+          runs={runs}
+          error={error}
+          onOpenRun={(id) => void openRun(id)}
+          onMaximizeRun={setDetailsRun}
+          onDeleteRun={(id) => void removeRun(id)}
+          onClose={() => setIsListModalOpen(false)}
+        />
+      )}
+
+      {detailsRun && (
+        <RunDetailsModal
+          run={detailsRun}
+          onClose={() => setDetailsRun(null)}
+          onOpenRun={() => {
+            const runId = detailsRun.id;
+            setDetailsRun(null);
+            void openRun(runId);
+          }}
+        />
+      )}
     </div>
   );
 }

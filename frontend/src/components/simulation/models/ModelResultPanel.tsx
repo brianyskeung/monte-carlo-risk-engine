@@ -1,5 +1,6 @@
 import type { ModelResult } from "../../../types";
 import SimulationChart from "../SimulationChart";
+import { formatDurationMs } from "../../../utils/formatting";
 
 interface ModelResultPanelProps {
   model: ModelResult;
@@ -20,7 +21,7 @@ export default function ModelResultPanel({ model }: ModelResultPanelProps) {
       <SimulationChart data={model.percentile_paths} summary={model.summary} />
 
       <p className="mt-3 text-xs text-text-muted normal-case">
-        Simulation time: {model.simulation_time_ms.toFixed(2)} ms
+        Simulation time: {formatDurationMs(model.simulation_time_ms)}
       </p>
     </section>
   );

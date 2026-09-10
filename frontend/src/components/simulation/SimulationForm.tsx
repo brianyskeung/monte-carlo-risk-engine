@@ -103,6 +103,7 @@ export default function SimulationForm({
               className="w-full bg-bg border border-black/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-mint transition-colors"
               required
               min="1"
+              max="100000"
               placeholder="0"
             />
           </div>

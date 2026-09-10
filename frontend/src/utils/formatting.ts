@@ -1,3 +1,8 @@
+export function formatDurationMs(ms: number) {
+  if (ms >= 1000) return `${(ms / 1000).toFixed(2)} s`;
+  return `${ms.toFixed(2)} ms`;
+}
+
 export function formatPercent(value: number) {
   const percent = value * 100;
   const sign = percent > 0 ? "+" : "";

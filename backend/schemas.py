@@ -37,7 +37,7 @@ class SimulationRequest(BaseModel):
     num_simulations: int = Field(
         1000,
         gt=0,
-        le=10000,
+        le=100000,
         description="Number of Monte Carlo paths",
     )
 
