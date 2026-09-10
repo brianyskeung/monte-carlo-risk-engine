@@ -53,7 +53,13 @@ def get_connection() -> Iterator[Any]:
         connection.close()
 
 
+_schema_ready = False
+
+
 def initialize_database() -> None:
+    global _schema_ready
+    if _schema_ready:
+        return
     with get_connection() as connection:
         connection.executescript(
             """
@@ -96,6 +102,7 @@ def initialize_database() -> None:
             """
         )
         _ensure_name_column(connection)
+    _schema_ready = True
 
 
 def _ensure_name_column(connection: Any) -> None:
