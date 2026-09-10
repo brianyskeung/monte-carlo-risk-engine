@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Any, Literal
 from pydantic import BaseModel, Field
 
 
@@ -39,4 +39,13 @@ class SimulationRequest(BaseModel):
         gt=0,
         le=10000,
         description="Number of Monte Carlo paths",
+    )
+
+
+class SaveRunRequest(SimulationRequest):
+    data: dict[str, Any] = Field(
+        ..., description="Simulation results produced by /api/simulate"
+    )
+    name: str | None = Field(
+        None, max_length=200, description="Optional display name for the saved run"
     )

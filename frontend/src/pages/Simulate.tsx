@@ -26,6 +26,10 @@ export default function Simulate() {
     selectedModels,
     setSelectedModels,
     lastRunId,
+    handleSaveRun,
+    isSaving,
+    isSaved,
+    saveError,
   } = useSimulation();
 
   const assets = useAssets(allocations.map(({ ticker }) => ticker));
@@ -76,6 +80,10 @@ export default function Simulate() {
             selectedModels={selectedModels}
             onChange={setSelectedModels}
             errorMessage={savedRun ? null : errorMessage}
+            onSaveRun={savedRun ? undefined : handleSaveRun}
+            isSaving={isSaving}
+            isSaved={isSaved}
+            saveError={saveError}
           />
 
           <Card

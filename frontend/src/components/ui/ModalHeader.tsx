@@ -19,13 +19,15 @@ export default function ModalHeader({
   titleClassName = "font-display text-xl font-semibold text-text-primary",
 }: ModalHeaderProps) {
   return (
-    <div className="mb-5 flex items-start justify-between gap-4">
+    <div className="mb-5 flex items-start justify-between gap-4 normal-case">
       <div>
-        <h2 id={titleId} className={titleClassName}>
+        <h2 id={titleId} className={`normal-case ${titleClassName}`}>
           {title}
         </h2>
         {description && (
-          <p className="mt-1 text-sm text-text-muted">{description}</p>
+          <p className="mt-1 text-sm font-normal normal-case text-text-muted">
+            {description}
+          </p>
         )}
       </div>
 

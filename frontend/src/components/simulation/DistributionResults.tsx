@@ -2,12 +2,17 @@ import Card from "../../components/ui/Card";
 import type { SimulationResults, ModelId } from "../../types";
 import ModelResultPanel from "./models/ModelResultPanel";
 import ModelSelector from "../simulation/models/ModelSelector";
+import SaveRunButton from "./SaveRunButton";
 
 interface DistributionResultsProps {
   results: SimulationResults | null;
   selectedModels: ModelId[];
   onChange: (models: ModelId[]) => void;
   errorMessage?: string | null;
+  onSaveRun?: (name: string) => void;
+  isSaving?: boolean;
+  isSaved?: boolean;
+  saveError?: string | null;
 }
 
 export default function DistributionResults({
@@ -15,12 +20,26 @@ export default function DistributionResults({
   selectedModels,
   onChange,
   errorMessage,
+  onSaveRun,
+  isSaving,
+  isSaved,
+  saveError,
 }: DistributionResultsProps) {
   return (
     <Card className="text-sm font-semibold text-stone-800 uppercase tracking-wider">
       <div className="flex justify-between items-center text-sm font-medium text-text-muted mb-4">
         <h3>Distribution Paths</h3>
-        <ModelSelector selectedModels={selectedModels} onChange={onChange} />
+        <div className="flex items-center gap-3">
+          {onSaveRun && results && results.models.length > 0 && (
+            <SaveRunButton
+              onSaveRun={onSaveRun}
+              isSaving={isSaving}
+              isSaved={isSaved}
+              saveError={saveError}
+            />
+          )}
+          <ModelSelector selectedModels={selectedModels} onChange={onChange} />
+        </div>
       </div>
 
       {results && results.models.length > 0 ? (

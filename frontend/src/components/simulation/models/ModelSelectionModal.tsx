@@ -71,6 +71,7 @@ export default function ModelSelectionModal({
           titleId="model-selector-title"
           onClose={onClose}
           closeLabel="Close model selector"
+          titleClassName="font-display text-xl font-semibold tracking-tight text-mint"
           description="Select the models you want to compare."
         />
 

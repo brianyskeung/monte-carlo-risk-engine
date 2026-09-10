@@ -42,6 +42,13 @@ export default function useSimulation() {
   const [selectedModels, setSelectedModels] =
     useState<ModelId[]>(DEFAULT_MODELS);
   const [lastRunId, setLastRunId] = useState<number | null>(null);
+  const [lastRunPayload, setLastRunPayload] = useState<Record<
+    string,
+    unknown
+  > | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     localStorage.setItem(PORTFOLIO_STORAGE_KEY, JSON.stringify(allocations));
@@ -59,6 +66,9 @@ export default function useSimulation() {
 
     setIsSimulating(true);
     setErrorMessage(null);
+    setSaveError(null);
+    setIsSaved(false);
+    setLastRunId(null);
 
     try {
       const tickerArray = allocations.map(({ ticker }) => ticker);
@@ -79,7 +89,7 @@ export default function useSimulation() {
       const response = await axios.post(`${apiUrl}/api/simulate`, payload);
 
       setResults(response.data.data);
-      setLastRunId(response.data.run_id);
+      setLastRunPayload(payload);
     } catch (error: any) {
       if (error.response) {
         setErrorMessage(
@@ -90,6 +100,31 @@ export default function useSimulation() {
       }
     } finally {
       setIsSimulating(false);
+    }
+  };
+
+  const handleSaveRun = async (name: string) => {
+    if (!results || !lastRunPayload) return;
+
+    setIsSaving(true);
+    setSaveError(null);
+
+    try {
+      const apiUrl = "http://localhost:8000"; // TODO: Update URL & env
+      const response = await axios.post(`${apiUrl}/api/runs`, {
+        ...lastRunPayload,
+        data: results,
+        name: name.trim() || null,
+      });
+
+      setLastRunId(response.data.run_id);
+      setIsSaved(true);
+    } catch (error: any) {
+      setSaveError(
+        error.response?.data?.detail || "Could not save this run.",
+      );
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -109,5 +144,9 @@ export default function useSimulation() {
     selectedModels,
     setSelectedModels,
     lastRunId,
+    handleSaveRun,
+    isSaving,
+    isSaved,
+    saveError,
   };
 }

@@ -65,7 +65,13 @@ def test_completed_runs_can_be_listed_loaded_and_deleted(
 
     simulation = client.post("/api/simulate", json=payload)
     assert simulation.status_code == 200
-    run_id = simulation.json()["run_id"]
+    assert "run_id" not in simulation.json()
+
+    save_response = client.post(
+        "/api/runs", json={**payload, "data": simulation.json()["data"]}
+    )
+    assert save_response.status_code == 200
+    run_id = save_response.json()["run_id"]
 
     history = client.get("/api/runs")
     assert history.status_code == 200

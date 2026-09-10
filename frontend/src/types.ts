@@ -38,6 +38,7 @@ export interface SimulationResults {
 export interface SavedRun {
   id: number;
   created_at: string;
+  name: string | null;
   tickers: string[];
   weights: Record<string, number>;
   models: ModelId[];

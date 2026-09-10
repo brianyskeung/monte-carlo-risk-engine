@@ -1,7 +1,7 @@
 import os
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from schemas import SimulationRequest
+from schemas import SaveRunRequest, SimulationRequest
 from data import get_asset_info, get_historical_returns
 from engine import SimulationEngine
 from models import HistoricalBootstrapModel, GeometricBrownianMotionModel
@@ -91,11 +91,19 @@ def run_simulation(request: SimulationRequest):
             }
         )
 
-    run_id = save_run(request, results)
+    return {
+        "status": "success",
+        "data": results,
+    }
+
+
+@app.post("/api/runs")
+def save_run_endpoint(request: SaveRunRequest):
+    name = request.name.strip() if request.name else None
+    run_id = save_run(request, request.data, name or None)
     return {
         "status": "success",
         "run_id": run_id,
-        "data": results,
     }
 
 

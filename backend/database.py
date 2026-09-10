@@ -43,6 +43,7 @@ def initialize_database() -> None:
             CREATE TABLE IF NOT EXISTS simulation_runs (
                 id INTEGER PRIMARY KEY,
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                name TEXT,
                 tickers_json TEXT NOT NULL,
                 weights_json TEXT NOT NULL,
                 models_json TEXT NOT NULL,
@@ -77,20 +78,30 @@ def initialize_database() -> None:
             CREATE INDEX IF NOT EXISTS idx_run_models_run_id ON run_models(run_id);
             """
         )
+        _ensure_name_column(connection)
 
 
-def save_run(request: Any, results: dict[str, Any]) -> int:
+def _ensure_name_column(connection: sqlite3.Connection) -> None:
+    columns = {
+        row["name"] for row in connection.execute("PRAGMA table_info(simulation_runs)")
+    }
+    if "name" not in columns:
+        connection.execute("ALTER TABLE simulation_runs ADD COLUMN name TEXT")
+
+
+def save_run(request: Any, results: dict[str, Any], name: str | None = None) -> int:
     """Save one successful request and all chart data atomically."""
     initialize_database()
     with get_connection() as connection:
         cursor = connection.execute(
             """
             INSERT INTO simulation_runs (
-                tickers_json, weights_json, models_json, lookback_period,
+                name, tickers_json, weights_json, models_json, lookback_period,
                 forecasted_days, num_simulations
-            ) VALUES (?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
             (
+                name,
                 json.dumps(request.tickers),
                 json.dumps(request.weights, sort_keys=True),
                 json.dumps(request.models),
@@ -138,7 +149,7 @@ def list_runs(limit: int, offset: int) -> dict[str, Any]:
         total = connection.execute("SELECT COUNT(*) FROM simulation_runs").fetchone()[0]
         rows = connection.execute(
             """
-            SELECT id, created_at, tickers_json, weights_json, models_json,
+            SELECT id, created_at, name, tickers_json, weights_json, models_json,
                    lookback_period, forecasted_days, num_simulations
             FROM simulation_runs ORDER BY id DESC LIMIT ? OFFSET ?
             """,
@@ -180,7 +191,7 @@ def delete_run(run_id: int) -> bool:
 
 def _serialize_run(row: sqlite3.Row) -> dict[str, Any]:
     return {
-        "id": row["id"], "created_at": row["created_at"],
+        "id": row["id"], "created_at": row["created_at"], "name": row["name"],
         "tickers": json.loads(row["tickers_json"]), "weights": json.loads(row["weights_json"]),
         "models": json.loads(row["models_json"]), "lookback_period": row["lookback_period"],
         "forecasted_days": row["forecasted_days"], "num_simulations": row["num_simulations"],

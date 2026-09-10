@@ -88,9 +88,14 @@ export default function RunHistoryCard({
                   className="w-full text-left focus:outline-none"
                   onClick={() => void openRun(run.id)}
                 >
-                  <p className="font-medium text-text-primary transition-colors group-hover:text-mint">
-                    {run.tickers.join(" · ")}
+                  <p className="truncate font-medium text-text-primary transition-colors group-hover:text-mint">
+                    {run.name || run.tickers.join(" · ")}
                   </p>
+                  {run.name && (
+                    <p className="mt-0.5 truncate text-xs text-text-muted">
+                      {run.tickers.join(" · ")}
+                    </p>
+                  )}
                   <p className="mt-1.5 text-xs text-text-muted">
                     {formatDate(run.created_at)}
                   </p>
