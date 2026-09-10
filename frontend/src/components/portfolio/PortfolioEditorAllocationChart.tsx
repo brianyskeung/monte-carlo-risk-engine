@@ -4,14 +4,12 @@ import type { Allocation, AssetInfoMap } from "../../types";
 import { formatAssetType } from "../../utils/formatting";
 import { getAllocationColor, getWeightRange } from "../../utils/allocationColors";
 
-export default function AllocationPieChart({
+export default function PortfolioEditorAllocationChart({
   allocations,
   assets,
-  showLegend = true,
 }: {
   allocations: Allocation[];
   assets: AssetInfoMap;
-  showLegend?: boolean;
 }) {
   const { min: minWeight, max: maxWeight } = getWeightRange(
     allocations.map((allocation) => Number(allocation.weight ?? 0)),
@@ -37,7 +35,7 @@ export default function AllocationPieChart({
     });
 
   return (
-    <div>
+    <div className="flex h-full min-h-0 flex-col">
       <ResponsiveContainer width="100%" height={240}>
         <PieChart>
           <Pie
@@ -52,8 +50,8 @@ export default function AllocationPieChart({
         </PieChart>
       </ResponsiveContainer>
 
-      {showLegend && chartData.length > 0 && (
-        <ul className="mt-3 space-y-1.5 text-sm">
+      {chartData.length > 0 && (
+        <ul className="scroll-area mt-3 min-h-0 flex-1 space-y-1.5 overflow-y-auto text-sm">
           {chartData.map((item) => (
             <li
               key={item.ticker}

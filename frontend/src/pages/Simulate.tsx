@@ -53,7 +53,7 @@ export default function Simulate() {
         </div>
       </div>
 
-      <div className="grid grid-cols-[4fr_9fr_3fr] gap-6">
+      <div className="grid grid-cols-simulate gap-6">
         <div className="flex flex-col min-w-0">
           <SimulationForm
             className="flex-1"

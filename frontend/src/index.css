@@ -13,6 +13,27 @@
   --font-display: "Inter Tight", sans-serif;
   --font-body: "Inter", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
+
+  --text-2xs: 0.6875rem; /* 11px */
+  --text-3xs: 0.625rem; /* 10px */
+
+  --tracking-label-sm: 0.12em;
+  --tracking-label: 0.14em;
+  --tracking-label-lg: 0.16em;
+
+  --height-modal-panel: 85vh;
+  --max-height-modal-panel: calc(100dvh - 2rem);
+
+  --background-image-editor-glow: radial-gradient(
+      circle at top right,
+      rgba(5, 150, 105, 0.16),
+      transparent 34%
+    ),
+    radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.12), transparent 32%);
+
+  --grid-template-columns-simulate: 4fr 9fr 3fr;
+  --grid-template-columns-editor: minmax(0, 1.35fr) minmax(15rem, 0.65fr);
+  --grid-template-columns-allocation-row: minmax(4rem, 0.9fr) minmax(4rem, 1.5fr) 3.75rem auto;
 }
 
 body {

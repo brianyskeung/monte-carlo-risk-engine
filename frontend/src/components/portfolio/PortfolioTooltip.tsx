@@ -32,7 +32,7 @@ export default function PortfolioTooltip({
   return (
     <div className="w-52.5 max-w-52.5 rounded-lg border border-stone-200 bg-white/95 p-3 shadow-lg backdrop-blur-sm">
       <div className="border-b border-stone-100 pb-1.5">
-        <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-stone-400">
+        <p className="text-3xs font-medium uppercase tracking-label-sm text-stone-400">
           {item.ticker || "Asset"}
         </p>
       </div>

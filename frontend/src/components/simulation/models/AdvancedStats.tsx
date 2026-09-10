@@ -19,7 +19,7 @@ export default function AdvancedStats({
 
   return (
     <section className="mx-auto mt-2 w-full max-w-6xl shrink-0 border-t border-stone-200 pt-4">
-      <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-text-muted">
+      <h3 className="text-xs font-semibold uppercase tracking-label-lg text-text-muted">
         Advanced Statistics
       </h3>
 

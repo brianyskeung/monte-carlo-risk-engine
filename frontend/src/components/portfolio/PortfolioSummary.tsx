@@ -29,7 +29,7 @@ export default function PortfolioSummary({
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
+        <h3 className="text-xs font-semibold uppercase tracking-label text-text-muted">
           Portfolio Exposure
         </h3>
 

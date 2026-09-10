@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import type { Allocation, AssetInfoMap } from "../../types";
 import ModalHeader from "../ui/ModalHeader";
-import AllocationPieChart from "./AllocationChart";
+import PortfolioEditorAllocationChart from "./PortfolioEditorAllocationChart";
 import Allocator from "./Allocator";
 import PortfolioDetails from "./PortfolioDetails";
 import useAssets from "../../hooks/useAssets";
@@ -47,25 +48,27 @@ export default function PortfolioEditor({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
-  return (
-    <div className="fixed inset-0 z-50 flex gap-6 overflow-hidden bg-slate-950/20 p-4 backdrop-blur-md sm:p-6 justify-center items-start">
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_right,rgba(5,150,105,0.16),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(59,130,246,0.12),transparent_32%)]" />
-      <div className="relative hidden max-h-[calc(100dvh-2rem)] w-full flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-5 shadow-2xl shadow-slate-900/15 backdrop-blur-2xl lg:flex lg:w-1/3 sm:p-8">
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex gap-6 overflow-hidden bg-slate-950/20 p-4 backdrop-blur-md justify-center items-center sm:p-6">
+      <div className="pointer-events-none fixed inset-0 bg-editor-glow" />
+
+      <div className="relative hidden h-modal-panel max-h-modal-panel w-full flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-5 shadow-2xl shadow-slate-900/15 backdrop-blur-2xl lg:flex lg:w-1/3 sm:p-8">
         <h2 className="font-display text-xl font-semibold tracking-tight text-mint">
           Allocation Chart
         </h2>
-        <div className="mt-4 flex-1">
-          <AllocationPieChart
+        <div className="mt-4 min-h-0 flex-1">
+          <PortfolioEditorAllocationChart
             allocations={draftAllocations}
             assets={{ ...assets, ...draftAssets }}
           />
         </div>
       </div>
+
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="portfolio-editor-title"
-        className="relative flex max-h-[calc(100dvh-2rem)] w-full lg:w-2/3 max-w-5xl flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-5 shadow-2xl shadow-slate-900/15 backdrop-blur-2xl sm:p-8"
+        className="relative flex h-modal-panel max-h-modal-panel w-full lg:w-2/3 max-w-5xl flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-5 shadow-2xl shadow-slate-900/15 backdrop-blur-2xl sm:p-8"
       >
         <ModalHeader
           title="Portfolio Allocation"
@@ -75,7 +78,7 @@ export default function PortfolioEditor({
           titleClassName="font-display text-2xl font-semibold tracking-tight text-mint"
         />
 
-        <div className="grid min-h-0 flex-1 gap-5 overflow-y-auto pb-1 lg:grid-cols-[minmax(0,1.35fr)_minmax(15rem,0.65fr)]">
+        <div className="grid min-h-0 flex-1 gap-5 pb-1 lg:grid-cols-editor">
           <Allocator
             allocations={draftAllocations}
             setAllocations={setDraftAllocations}
@@ -104,6 +107,7 @@ export default function PortfolioEditor({
           Save changes
         </button>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

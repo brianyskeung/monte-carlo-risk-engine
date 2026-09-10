@@ -51,7 +51,7 @@ export default function Allocator({
         value={`${allocations.reduce((sum, allocation) => sum + allocation.weight, 0)}%`}
       />
 
-      <div className="grid min-h-0 max-h-[min(38rem,68vh)] grid-cols-1 gap-2.5 overflow-y-auto px-1 pb-1 sm:grid-cols-2">
+      <div className="scroll-area grid min-h-0 flex-1 content-start grid-cols-1 gap-2.5 overflow-y-auto pb-1 pl-1 sm:grid-cols-2">
         {allocations.map((allocation, index) => (
           <AllocationRow
             key={index}
@@ -75,7 +75,7 @@ export default function Allocator({
         onClick={() =>
           setAllocations([...allocations, { ticker: "", weight: 0 }])
         }
-        className="mt-4 cursor-pointer rounded-lg px-2 py-1 text-sm font-medium text-mint transition-colors hover:bg-emerald-50"
+        className="mt-4 shrink-0 cursor-pointer rounded-lg px-2 py-1 text-sm font-medium text-mint transition-colors hover:bg-emerald-50"
       >
         + Add asset
       </button>

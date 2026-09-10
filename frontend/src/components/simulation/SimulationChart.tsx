@@ -22,10 +22,10 @@ const CompactTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white/95 backdrop-blur-md p-3 border border-stone-100 rounded-lg shadow-lg pointer-events-none z-50 min-w-48">
-        <p className="font-medium text-stone-400 pb-1 border-b border-stone-100/80 uppercase tracking-wider text-[11px]">
+        <p className="font-medium text-stone-400 pb-1 border-b border-stone-100/80 uppercase tracking-wider text-2xs">
           Forecast Day {label}
         </p>
-        <div className="flex flex-col gap-1.5 text-[10px] ">
+        <div className="flex flex-col gap-1.5 text-3xs ">
           {payload.map((entry: any, index: number) => {
             const percentValue = entry.value * 100;
             const isPositive = percentValue >= 0;

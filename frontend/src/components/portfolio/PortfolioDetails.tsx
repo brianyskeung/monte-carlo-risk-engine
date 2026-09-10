@@ -28,12 +28,12 @@ export default function PortfolioDetails({
   }, {});
 
   return (
-    <aside className="rounded-2xl border border-black/5 bg-slate-50/70 p-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
+    <aside className="flex h-full min-h-0 flex-col rounded-2xl border border-black/5 bg-slate-50/70 p-4">
+      <p className="shrink-0 text-xs font-semibold uppercase tracking-label text-text-muted">
         Portfolio details
       </p>
 
-      <dl className="mt-4 space-y-3 text-sm">
+      <dl className="mt-4 shrink-0 space-y-3 text-sm">
         <div className="flex justify-between gap-4">
           <dt className="text-text-muted">Holdings</dt>
           <dd className="font-semibold text-text-primary">
@@ -57,11 +57,11 @@ export default function PortfolioDetails({
       </dl>
 
       {Object.keys(sectorDetails).length > 0 && (
-        <div className="mt-6 border-t border-black/5 pt-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
+        <div className="mt-6 flex min-h-0 flex-1 flex-col border-t border-black/5 pt-4">
+          <p className="shrink-0 text-xs font-semibold uppercase tracking-label text-text-muted">
             Sector investment
           </p>
-          <div className="mt-3 space-y-2 max-h-[min(34rem,52vh)] overflow-y-auto pr-1">
+          <div className="scroll-area mt-3 min-h-0 flex-1 space-y-2 overflow-y-auto">
             {Object.entries(sectorDetails).map(([sector, details]) => (
               <div
                 key={sector}
