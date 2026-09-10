@@ -99,7 +99,7 @@ The frontend starts with an empty portfolio. Add at least one asset before runni
 }
 ```
 
-`models` accepts any combination of `historical_bootstrap`, `geometric_brownian_motion`, `block_bootstrap`, and `jump_diffusion` (defaults to the first two). `forecasted_days` must be greater than 0 and at most `7560`; `num_simulations` must be greater than 0 and at most `100000`.
+`models` accepts any combination of `historical_bootstrap`, `geometric_brownian_motion`, `block_bootstrap`, and `jump_diffusion`; if omitted from the request, the API defaults to the first two. The frontend always sends this field explicitly and only pre-selects `historical_bootstrap` by default. `forecasted_days` must be greater than 0 and at most `7560`; `num_simulations` must be greater than 0 and at most `100000`.
 
 - **response body**
 
