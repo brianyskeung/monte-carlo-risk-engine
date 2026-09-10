@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import ModalHeader from "../ui/ModalHeader";
 
 interface SaveRunModalProps {
@@ -30,7 +31,7 @@ export default function SaveRunModal({
     onSave(name);
   };
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/20 p-4 backdrop-blur-md sm:p-6"
       onMouseDown={(event) => {
@@ -94,6 +95,7 @@ export default function SaveRunModal({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

@@ -1,7 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import type { ModelId } from "../../../types";
 import ModalHeader from "../../ui/ModalHeader";
 import SectionHeader from "../../ui/SectionHeader";
+import SearchInput from "../../ui/SearchInput";
 import ModelOptionButton from "./ModelOptionButton";
 
 interface ModelOption {
@@ -34,6 +36,8 @@ export default function ModelSelectionModal({
   onChange,
   onClose,
 }: ModelSelectionModalProps) {
+  const [query, setQuery] = useState("");
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
@@ -53,9 +57,16 @@ export default function ModelSelectionModal({
     onChange([...selectedModels, modelId]);
   };
 
-  return (
+  const normalizedQuery = query.trim().toLowerCase();
+  const filteredModels = normalizedQuery
+    ? MODEL_OPTIONS.filter((model) =>
+        model.name.toLowerCase().includes(normalizedQuery),
+      )
+    : MODEL_OPTIONS;
+
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/20 p-4 backdrop-blur-md sm:p-6"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/20 p-4 backdrop-blur-md sm:p-6"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
@@ -64,7 +75,7 @@ export default function ModelSelectionModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="model-selector-title"
-        className="relative mx-auto mt-[10vh] max-w-lg overflow-hidden rounded-3xl border border-white/70 bg-white/90 p-5 shadow-2xl shadow-slate-900/15 backdrop-blur-2xl sm:p-7"
+        className="relative flex max-h-modal-panel w-full max-w-xl flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/90 p-5 shadow-2xl shadow-slate-900/15 backdrop-blur-2xl sm:p-7"
       >
         <ModalHeader
           title="Choose simulation models"
@@ -75,14 +86,22 @@ export default function ModelSelectionModal({
           description="Select the models you want to compare."
         />
 
-        <div className="rounded-2xl border border-black/5 bg-white/45 p-4">
+        <div className="flex min-h-0 flex-col rounded-2xl border border-black/5 bg-white/45 p-4">
           <SectionHeader
             label="Model Selection"
             value={`${selectedModels.length}/${MODEL_OPTIONS.length}`}
           />
 
-          <div className="space-y-2.5">
-            {MODEL_OPTIONS.map((model) => {
+          <SearchInput
+            value={query}
+            onChange={setQuery}
+            placeholder="Search models"
+            aria-label="Search models"
+            className="mb-3 shrink-0"
+          />
+
+          <div className="scroll-area max-h-80 space-y-2.5 overflow-y-auto p-1">
+            {filteredModels.map((model) => {
               const isSelected = selectedModels.includes(model.id);
 
               return (
@@ -96,6 +115,12 @@ export default function ModelSelectionModal({
                 />
               );
             })}
+
+            {filteredModels.length === 0 && (
+              <p className="px-1 py-6 text-center text-sm text-text-muted">
+                No models match “{query.trim()}”.
+              </p>
+            )}
           </div>
         </div>
 
@@ -107,6 +132,7 @@ export default function ModelSelectionModal({
           Done
         </button>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
