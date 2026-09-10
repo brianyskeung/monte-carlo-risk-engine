@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Check, Save } from "lucide-react";
-import SaveRunModal from "./SaveRunModal";
+import SaveRunModal from "./modals/SaveRunModal";
 
 interface SaveRunButtonProps {
   onSaveRun: (name: string) => void;

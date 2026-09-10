@@ -12,6 +12,8 @@ class SimulationRequest(BaseModel):
     models: list[Literal[
         "historical_bootstrap",
         "geometric_brownian_motion",
+        "block_bootstrap",
+        "jump_diffusion",
     ]] = Field(
         default_factory=lambda: [
             "historical_bootstrap",
@@ -32,6 +34,7 @@ class SimulationRequest(BaseModel):
     forecasted_days: int = Field(
         252,
         gt=0,
+        le=7560,
         description="Trading days to project forward",
     )
     num_simulations: int = Field(

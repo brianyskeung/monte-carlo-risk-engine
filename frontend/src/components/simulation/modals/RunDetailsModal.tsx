@@ -1,13 +1,13 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
-import type { SavedRun } from "../../types";
+import type { SavedRun } from "../../../types";
 import {
   getLookbackLabel,
   getModelLabel,
-} from "../../constants/simulationOptions";
-import ModalHeader from "../ui/ModalHeader";
-import SectionHeader from "../ui/SectionHeader";
-import ScrollArea from "../ui/ScrollArea";
+} from "../../../constants/simulationOptions";
+import ModalHeader from "../../ui/ModalHeader";
+import SectionHeader from "../../ui/SectionHeader";
+import ScrollArea from "../../ui/ScrollArea";
 
 interface RunDetailsModalProps {
   run: SavedRun;

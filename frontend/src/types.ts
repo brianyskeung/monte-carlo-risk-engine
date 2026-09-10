@@ -3,7 +3,11 @@ export interface Allocation {
   weight: number;
 }
 
-export type ModelId = "historical_bootstrap" | "geometric_brownian_motion";
+export type ModelId =
+  | "historical_bootstrap"
+  | "geometric_brownian_motion"
+  | "block_bootstrap"
+  | "jump_diffusion";
 
 export interface PathData {
   day: number;

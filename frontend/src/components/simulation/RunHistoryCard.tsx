@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { Maximize2 } from "lucide-react";
 import type { SavedRun, SavedRunDetail } from "../../types";
 import ScrollArea from "../ui/ScrollArea";
-import RunDetailsModal from "./RunDetailsModal";
-import SavedRunsModal from "./SavedRunsModal";
+import RunDetailsModal from "./modals/RunDetailsModal";
+import SavedRunsModal from "./modals/SavedRunsModal";
 import SavedRunListItem from "./SavedRunListItem";
 
 const API_URL = "http://localhost:8000";
@@ -66,7 +66,7 @@ export default function RunHistoryCard({
             Saved runs
           </h3>
           <button
-            className="rounded-md p-1 text-text-muted transition-colors hover:text-mint focus:outline-none"
+            className="cursor-pointer rounded-md p-1 text-text-muted transition-colors hover:text-mint focus:outline-none"
             onClick={() => {
               setIsListModalOpen(true);
               void loadRuns();

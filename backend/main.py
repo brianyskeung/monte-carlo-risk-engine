@@ -4,7 +4,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from schemas import SaveRunRequest, SimulationRequest
 from data import get_asset_info, get_historical_returns
 from engine import SimulationEngine
-from models import HistoricalBootstrapModel, GeometricBrownianMotionModel
+from models import (
+    HistoricalBootstrapModel,
+    GeometricBrownianMotionModel,
+    BlockBootstrapModel,
+    JumpDiffusionModel,
+)
 from metrics import calculate_portfolio_metrics
 from database import delete_run, get_run, list_runs, save_run
 import time
@@ -54,6 +59,14 @@ def run_simulation(request: SimulationRequest):
             GeometricBrownianMotionModel,
             "Geometric Brownian Motion",
         ),
+        "block_bootstrap": (
+            BlockBootstrapModel,
+            "Block Bootstrap",
+        ),
+        "jump_diffusion": (
+            JumpDiffusionModel,
+            "Jump Diffusion (Merton)",
+        ),
     }
     results = {"models": []}
     
@@ -100,7 +113,10 @@ def run_simulation(request: SimulationRequest):
 @app.post("/api/runs")
 def save_run_endpoint(request: SaveRunRequest):
     name = request.name.strip() if request.name else None
-    run_id = save_run(request, request.data, name or None)
+    try:
+        run_id = save_run(request, request.data, name or None)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     return {
         "status": "success",
         "run_id": run_id,

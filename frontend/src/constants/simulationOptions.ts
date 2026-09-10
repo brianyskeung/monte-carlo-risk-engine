@@ -17,6 +17,16 @@ export const MODEL_OPTIONS: ModelOption[] = [
     name: "Geometric Brownian Motion",
     description: "Fits a statistical distribution to historical returns.",
   },
+  {
+    id: "block_bootstrap",
+    name: "Block Bootstrap",
+    description: "Resamples multi-day chunks to preserve volatility clustering.",
+  },
+  {
+    id: "jump_diffusion",
+    name: "Jump Diffusion (Merton)",
+    description: "Adds sudden crash/spike risk on top of a diffusion model.",
+  },
 ];
 
 export function getModelLabel(modelId: ModelId): string {

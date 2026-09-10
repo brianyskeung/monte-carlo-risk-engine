@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import type { Allocation, AssetInfoMap } from "../../types";
-import ModalHeader from "../ui/ModalHeader";
-import PortfolioEditorAllocationChart from "./PortfolioEditorAllocationChart";
-import Allocator from "./Allocator";
-import PortfolioDetails from "./PortfolioDetails";
-import useAssets from "../../hooks/useAssets";
-import { validatePortfolioAllocations } from "../../utils/portfolioValidation";
+import type { Allocation, AssetInfoMap } from "../../../types";
+import ModalHeader from "../../ui/ModalHeader";
+import PortfolioEditorAllocationChart from "../PortfolioEditorAllocationChart";
+import Allocator from "../Allocator";
+import PortfolioDetails from "../PortfolioDetails";
+import useAssets from "../../../hooks/useAssets";
+import { validatePortfolioAllocations } from "../../../utils/portfolioValidation";
 
 type PortfolioEditorProps = {
   allocations: Allocation[];

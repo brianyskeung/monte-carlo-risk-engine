@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { ModelId } from "../../../types";
-import ModelSelectionModal from "./ModelSelectionModal";
+import ModelSelectionModal from "../modals/ModelSelectionModal";
 
 interface ModelSelectorProps {
   selectedModels: ModelId[];

@@ -81,10 +81,52 @@ def test_completed_runs_can_be_listed_loaded_and_deleted(
     saved_run = client.get(f"/api/runs/{run_id}")
     assert saved_run.status_code == 200
     assert saved_run.json()["tickers"] == ["SPY", "QQQ"]
+    assert saved_run.json()["data"]["models"][0]["summary"]["forecasted_days"] == 5
     assert len(saved_run.json()["data"]["models"][0]["percentile_paths"]) == 5
 
     assert client.delete(f"/api/runs/{run_id}").status_code == 200
     assert client.get(f"/api/runs/{run_id}").status_code == 404
+
+
+@patch("main.get_historical_returns")
+def test_duplicate_run_name_is_rejected(
+    mock_get_returns, mock_market_data, monkeypatch, tmp_path
+):
+    monkeypatch.setenv("SIMULATION_DB_PATH", str(tmp_path / "runs.sqlite3"))
+    mock_get_returns.return_value = mock_market_data
+    payload = {
+        "tickers": ["SPY", "QQQ"],
+        "weights": {"SPY": 0.6, "QQQ": 0.4},
+        "models": ["historical_bootstrap"],
+        "num_simulations": 10,
+        "forecasted_days": 5,
+    }
+
+    simulation = client.post("/api/simulate", json=payload)
+    data = simulation.json()["data"]
+
+    first = client.post(
+        "/api/runs", json={**payload, "data": data, "name": "My Run"}
+    )
+    assert first.status_code == 200
+
+    duplicate = client.post(
+        "/api/runs", json={**payload, "data": data, "name": "My Run"}
+    )
+    assert duplicate.status_code == 400
+    assert "already exists" in duplicate.json()["detail"]
+
+    # case-insensitive match is also rejected
+    case_variant = client.post(
+        "/api/runs", json={**payload, "data": data, "name": "my run"}
+    )
+    assert case_variant.status_code == 400
+
+    # unnamed runs are never treated as duplicates of each other
+    unnamed_one = client.post("/api/runs", json={**payload, "data": data})
+    unnamed_two = client.post("/api/runs", json={**payload, "data": data})
+    assert unnamed_one.status_code == 200
+    assert unnamed_two.status_code == 200
 
 
 @patch("main.get_historical_returns")

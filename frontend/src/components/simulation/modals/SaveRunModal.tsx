@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import ModalHeader from "../ui/ModalHeader";
+import ModalHeader from "../../ui/ModalHeader";
 
 interface SaveRunModalProps {
   isSaving: boolean;

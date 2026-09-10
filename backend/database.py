@@ -93,6 +93,14 @@ def save_run(request: Any, results: dict[str, Any], name: str | None = None) -> 
     """Save one successful request and all chart data atomically."""
     initialize_database()
     with get_connection() as connection:
+        if name is not None:
+            existing = connection.execute(
+                "SELECT 1 FROM simulation_runs WHERE name IS NOT NULL AND LOWER(name) = LOWER(?)",
+                (name,),
+            ).fetchone()
+            if existing is not None:
+                raise ValueError(f"A saved run named '{name}' already exists.")
+
         cursor = connection.execute(
             """
             INSERT INTO simulation_runs (
@@ -174,7 +182,10 @@ def get_run(run_id: int) -> dict[str, Any] | None:
             result_models.append(
                 {
                     "model_id": model["model_id"], "display_name": model["display_name"],
-                    "summary": {key: model[key] for key in ("expected_terminal_value", "expected_return", "loss_var_95", "loss_cvar_95")},
+                    "summary": {
+                        **{key: model[key] for key in ("expected_terminal_value", "expected_return", "loss_var_95", "loss_cvar_95")},
+                        "forecasted_days": run["forecasted_days"],
+                    },
                     "simulation_time_ms": model["simulation_time_ms"],
                     "percentile_paths": [dict(point) for point in points],
                 }

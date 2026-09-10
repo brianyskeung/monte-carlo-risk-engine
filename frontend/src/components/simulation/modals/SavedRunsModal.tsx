@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { SlidersHorizontal } from "lucide-react";
-import type { ModelId, SavedRun } from "../../types";
-import ModalHeader from "../ui/ModalHeader";
-import SearchInput from "../ui/SearchInput";
-import ScrollArea from "../ui/ScrollArea";
-import SavedRunListItem from "./SavedRunListItem";
+import type { ModelId, SavedRun } from "../../../types";
+import ModalHeader from "../../ui/ModalHeader";
+import SearchInput from "../../ui/SearchInput";
+import ScrollArea from "../../ui/ScrollArea";
+import SavedRunListItem from "../SavedRunListItem";
 import ModelFilterModal from "./ModelFilterModal";
 
 interface SavedRunsModalProps {

@@ -1,5 +1,5 @@
 import type { Allocation, AssetInfoMap } from "../../types";
-import PortfolioEditor from "./PortfolioEditor";
+import PortfolioEditor from "./modals/PortfolioEditor";
 import { useState } from "react";
 import { formatAssetType } from "../../utils/formatting";
 import ScrollArea from "../ui/ScrollArea";

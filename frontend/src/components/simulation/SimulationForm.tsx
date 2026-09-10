@@ -34,8 +34,14 @@ export default function SimulationForm({
   className = "",
 }: SimulationFormProps) {
   return (
-    <Card title="Portfolio Configuration" className={`flex flex-col ${className}`}>
-      <form onSubmit={onSubmit} className="flex-1 flex flex-col justify-between">
+    <Card
+      title="Portfolio Configuration"
+      className={`flex flex-col ${className}`}
+    >
+      <form
+        onSubmit={onSubmit}
+        className="flex-1 flex flex-col justify-between"
+      >
         <div className="space-y-4">
           <AllocationPieChart
             allocations={allocations}
@@ -60,6 +66,7 @@ export default function SimulationForm({
               className="w-full bg-bg border border-black/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-mint transition-colors"
               required
               min="1"
+              max="7560"
               placeholder="0"
             />
           </div>

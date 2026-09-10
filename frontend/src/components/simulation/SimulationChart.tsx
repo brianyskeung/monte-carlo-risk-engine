@@ -90,7 +90,7 @@ export default function SimulationChart({
       {/* Fullscreen Toggle */}
       <button
         onClick={() => setIsFullscreen(!isFullscreen)}
-        className="absolute top-4 right-4 p-1.5 text-stone-400 hover:text-stone-700 bg-white hover:bg-stone-50 border border-stone-100 rounded-md transition-colors z-10"
+        className="absolute top-4 right-4 cursor-pointer p-1.5 text-stone-400 hover:text-stone-700 bg-white hover:bg-stone-50 border border-stone-100 rounded-md transition-colors z-10"
         title="Toggle Fullscreen"
       >
         {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
