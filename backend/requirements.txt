@@ -16,6 +16,7 @@ httpx==0.28.1
 httpx2==2.9.1
 idna==3.18
 iniconfig==2.3.0
+libsql==0.1.11
 markdown-it-py==4.2.0
 mdurl==0.1.2
 multitasking==0.0.13

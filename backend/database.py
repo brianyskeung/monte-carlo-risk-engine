@@ -1,30 +1,47 @@
 """Persistence for completed simulation runs.
 
 The database is intentionally kept behind this small module so the API does
-not depend on an ORM and a future database migration remains straightforward.
+not depend on an ORM. Uses Turso (libSQL) when TURSO_DATABASE_URL is set,
+falling back to a local SQLite file for development.
 """
 
 import json
 import os
-import sqlite3
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator
+
+import libsql
 
 
 DEFAULT_DATABASE_PATH = Path(__file__).parent / "data" / "simulation_runs.sqlite3"
 
 
-def _database_path() -> Path:
-    return Path(os.getenv("SIMULATION_DB_PATH", DEFAULT_DATABASE_PATH))
+def _connect() -> Any:
+    url = os.getenv("TURSO_DATABASE_URL")
+    if url:
+        return libsql.connect(url, auth_token=os.getenv("TURSO_AUTH_TOKEN"))
+
+    path = Path(os.getenv("SIMULATION_DB_PATH", DEFAULT_DATABASE_PATH))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    return libsql.connect(str(path))
+
+
+def _row_to_dict(cursor: Any, row: Any) -> dict[str, Any] | None:
+    if row is None:
+        return None
+    columns = [column[0] for column in cursor.description]
+    return dict(zip(columns, row))
+
+
+def _rows_to_dicts(cursor: Any) -> list[dict[str, Any]]:
+    columns = [column[0] for column in cursor.description]
+    return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 
 @contextmanager
-def get_connection() -> Iterator[sqlite3.Connection]:
-    path = _database_path()
-    path.parent.mkdir(parents=True, exist_ok=True)
-    connection = sqlite3.connect(path)
-    connection.row_factory = sqlite3.Row
+def get_connection() -> Iterator[Any]:
+    connection = _connect()
     connection.execute("PRAGMA foreign_keys = ON")
     try:
         yield connection
@@ -81,10 +98,9 @@ def initialize_database() -> None:
         _ensure_name_column(connection)
 
 
-def _ensure_name_column(connection: sqlite3.Connection) -> None:
-    columns = {
-        row["name"] for row in connection.execute("PRAGMA table_info(simulation_runs)")
-    }
+def _ensure_name_column(connection: Any) -> None:
+    cursor = connection.execute("PRAGMA table_info(simulation_runs)")
+    columns = {row[1] for row in cursor.fetchall()}
     if "name" not in columns:
         connection.execute("ALTER TABLE simulation_runs ADD COLUMN name TEXT")
 
@@ -101,7 +117,8 @@ def save_run(request: Any, results: dict[str, Any], name: str | None = None) -> 
             if existing is not None:
                 raise ValueError(f"A saved run named '{name}' already exists.")
 
-        cursor = connection.execute(
+        cursor = connection.cursor()
+        cursor.execute(
             """
             INSERT INTO simulation_runs (
                 name, tickers_json, weights_json, models_json, lookback_period,
@@ -122,7 +139,8 @@ def save_run(request: Any, results: dict[str, Any], name: str | None = None) -> 
 
         for model in results["models"]:
             summary = model["summary"]
-            model_cursor = connection.execute(
+            model_cursor = connection.cursor()
+            model_cursor.execute(
                 """
                 INSERT INTO run_models (
                     run_id, model_id, display_name, expected_terminal_value,
@@ -155,30 +173,36 @@ def list_runs(limit: int, offset: int) -> dict[str, Any]:
     initialize_database()
     with get_connection() as connection:
         total = connection.execute("SELECT COUNT(*) FROM simulation_runs").fetchone()[0]
-        rows = connection.execute(
+        cursor = connection.execute(
             """
             SELECT id, created_at, name, tickers_json, weights_json, models_json,
                    lookback_period, forecasted_days, num_simulations
             FROM simulation_runs ORDER BY id DESC LIMIT ? OFFSET ?
             """,
             (limit, offset),
-        ).fetchall()
+        )
+        rows = _rows_to_dicts(cursor)
     return {"total": total, "runs": [_serialize_run(row) for row in rows]}
 
 
 def get_run(run_id: int) -> dict[str, Any] | None:
     initialize_database()
     with get_connection() as connection:
-        run = connection.execute("SELECT * FROM simulation_runs WHERE id = ?", (run_id,)).fetchone()
+        cursor = connection.execute("SELECT * FROM simulation_runs WHERE id = ?", (run_id,))
+        run = _row_to_dict(cursor, cursor.fetchone())
         if run is None:
             return None
-        models = connection.execute("SELECT * FROM run_models WHERE run_id = ? ORDER BY id", (run_id,)).fetchall()
+        models_cursor = connection.execute(
+            "SELECT * FROM run_models WHERE run_id = ? ORDER BY id", (run_id,)
+        )
+        models = _rows_to_dicts(models_cursor)
         result_models = []
         for model in models:
-            points = connection.execute(
+            points_cursor = connection.execute(
                 "SELECT day, p5, p25, p50, p75, p95, mean FROM run_percentile_paths WHERE run_model_id = ? ORDER BY day",
                 (model["id"],),
-            ).fetchall()
+            )
+            points = _rows_to_dicts(points_cursor)
             result_models.append(
                 {
                     "model_id": model["model_id"], "display_name": model["display_name"],
@@ -187,7 +211,7 @@ def get_run(run_id: int) -> dict[str, Any] | None:
                         "forecasted_days": run["forecasted_days"],
                     },
                     "simulation_time_ms": model["simulation_time_ms"],
-                    "percentile_paths": [dict(point) for point in points],
+                    "percentile_paths": points,
                 }
             )
     return {**_serialize_run(run), "data": {"models": result_models}}
@@ -196,11 +220,12 @@ def get_run(run_id: int) -> dict[str, Any] | None:
 def delete_run(run_id: int) -> bool:
     initialize_database()
     with get_connection() as connection:
-        cursor = connection.execute("DELETE FROM simulation_runs WHERE id = ?", (run_id,))
-    return cursor.rowcount == 1
+        connection.execute("DELETE FROM simulation_runs WHERE id = ?", (run_id,))
+        changed = connection.execute("SELECT changes()").fetchone()[0]
+    return changed == 1
 
 
-def _serialize_run(row: sqlite3.Row) -> dict[str, Any]:
+def _serialize_run(row: dict[str, Any]) -> dict[str, Any]:
     return {
         "id": row["id"], "created_at": row["created_at"], "name": row["name"],
         "tickers": json.loads(row["tickers_json"]), "weights": json.loads(row["weights_json"]),

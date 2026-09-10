@@ -22,11 +22,11 @@ an interactive risk analytics tool designed to model multi-asset portfolio traje
 
 ### tech stack
 
-| layer        | tech                                                                                    |
-| :----------- | :-------------------------------------------------------------------------------------- |
-| **backend**  | python 3.11+, fastapi, pydantic, numpy, pandas, yfinance, sqlite, pytest                |
-| **frontend** | react 19, typescript, vite, tailwind css, recharts, axios                               |
-| **models**   | historical bootstrap, geometric Brownian motion, block bootstrap, Merton jump diffusion |
+| layer        | tech                                                                                                  |
+| :----------- | :---------------------------------------------------------------------------------------------------- |
+| **backend**  | python 3.11+, fastapi, pydantic, numpy, pandas, yfinance, sqlite (libSQL/Turso in production), pytest |
+| **frontend** | react 19, typescript, vite, tailwind css, recharts, axios                                             |
+| **models**   | historical bootstrap, geometric Brownian motion, block bootstrap, Merton jump diffusion               |
 
 #### available models
 
@@ -149,7 +149,7 @@ The frontend starts with an empty portfolio. Add at least one asset before runni
 
 #### saved runs
 
-A completed simulation is saved by explicitly `post`ing it (along with the response `data`) to `/api/runs`. Saved runs are stored in a local SQLite database at `backend/data/simulation_runs.sqlite3`. The database is excluded from Git. Set `SIMULATION_DB_PATH` to place it elsewhere.
+A completed simulation is saved by explicitly `post`ing it (along with the response `data`) to `/api/runs`. Saved runs are persisted to a Turso (libSQL) database when `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` are set — this is what production (e.g. Vercel) uses, since local disk isn't persistent there. Without those set, it falls back to a local SQLite file at `backend/data/simulation_runs.sqlite3` (excluded from Git; set `SIMULATION_DB_PATH` to place it elsewhere).
 
 | endpoint                          | purpose                                              |
 | :-------------------------------- | :--------------------------------------------------- |
