@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_URL } from "../constants/api";
 import type { AssetInfoMap } from "../types";
 
 export default function useAssets(tickers: string[]) {
@@ -19,7 +20,7 @@ export default function useAssets(tickers: string[]) {
     const tickerArray = tickerKey.split(",");
 
     axios
-      .get("http://localhost:8000/api/assets", {
+      .get(`${API_URL}/api/assets`, {
         timeout: 10000,
         params: {
           tickers: tickerArray,

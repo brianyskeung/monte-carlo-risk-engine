@@ -2,30 +2,40 @@
 
 > a full-stack portfolio simulator and historical bootstrapping engine.
 
-an interactive risk analytics tool designed to model multi-asset portfolio trajectories under historical market distributions. runs correlated monte carlo scenario simulations to quantify tail risk, drawdowns, and distribution percentiles. i intend to add more models later on.
+an interactive risk analytics tool designed to model multi-asset portfolio trajectories under historical market distributions. runs correlated monte carlo scenario simulations across four selectable models to quantify tail risk, drawdowns, and distribution percentiles.
 
 ---
 
 ### what it does
 
 - **custom allocations:** pick your tickers and assign portfolio weights.
-- **correlated bootstrapping:** resamples historical daily returns across all assets on the exact same days. this keeps the real-world correlation between your assets intact.
-- **risk metrics:** calculates expected terminal value, 95% value-at-risk (var), and conditional var (cvar / expected shortfall).
-- **percentile paths:** generates p5 to p95 fan-charts so you can visualize the spread of best and worst-case scenarios.
+- **simulation models:** compare historical bootstrap, geometric Brownian motion, block bootstrap, and Merton jump diffusion side by side — pick any combination to run per simulation.
+- **correlated resampling:** the bootstrap-based models resample historical daily returns across all assets on the exact same days (or same contiguous blocks), keeping real-world correlation between assets intact.
+- **risk metrics:** calculates expected terminal value, 95% value-at-risk (var), and conditional var (cvar / expected shortfall) per model.
+- **percentile paths:** generates p5 to p95 fan-charts so you can visualize the spread of best and worst-case scenarios, with a per-chart and a maximize-all fullscreen view.
 - **ticker validation:** checks if a ticker is real and grabs its basic info for the frontend.
 - **asset metadata:** provides quote type, industry, sector, exchange, currency, and validity information for each ticker.
 - **local portfolio saving:** saves the current allocation list in the browser and restores it after refresh.
-- **run history:** automatically saves completed simulations locally and lets you reopen their metrics and percentile charts.
+- **run history:** automatically saves completed simulations and lets you reopen their metrics and percentile charts, search/filter saved runs by name, ticker, or model, and view full run details in a dedicated modal. saved run names must be unique.
 
 ---
 
 ### tech stack
 
-| layer        | tech                                                             |
-| :----------- | :--------------------------------------------------------------- |
-| **backend**  | python 3.11+, fastapi, pydantic, numpy, pandas, yfinance, pytest |
-| **frontend** | react 19, typescript, vite, tailwind css, recharts, axios        |
-| **model**    | historical bootstrap (multivariate resampling with replacement)  |
+| layer        | tech                                                                                    |
+| :----------- | :-------------------------------------------------------------------------------------- |
+| **backend**  | python 3.11+, fastapi, pydantic, numpy, pandas, yfinance, sqlite, pytest                |
+| **frontend** | react 19, typescript, vite, tailwind css, recharts, axios                               |
+| **models**   | historical bootstrap, geometric Brownian motion, block bootstrap, Merton jump diffusion |
+
+#### available models
+
+| model id                    | name                      | approach                                                                                            |
+| :-------------------------- | :------------------------ | :-------------------------------------------------------------------------------------------------- |
+| `historical_bootstrap`      | Historical Bootstrap      | resamples historical daily return rows with replacement, preserving cross-asset correlation         |
+| `geometric_brownian_motion` | Geometric Brownian Motion | fits a multivariate normal distribution to historical log returns                                   |
+| `block_bootstrap`           | Block Bootstrap           | resamples contiguous multi-day blocks instead of single days, preserving volatility clustering      |
+| `jump_diffusion`            | Jump Diffusion (Merton)   | GBM diffusion plus a per-asset compound-Poisson jump component, calibrated from historical outliers |
 
 ---
 
@@ -44,11 +54,22 @@ monte-carlo-risk-engine/
 │   ├── metrics/
 │   │   └── risk.py          # calculates var, cvar, and percentiles
 │   ├── models/
-│   │   ├── base.py          # abstract engine class
-│   │   └── bootstrap.py     # historical bootstrap logic
+│   │   ├── base.py             # abstract engine class
+│   │   ├── bootstrap.py        # historical bootstrap logic
+│   │   ├── gbm.py               # geometric Brownian motion logic
+│   │   ├── block_bootstrap.py  # multi-day block resampling logic
+│   │   └── jump_diffusion.py   # Merton jump-diffusion logic
 │   └── tests/               # pytest suite
 └── frontend/
-    ├── src/                 # react components, hooks, charts
+    ├── src/
+    │   ├── components/
+    │   │   ├── simulation/    # form, charts, run history
+    │   │   ├── portfolio/     # allocation editor & charts
+    │   │   ├── layout/        # shell, sidebar, top bar
+    │   │   └── ui/            # shared primitives (modal header, scroll area, search input)
+    │   ├── hooks/             # useSimulation, useAssets
+    │   ├── constants/         # model & lookback-period option lists
+    │   └── utils/             # formatting & validation helpers
     └── package.json
 ```
 
@@ -71,11 +92,14 @@ The frontend starts with an empty portfolio. Add at least one asset before runni
     "SPY": 0.6,
     "NVDA": 0.4
   },
+  "models": ["historical_bootstrap", "geometric_brownian_motion"],
   "lookback_period": "5y",
   "forecasted_days": 252,
   "num_simulations": 1000
 }
 ```
+
+`models` accepts any combination of `historical_bootstrap`, `geometric_brownian_motion`, `block_bootstrap`, and `jump_diffusion` (defaults to the first two). `forecasted_days` must be greater than 0 and at most `7560`; `num_simulations` must be greater than 0 and at most `100000`.
 
 - **response body**
 
@@ -91,7 +115,8 @@ The frontend starts with an empty portfolio. Add at least one asset before runni
           "expected_terminal_value": 1.1084,
           "expected_return": 0.1084,
           "loss_var_95": 0.1421,
-          "loss_cvar_95": 0.2018
+          "loss_cvar_95": 0.2018,
+          "forecasted_days": 252
         },
         "percentile_paths": [
           {
@@ -124,15 +149,18 @@ The frontend starts with an empty portfolio. Add at least one asset before runni
 
 #### saved runs
 
-Every successful `post /api/simulate` response includes a `run_id` and is stored in a local SQLite database at `backend/data/simulation_runs.sqlite3`. The database is excluded from Git. Set `SIMULATION_DB_PATH` to place it elsewhere.
+A completed simulation is saved by explicitly `post`ing it (along with the response `data`) to `/api/runs`. Saved runs are stored in a local SQLite database at `backend/data/simulation_runs.sqlite3`. The database is excluded from Git. Set `SIMULATION_DB_PATH` to place it elsewhere.
 
-| endpoint | purpose |
-| :--- | :--- |
-| `get /api/runs?limit=25&offset=0` | list saved runs, newest first |
-| `get /api/runs/{run_id}` | load one run's inputs, metrics, and percentile paths |
-| `delete /api/runs/{run_id}` | permanently delete a saved run |
+| endpoint                          | purpose                                              |
+| :-------------------------------- | :--------------------------------------------------- |
+| `post /api/runs`                  | save a completed simulation, optionally with a name  |
+| `get /api/runs?limit=25&offset=0` | list saved runs, newest first                        |
+| `get /api/runs/{run_id}`          | load one run's inputs, metrics, and percentile paths |
+| `delete /api/runs/{run_id}`       | permanently delete a saved run                       |
 
-The frontend exposes these in the **Saved runs** card beside the distribution results.
+Run names are optional but must be unique (case-insensitive) — saving with a name that already exists returns `400`. Unnamed runs never collide with each other.
+
+The frontend exposes these in the **Saved runs** panel beside the distribution results, which can be expanded into a full search-and-filter modal (filter by model, search by name/ticker) and maximized per-run to see full portfolio, model, and horizon details before opening it.
 
 ---
 
@@ -241,4 +269,4 @@ python -m pytest -v
 
 - **portfolio:** the monte carlo engine is _long-only_, meaning it only applies to investment portfolios that buy and hold assets
 - **disclaimer:** this is built for exploratory scenario testing. it is not actual financial advice.
-- project is in development, it is incomplete
+- project is being actively developed

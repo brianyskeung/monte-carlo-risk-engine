@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_URL } from "../constants/api";
 import type { Allocation, ModelId, SimulationResults } from "../types";
 
 const DEFAULT_MODELS: ModelId[] = ["historical_bootstrap"];
@@ -85,8 +86,7 @@ export default function useSimulation() {
         num_simulations: numSimulations,
       };
 
-      const apiUrl = "http://localhost:8000"; // TODO: Update URL & env
-      const response = await axios.post(`${apiUrl}/api/simulate`, payload);
+      const response = await axios.post(`${API_URL}/api/simulate`, payload);
 
       setResults(response.data.data);
       setLastRunPayload(payload);
@@ -110,8 +110,7 @@ export default function useSimulation() {
     setSaveError(null);
 
     try {
-      const apiUrl = "http://localhost:8000"; // TODO: Update URL & env
-      const response = await axios.post(`${apiUrl}/api/runs`, {
+      const response = await axios.post(`${API_URL}/api/runs`, {
         ...lastRunPayload,
         data: results,
         name: name.trim() || null,

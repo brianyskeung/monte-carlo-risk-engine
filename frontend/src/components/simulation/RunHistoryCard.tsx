@@ -1,13 +1,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Maximize2 } from "lucide-react";
+import { API_URL } from "../../constants/api";
 import type { SavedRun, SavedRunDetail } from "../../types";
 import ScrollArea from "../ui/ScrollArea";
 import RunDetailsModal from "./modals/RunDetailsModal";
 import SavedRunsModal from "./modals/SavedRunsModal";
 import SavedRunListItem from "./SavedRunListItem";
-
-const API_URL = "http://localhost:8000";
 
 interface RunHistoryCardProps {
   onOpen: (run: SavedRunDetail) => void;
