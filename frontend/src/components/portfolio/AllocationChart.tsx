@@ -1,6 +1,7 @@
 import { PieChart, Pie, Tooltip, ResponsiveContainer } from "recharts";
 import PortfolioTooltip from "./PortfolioTooltip";
 import type { Allocation, AssetInfoMap } from "../../types";
+import { formatAssetType } from "../../utils/formatting";
 
 const baseColors = [
   "#E7F9F1",
@@ -37,7 +38,9 @@ export default function AllocationPieChart({
         ...allocation,
         fill: baseColors[colorIndex],
         assetName: asset?.short_name || allocation.ticker || "Unknown security",
-        assetType: asset?.quote_type || "Unknown type",
+        assetType: asset?.quote_type
+          ? formatAssetType(asset.quote_type)
+          : "Unknown type",
         assetSector: asset?.sector || undefined,
       };
     });

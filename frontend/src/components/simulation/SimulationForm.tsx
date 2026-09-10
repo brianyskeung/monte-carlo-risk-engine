@@ -111,7 +111,7 @@ export default function SimulationForm({
         <button
           type="submit"
           disabled={isSimulating}
-          className="w-full mt-2 bg-mint text-white font-medium text-sm py-2.5 rounded-lg hover:bg-mint/90 transition-colors disabled:opacity-50"
+          className="w-full mt-6 bg-mint text-white font-medium text-sm py-2.5 rounded-lg hover:bg-mint/90 transition-colors disabled:opacity-50"
         >
           {isSimulating ? "Running Engine..." : "Run Simulation"}
         </button>

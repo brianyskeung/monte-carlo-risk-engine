@@ -1,6 +1,8 @@
 import type { Allocation, AssetInfoMap } from "../../types";
 import PortfolioEditor from "./PortfolioEditor";
 import { useState } from "react";
+import { formatAssetType } from "../../utils/formatting";
+import ScrollArea from "../ui/ScrollArea";
 
 type PortfolioSummaryProps = {
   allocations: Allocation[];
@@ -52,16 +54,16 @@ export default function PortfolioSummary({
         />
       )}
 
-      <div className="mt-2 space-y-2">
+      <ScrollArea className="mt-2 max-h-32 space-y-2">
         {Object.entries(exposureByType).map(([type, weight]) => (
           <div key={type} className="flex justify-between text-sm">
-            <span className="text-text-muted">{type}</span>
+            <span className="text-text-muted">{formatAssetType(type)}</span>
             <span className="font-semibold text-stone-500">
               {weight.toFixed(1)}%
             </span>
           </div>
         ))}
-      </div>
+      </ScrollArea>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import type { SavedRun, SavedRunDetail } from "../../types";
+import ScrollArea from "../ui/ScrollArea";
 
 const API_URL = "http://localhost:8000";
 
@@ -77,7 +78,7 @@ export default function RunHistoryCard({
             Completed simulations will appear here.
           </p>
         ) : (
-          <div className="flex-1 min-h-0 space-y-3 overflow-y-auto pr-2 [&::- webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-stone-200 hover:[&::-webkit-scrollbar-thumb]:bg-stone-300">
+          <ScrollArea className="flex-1 min-h-0 space-y-3">
             {runs.map((run) => (
               <article
                 key={run.id}
@@ -110,7 +111,7 @@ export default function RunHistoryCard({
                 </button>
               </article>
             ))}
-          </div>
+          </ScrollArea>
         )}
       </aside>
     </div>

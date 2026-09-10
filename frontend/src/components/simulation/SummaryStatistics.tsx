@@ -1,5 +1,5 @@
 import type { SimulationResults } from "../../types";
-import AdvancedStatItem from "./models/AdvancedStatItem";
+import StatTile from "./models/StatTile";
 import {
   formatPercent,
   formatLossPercent,
@@ -15,9 +15,12 @@ export default function SummaryStatistics({ results }: SummaryStatisticsProps) {
 
   if (models.length === 0) {
     return (
-      <span className="text-sm text-text-muted normal-case">
-        Run a simulation to generate summary statistics
-      </span>
+      <div className="grid grid-cols-2 gap-3 normal-case">
+        <StatTile label="Highest Avg. Return" model="--" value="--" />
+        <StatTile label="Lowest Avg. Return" model="--" value="--" />
+        <StatTile label="Lowest VaR 95%" model="--" value="--" />
+        <StatTile label="Lowest CVaR 95%" model="--" value="--" />
+      </div>
     );
   }
 
@@ -35,24 +38,28 @@ export default function SummaryStatistics({ results }: SummaryStatisticsProps) {
   );
 
   return (
-    <div className="normal-case">
-      <AdvancedStatItem
-        label={`Highest Avg. Return (${highest.display_name})`}
+    <div className="grid grid-cols-2 gap-3 normal-case">
+      <StatTile
+        label="Highest Avg. Return"
+        model={highest.display_name}
         value={formatPercent(highest.summary.expected_return)}
         tone={getReturnTone(highest.summary.expected_return)}
       />
-      <AdvancedStatItem
-        label={`Lowest Avg. Return (${lowest.display_name})`}
+      <StatTile
+        label="Lowest Avg. Return"
+        model={lowest.display_name}
         value={formatPercent(lowest.summary.expected_return)}
         tone={getReturnTone(lowest.summary.expected_return)}
       />
-      <AdvancedStatItem
-        label={`Lowest VaR 95% (${lowestVar.display_name})`}
+      <StatTile
+        label="Lowest VaR 95%"
+        model={lowestVar.display_name}
         value={formatLossPercent(lowestVar.summary.loss_var_95)}
         tone={getReturnTone(-lowestVar.summary.loss_var_95)}
       />
-      <AdvancedStatItem
-        label={`Lowest CVaR 95% (${lowestCvar.display_name})`}
+      <StatTile
+        label="Lowest CVaR 95%"
+        model={lowestCvar.display_name}
         value={formatLossPercent(lowestCvar.summary.loss_cvar_95)}
         tone={getReturnTone(-lowestCvar.summary.loss_cvar_95)}
       />

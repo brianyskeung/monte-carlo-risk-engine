@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #F7F8FA;
-  --color-surface: #FFFFFF;
-  --color-surface-raised: #F0F1F3;
-  --color-text-primary: #14171D;
-  --color-text-muted: #6B7280;
+  --color-bg: #f7f8fa;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f0f1f3;
+  --color-text-primary: #14171d;
+  --color-text-muted: #6b7280;
   --color-mint: #059669;
-  --color-coral: #E11D48;
-  --color-line-blue: #3B82F6;
+  --color-coral: #e11d48;
+  --color-line-blue: #3b82f6;
 
   --font-display: "Inter Tight", sans-serif;
   --font-body: "Inter", sans-serif;
@@ -19,4 +19,44 @@ body {
   background: var(--color-bg);
   color: var(--color-text-primary);
   font-family: var(--font-body);
+}
+
+.scroll-area {
+  padding-right: 15px;
+  scrollbar-gutter: stable;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.15s ease;
+}
+
+.scroll-area:hover {
+  scrollbar-color: color-mix(in srgb, var(--color-text-muted) 40%, transparent)
+    transparent;
+}
+
+.scroll-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scroll-area::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  border-radius: 9999px;
+  transition: background-color 0.15s ease;
+}
+
+.scroll-area:hover::-webkit-scrollbar-thumb {
+  background-color: color-mix(
+    in srgb,
+    var(--color-text-muted) 40%,
+    transparent
+  );
+}
+
+.scroll-area::-webkit-scrollbar-thumb:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--color-text-muted) 65%,
+    transparent
+  );
 }

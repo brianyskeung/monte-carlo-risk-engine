@@ -60,9 +60,6 @@ def get_asset_info(tickers: list[str]) -> dict[str, dict]:
             info = yf.Ticker(ticker).info
             quote_type = info.get("quoteType")
 
-            if quote_type == "EQUITY":
-                quote_type = "STOCK"
-
             assets[ticker] = {
                 "symbol": ticker,
                 "short_name": info.get("shortName"),
