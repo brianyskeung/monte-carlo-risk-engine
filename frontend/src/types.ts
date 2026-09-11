@@ -7,7 +7,8 @@ export type ModelId =
   | "historical_bootstrap"
   | "geometric_brownian_motion"
   | "block_bootstrap"
-  | "jump_diffusion";
+  | "jump_diffusion"
+  | "heston";
 
 export interface PathData {
   day: number;

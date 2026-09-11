@@ -2,14 +2,14 @@
 
 > a full-stack portfolio simulator and historical bootstrapping engine.
 
-an interactive risk analytics tool designed to model multi-asset portfolio trajectories under historical market distributions. runs correlated monte carlo scenario simulations across four selectable models to quantify tail risk, drawdowns, and distribution percentiles.
+an interactive risk analytics tool designed to model multi-asset portfolio trajectories under historical market distributions. runs correlated monte carlo scenario simulations across five selectable models to quantify tail risk, drawdowns, and distribution percentiles.
 
 ---
 
 ### what it does
 
 - **custom allocations:** pick your tickers and assign portfolio weights.
-- **simulation models:** compare historical bootstrap, geometric Brownian motion, block bootstrap, and Merton jump diffusion side by side — pick any combination to run per simulation.
+- **simulation models:** compare historical bootstrap, geometric Brownian motion, block bootstrap, Merton jump diffusion, and Heston stochastic volatility side by side — pick any combination to run per simulation.
 - **correlated resampling:** the bootstrap-based models resample historical daily returns across all assets on the exact same days (or same contiguous blocks), keeping real-world correlation between assets intact.
 - **risk metrics:** calculates expected terminal value, 95% value-at-risk (var), and conditional var (cvar / expected shortfall) per model.
 - **percentile paths:** generates p5 to p95 fan-charts so you can visualize the spread of best and worst-case scenarios, with a per-chart and a maximize-all fullscreen view.
@@ -26,7 +26,7 @@ an interactive risk analytics tool designed to model multi-asset portfolio traje
 | :----------- | :---------------------------------------------------------------------------------------------------- |
 | **backend**  | python 3.11+, fastapi, pydantic, numpy, pandas, yfinance, sqlite (libSQL/Turso in production), pytest |
 | **frontend** | react 19, typescript, vite, tailwind css, recharts, axios                                             |
-| **models**   | historical bootstrap, geometric Brownian motion, block bootstrap, Merton jump diffusion               |
+| **models**   | historical bootstrap, geometric Brownian motion, block bootstrap, Merton jump diffusion, Heston stochastic volatility |
 
 #### available models
 
@@ -36,6 +36,7 @@ an interactive risk analytics tool designed to model multi-asset portfolio traje
 | `geometric_brownian_motion` | Geometric Brownian Motion | fits a multivariate normal distribution to historical log returns                                   |
 | `block_bootstrap`           | Block Bootstrap           | resamples contiguous multi-day blocks instead of single days, preserving volatility clustering      |
 | `jump_diffusion`            | Jump Diffusion (Merton)   | GBM diffusion plus a per-asset compound-Poisson jump component, calibrated from historical outliers |
+| `heston`                    | Heston                    | mean-reverting stochastic volatility (CIR variance process) per asset, with a calibrated leverage correlation between price and volatility shocks and cross-asset price correlation from historical returns |
 
 ---
 
@@ -58,7 +59,8 @@ monte-carlo-risk-engine/
 │   │   ├── bootstrap.py        # historical bootstrap logic
 │   │   ├── gbm.py               # geometric Brownian motion logic
 │   │   ├── block_bootstrap.py  # multi-day block resampling logic
-│   │   └── jump_diffusion.py   # Merton jump-diffusion logic
+│   │   ├── jump_diffusion.py   # Merton jump-diffusion logic
+│   │   └── heston.py           # Heston stochastic-volatility logic
 │   └── tests/               # pytest suite
 └── frontend/
     ├── src/
@@ -99,7 +101,7 @@ The frontend starts with an empty portfolio. Add at least one asset before runni
 }
 ```
 
-`models` accepts any combination of `historical_bootstrap`, `geometric_brownian_motion`, `block_bootstrap`, and `jump_diffusion`; if omitted from the request, the API defaults to the first two. The frontend always sends this field explicitly and only pre-selects `historical_bootstrap` by default. `forecasted_days` must be greater than 0 and at most `7560`; `num_simulations` must be greater than 0 and at most `100000`.
+`models` accepts any combination of `historical_bootstrap`, `geometric_brownian_motion`, `block_bootstrap`, `jump_diffusion`, and `heston`; if omitted from the request, the API defaults to the first two. The frontend always sends this field explicitly and only pre-selects `historical_bootstrap` by default. `forecasted_days` must be greater than 0 and at most `7560`; `num_simulations` must be greater than 0 and at most `100000`.
 
 - **response body**
 

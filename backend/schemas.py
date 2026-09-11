@@ -14,6 +14,7 @@ class SimulationRequest(BaseModel):
         "geometric_brownian_motion",
         "block_bootstrap",
         "jump_diffusion",
+        "heston",
     ]] = Field(
         default_factory=lambda: [
             "historical_bootstrap",

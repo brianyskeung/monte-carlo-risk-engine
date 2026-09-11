@@ -62,7 +62,9 @@ export default function PortfolioDetails({
             Sector investment
           </p>
           <div className="scroll-area mt-3 min-h-0 flex-1 space-y-2 overflow-y-auto">
-            {Object.entries(sectorDetails).map(([sector, details]) => (
+            {Object.entries(sectorDetails)
+              .sort(([, a], [, b]) => b.weight - a.weight)
+              .map(([sector, details]) => (
               <div
                 key={sector}
                 className="rounded-lg bg-white/60 px-3 py-2.5 text-sm"

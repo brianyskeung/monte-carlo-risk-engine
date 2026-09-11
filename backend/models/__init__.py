@@ -3,6 +3,7 @@ from models.bootstrap import HistoricalBootstrapModel
 from models.gbm import GeometricBrownianMotionModel
 from models.block_bootstrap import BlockBootstrapModel
 from models.jump_diffusion import JumpDiffusionModel
+from models.heston import HestonModel
 
 __all__ = [
 	"BaseSimulationModel",
@@ -10,4 +11,5 @@ __all__ = [
 	"GeometricBrownianMotionModel",
 	"BlockBootstrapModel",
 	"JumpDiffusionModel",
+	"HestonModel",
 ]

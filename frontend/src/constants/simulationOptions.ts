@@ -31,6 +31,12 @@ export const MODEL_OPTIONS: ModelOption[] = [
     description:
       "Extends standard diffusion models by incorporating discrete, random jumps to account for extreme market shocks.",
   },
+  {
+    id: "heston",
+    name: "Heston",
+    description:
+      "Simulates price paths with a mean-reverting stochastic volatility process, capturing volatility clustering and the leverage effect.",
+  },
 ];
 
 export function getModelLabel(modelId: ModelId): string {

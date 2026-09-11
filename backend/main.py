@@ -9,6 +9,7 @@ from models import (
     GeometricBrownianMotionModel,
     BlockBootstrapModel,
     JumpDiffusionModel,
+    HestonModel,
 )
 from metrics import calculate_portfolio_metrics
 from database import delete_run, get_run, list_runs, save_run
@@ -73,6 +74,10 @@ def run_simulation(request: SimulationRequest):
         "jump_diffusion": (
             JumpDiffusionModel,
             "Jump Diffusion (Merton)",
+        ),
+        "heston": (
+            HestonModel,
+            "Heston",
         ),
     }
     results = {"models": []}
