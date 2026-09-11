@@ -10,27 +10,35 @@ export const MODEL_OPTIONS: ModelOption[] = [
   {
     id: "historical_bootstrap",
     name: "Historical Bootstrap",
-    description: "Resamples observed market return patterns.",
+    description:
+      "Generates simulated price paths by randomly resampling individual historical returns with replacement.",
   },
   {
     id: "geometric_brownian_motion",
     name: "Geometric Brownian Motion",
-    description: "Fits a statistical distribution to historical returns.",
+    description:
+      "Models price paths as a continuous-time stochastic process assuming constant drift and volatility.",
   },
   {
     id: "block_bootstrap",
     name: "Block Bootstrap",
-    description: "Resamples multi-day chunks to preserve volatility clustering.",
+    description:
+      "Resamples sequential blocks of historical returns to preserve autocorrelation and volatility clustering.",
   },
   {
     id: "jump_diffusion",
     name: "Jump Diffusion (Merton)",
-    description: "Adds sudden crash/spike risk on top of a diffusion model.",
+    description:
+      "Extends standard diffusion models by incorporating discrete, random jumps to account for extreme market shocks.",
   },
 ];
 
 export function getModelLabel(modelId: ModelId): string {
   return MODEL_OPTIONS.find((model) => model.id === modelId)?.name ?? modelId;
+}
+
+export function getModelDescription(modelId: ModelId): string {
+  return MODEL_OPTIONS.find((model) => model.id === modelId)?.description ?? "";
 }
 
 export const LOOKBACK_LABELS: Record<string, string> = {
