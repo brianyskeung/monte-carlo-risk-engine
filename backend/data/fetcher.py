@@ -50,6 +50,29 @@ def get_historical_returns(tickers: list[str], period: str = "5y") -> pd.DataFra
     return daily_returns
 
 
+def search_tickers(query: str, limit: int = 8) -> list[dict]:
+    """
+    Looks up the closest matching tickers for a partial query string, for
+    use in ticker-entry autocomplete.
+    """
+    query = query.strip()
+    if not query:
+        return []
+
+    results = yf.Search(query, max_results=limit).quotes
+
+    return [
+        {
+            "symbol": result.get("symbol"),
+            "name": result.get("shortname") or result.get("longname"),
+            "exchange": result.get("exchDisp") or result.get("exchange"),
+            "quote_type": result.get("quoteType") or "UNKNOWN",
+        }
+        for result in results
+        if result.get("symbol")
+    ]
+
+
 def get_asset_info(tickers: list[str]) -> dict[str, dict]:
     assets = {}
 

@@ -9,7 +9,7 @@ import json
 import os
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any, Generator
 
 import libsql
 
@@ -40,7 +40,7 @@ def _rows_to_dicts(cursor: Any) -> list[dict[str, Any]]:
 
 
 @contextmanager
-def get_connection() -> Iterator[Any]:
+def get_connection() -> Generator[Any, None, None]:
     connection = _connect()
     connection.execute("PRAGMA foreign_keys = ON")
     try:
@@ -161,19 +161,33 @@ def save_run(request: Any, results: dict[str, Any], name: str | None = None) -> 
                     model["simulation_time_ms"],
                 ),
             )
-            connection.executemany(
-                """
-                INSERT INTO run_percentile_paths
-                    (run_model_id, day, p5, p25, p50, p75, p95, mean)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                """,
-                [
-                    (model_cursor.lastrowid, point["day"], point["p5"], point["p25"],
-                     point["p50"], point["p75"], point["p95"], point["mean"])
-                    for point in model["percentile_paths"]
-                ],
-            )
+            _insert_percentile_paths(connection, model_cursor.lastrowid, model["percentile_paths"])
     return int(run_id)
+
+
+_PERCENTILE_PATH_CHUNK_SIZE = 900
+
+
+def _insert_percentile_paths(connection: Any, run_model_id: int, points: list[dict[str, Any]]) -> None:
+    for offset in range(0, len(points), _PERCENTILE_PATH_CHUNK_SIZE):
+        chunk = points[offset:offset + _PERCENTILE_PATH_CHUNK_SIZE]
+        placeholders = ", ".join(["(?, ?, ?, ?, ?, ?, ?, ?)"] * len(chunk))
+        params = [
+            value
+            for point in chunk
+            for value in (
+                run_model_id, point["day"], point["p5"], point["p25"],
+                point["p50"], point["p75"], point["p95"], point["mean"],
+            )
+        ]
+        connection.execute(
+            f"""
+            INSERT INTO run_percentile_paths
+                (run_model_id, day, p5, p25, p50, p75, p95, mean)
+            VALUES {placeholders}
+            """,
+            params,
+        )
 
 
 def list_runs(limit: int, offset: int) -> dict[str, Any]:

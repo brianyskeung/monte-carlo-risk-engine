@@ -66,3 +66,10 @@ export interface AssetInfo {
 }
 
 export type AssetInfoMap = Record<string, AssetInfo>;
+
+export interface TickerMatch {
+  symbol: string;
+  name: string | null;
+  exchange: string | null;
+  quote_type: string;
+}

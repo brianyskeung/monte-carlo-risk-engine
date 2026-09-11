@@ -4,6 +4,11 @@ interface FitToHeightProps {
   children: ReactNode;
 }
 
+// Matches the `lg` breakpoint where the dashboard grid switches from a
+// single stacked column to the fixed-height multi-column layout. Below it,
+// content stacks and scrolls naturally instead of being zoom-scaled to fit.
+const COMPACT_MEDIA_QUERY = "(max-width: 1023px)";
+
 export default function FitToHeight({ children }: FitToHeightProps) {
   const outerRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
@@ -13,7 +18,19 @@ export default function FitToHeight({ children }: FitToHeightProps) {
     const inner = innerRef.current;
     if (!outer || !inner) return;
 
+    const mediaQuery = window.matchMedia(COMPACT_MEDIA_QUERY);
+
     const recompute = () => {
+      if (mediaQuery.matches) {
+        inner.style.zoom = "1";
+        outer.classList.add("overflow-y-auto");
+        outer.classList.remove("overflow-hidden");
+        return;
+      }
+
+      outer.classList.add("overflow-hidden");
+      outer.classList.remove("overflow-y-auto");
+
       inner.style.zoom = "1";
       const naturalHeight = inner.scrollHeight;
       const availableHeight = outer.clientHeight;
@@ -37,11 +54,13 @@ export default function FitToHeight({ children }: FitToHeightProps) {
     });
 
     window.addEventListener("resize", recompute);
+    mediaQuery.addEventListener("change", recompute);
 
     return () => {
       resizeObserver.disconnect();
       mutationObserver.disconnect();
       window.removeEventListener("resize", recompute);
+      mediaQuery.removeEventListener("change", recompute);
     };
   }, []);
 

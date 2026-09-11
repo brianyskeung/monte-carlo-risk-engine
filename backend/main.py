@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from schemas import SaveRunRequest, SimulationRequest
-from data import get_asset_info, get_historical_returns
+from data import get_asset_info, get_historical_returns, search_tickers
 from engine import SimulationEngine
 from models import (
     HistoricalBootstrapModel,
@@ -37,6 +37,13 @@ app.add_middleware(
 def get_assets_endpoint(tickers: list[str] = Query(...)):
     return {
         "assets": get_asset_info(tickers),
+    }
+
+
+@app.get("/api/tickers/search")
+def search_tickers_endpoint(q: str = Query(..., min_length=1), limit: int = Query(8, ge=1, le=20)):
+    return {
+        "matches": search_tickers(q, limit=limit),
     }
 
 

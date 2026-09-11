@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import type { Allocation } from "../../types";
+import useTickerSearch from "../../hooks/useTickerSearch";
 
 interface AllocationRowProps {
   allocation: Allocation;
@@ -21,16 +23,61 @@ export default function AllocationRow({
       ? Math.min(100, (allocation.weight / maximumWeight) * 100)
       : 0;
 
+  const [isFocused, setIsFocused] = useState(false);
+  const matches = useTickerSearch(isFocused ? allocation.ticker : "");
+  const showMatches = isFocused && matches.length > 0;
+
+  const selectMatch = (symbol: string) => {
+    onTickerChange(symbol.toUpperCase());
+    setIsFocused(false);
+  };
+
   return (
     <div className="grid grid-cols-allocation-row items-center gap-1 rounded-xl bg-white/70 p-1 shadow-sm ring-1 ring-black/5">
-      <input
-        type="text"
-        value={allocation.ticker}
-        onChange={(event) => onTickerChange(event.target.value.toUpperCase())}
-        placeholder="Ticker"
-        className="min-w-0 rounded-lg border-0 bg-transparent px-2 py-1.5 text-sm outline-none placeholder:text-text-muted/60 focus:ring-2 focus:ring-mint/20"
-        required
-      />
+      <div className="relative min-w-0">
+        <input
+          type="text"
+          value={allocation.ticker}
+          onChange={(event) =>
+            onTickerChange(event.target.value.toUpperCase())
+          }
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setTimeout(() => setIsFocused(false), 150)}
+          placeholder="Ticker"
+          autoComplete="off"
+          className="min-w-0 w-full rounded-lg border-0 bg-transparent px-2 py-1.5 text-sm outline-none placeholder:text-text-muted/60 focus:ring-2 focus:ring-mint/20"
+          required
+        />
+
+        {showMatches && (
+          <ul className="scroll-area absolute top-full left-0 z-10 mt-1 max-h-56 w-56 overflow-y-auto rounded-lg bg-white py-1 shadow-lg ring-1 ring-black/10">
+            {matches.map((match) => (
+              <li key={match.symbol}>
+                <button
+                  type="button"
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={() => selectMatch(match.symbol)}
+                  className="flex w-full cursor-pointer items-center justify-between gap-2 px-2.5 py-1.5 text-left text-sm hover:bg-emerald-50"
+                >
+                  <span className="min-w-0 truncate">
+                    <span className="font-medium">{match.symbol}</span>
+                    {match.name && (
+                      <span className="ml-1.5 truncate text-xs text-text-muted/70">
+                        {match.name}
+                      </span>
+                    )}
+                  </span>
+                  {match.exchange && (
+                    <span className="shrink-0 text-xs text-text-muted/50">
+                      {match.exchange}
+                    </span>
+                  )}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
       <input
         type="range"

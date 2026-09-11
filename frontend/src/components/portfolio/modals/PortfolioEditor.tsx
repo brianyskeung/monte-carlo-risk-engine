@@ -68,7 +68,7 @@ export default function PortfolioEditor({
         role="dialog"
         aria-modal="true"
         aria-labelledby="portfolio-editor-title"
-        className="relative flex h-modal-panel max-h-modal-panel w-full lg:w-2/3 max-w-5xl flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-5 shadow-2xl shadow-slate-900/15 backdrop-blur-2xl sm:p-8"
+        className="relative flex h-modal-panel max-h-modal-panel w-full lg:w-2/3 max-w-5xl flex-col overflow-y-auto rounded-3xl border border-white/70 bg-white/80 p-5 shadow-2xl shadow-slate-900/15 backdrop-blur-2xl sm:p-8 lg:overflow-hidden"
       >
         <ModalHeader
           title="Portfolio Allocation"
@@ -78,7 +78,7 @@ export default function PortfolioEditor({
           titleClassName="font-display text-2xl font-semibold tracking-tight text-mint"
         />
 
-        <div className="grid min-h-0 flex-1 gap-5 pb-1 lg:grid-cols-editor">
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-5 pb-1 lg:grid-cols-editor">
           <Allocator
             allocations={draftAllocations}
             setAllocations={setDraftAllocations}

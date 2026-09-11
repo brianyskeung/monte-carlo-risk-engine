@@ -83,7 +83,7 @@ export default function SimulationChart({
     <div
       className={
         isFullscreen
-          ? "fixed inset-0 z-50 bg-[#fafaf9] p-8 flex flex-col"
+          ? "fixed inset-0 z-50 bg-[#fafaf9] p-4 sm:p-8 flex flex-col"
           : "relative w-full h-80 bg-white p-6 rounded-xl border border-stone-100 shadow-sm transition-all duration-300"
       }
     >

@@ -223,6 +223,44 @@ Accept: application/json
 
 ---
 
+#### `get /api/tickers/search`
+
+returns the closest matching tickers for a partial query, for autocomplete while allocating a ticker to the portfolio.
+
+- **query parameters**
+
+| parameter | type     | required | description                                |
+| :-------- | :------- | :------- | :------------------------------------------ |
+| `q`       | `string` | yes      | partial ticker or company name to match on |
+| `limit`   | `int`    | no       | max results to return, 1-20 (default 8)    |
+
+- **example request**
+
+```http
+GET /api/tickers/search?q=appl&limit=5 HTTP/1.1
+Host: localhost:8000
+Accept: application/json
+```
+
+- **response body**
+
+```json
+{
+  "matches": [
+    {
+      "symbol": "AAPL",
+      "name": "Apple Inc.",
+      "exchange": "NASDAQ",
+      "quote_type": "EQUITY"
+    }
+  ]
+}
+```
+
+The frontend calls this endpoint (debounced) as you type into a ticker field in the portfolio allocator, showing a dropdown of the closest matches to pick from.
+
+---
+
 ### getting started
 
 #### backend setup

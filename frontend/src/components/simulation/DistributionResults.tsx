@@ -62,7 +62,7 @@ export default function DistributionResults({
       {results && results.models.length > 0 ? (
         <ScrollArea className="h-96">
           <div
-            className={`grid gap-6 ${results.models.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}
+            className={`grid gap-6 ${results.models.length > 1 ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1"}`}
           >
             {results.models.map((model) => (
               <ModelResultPanel key={model.model_id} model={model} />
