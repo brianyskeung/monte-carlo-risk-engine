@@ -40,20 +40,18 @@ export default function Simulate() {
   };
 
   return (
-    <div className="max-w-none space-y-6">
-      <div>
-        <h2 className="text-2xl font-display font-semibold text-text-primary">
+    <div className="max-w-none space-y-4">
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <h2 className="text-xl font-display font-semibold tracking-tight text-text-primary">
           Monte Carlo Simulation
         </h2>
-        <div className="mt-1 flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm text-text-muted">
-            Model potential portfolio outcomes through repeated random sampling
-            of historical market volatility.
-          </p>
-        </div>
+        <p className="text-sm text-text-muted">
+          Model potential portfolio outcomes through repeated random sampling
+          of historical market volatility.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-simulate">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-simulate">
         <div className="flex flex-col min-w-0">
           <SimulationForm
             className="flex-1"
@@ -74,7 +72,7 @@ export default function Simulate() {
           />
         </div>
 
-        <div className="flex flex-col space-y-6 min-w-0">
+        <div className="flex flex-col space-y-4 min-w-0">
           <DistributionResults
             results={savedRun?.data ?? results}
             selectedModels={selectedModels}
@@ -86,13 +84,7 @@ export default function Simulate() {
             saveError={saveError}
           />
 
-          <Card
-            title=""
-            className="flex-1 flex flex-col text-sm font-semibold text-stone-800 uppercase tracking-wider"
-          >
-            <div className="flex justify-between items-center text-sm font-medium text-text-muted mb-4">
-              <h3>Summary Statistics</h3>
-            </div>
+          <Card title="Best Across Models" className="flex-1 flex flex-col">
             <SummaryStatistics results={savedRun?.data ?? results} />
           </Card>
         </div>

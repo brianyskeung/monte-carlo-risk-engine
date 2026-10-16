@@ -3,10 +3,10 @@ export function formatDurationMs(ms: number) {
   return `${ms.toFixed(2)} ms`;
 }
 
-export function formatPercent(value: number) {
+export function formatPercent(value: number, decimals = 2) {
   const percent = value * 100;
   const sign = percent > 0 ? "+" : "";
-  return `${sign}${percent.toFixed(2)}%`;
+  return `${sign}${percent.toFixed(decimals)}%`;
 }
 
 // loss_var_95 / loss_cvar_95 are stored as a positive loss magnitude;

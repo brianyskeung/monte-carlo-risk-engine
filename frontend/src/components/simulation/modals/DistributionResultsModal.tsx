@@ -47,10 +47,14 @@ export default function DistributionResultsModal({
 
         <ScrollArea className="min-h-0 flex-1 pr-1">
           <div
-            className={`grid gap-6 normal-case ${results.models.length > 1 ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1"}`}
+            className={`grid gap-4 normal-case ${results.models.length > 1 ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1"}`}
           >
             {results.models.map((model) => (
-              <ModelResultPanel key={model.model_id} model={model} />
+              <ModelResultPanel
+                key={model.model_id}
+                model={model}
+                chartHeightClassName="h-80"
+              />
             ))}
           </div>
         </ScrollArea>

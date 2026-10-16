@@ -38,22 +38,33 @@ export default function AllocationPieChart({
 
   return (
     <div>
-      <ResponsiveContainer width="100%" height={240}>
-        <PieChart>
-          <Pie
-            data={chartData}
-            dataKey="weight"
-            nameKey="ticker"
-            innerRadius={60}
-            outerRadius={90}
-            paddingAngle={2}
-          />
-          <Tooltip content={<PortfolioTooltip assets={assets} />} />
-        </PieChart>
-      </ResponsiveContainer>
+      <div className="relative">
+        <ResponsiveContainer width="100%" height={176}>
+          <PieChart>
+            <Pie
+              data={chartData}
+              dataKey="weight"
+              nameKey="ticker"
+              innerRadius={56}
+              outerRadius={80}
+              paddingAngle={2}
+              stroke="none"
+            />
+            <Tooltip content={<PortfolioTooltip assets={assets} />} />
+          </PieChart>
+        </ResponsiveContainer>
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+          <span className="font-display text-2xl font-semibold tabular-nums text-text-primary">
+            {chartData.length}
+          </span>
+          <span className="text-3xs font-medium uppercase tracking-label-sm text-text-muted">
+            {chartData.length === 1 ? "Asset" : "Assets"}
+          </span>
+        </div>
+      </div>
 
       {showLegend && chartData.length > 0 && (
-        <ul className="mt-3 space-y-1.5 text-sm">
+        <ul className="scroll-area mt-3 max-h-28 space-y-1.5 overflow-y-auto text-sm -mr-[15px]">
           {chartData.map((item) => (
             <li
               key={item.ticker}

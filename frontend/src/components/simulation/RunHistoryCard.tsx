@@ -59,9 +59,9 @@ export default function RunHistoryCard({
 
   return (
     <div className="relative h-full w-full">
-      <aside className="absolute inset-0 flex h-full w-full flex-col rounded-2xl bg-surface p-5">
+      <aside className="absolute inset-0 flex h-full w-full flex-col rounded-2xl border border-black/5 bg-surface p-5 shadow-sm shadow-black/2">
         <div className="mb-4 flex shrink-0 items-center justify-between">
-          <h3 className="uppercase tracking-wider text-sm font-medium text-text-muted">
+          <h3 className="text-xs font-semibold uppercase tracking-label text-text-muted">
             Saved runs
           </h3>
           <button
@@ -84,7 +84,7 @@ export default function RunHistoryCard({
             Completed simulations will appear here.
           </p>
         ) : (
-          <ScrollArea className="flex-1 min-h-0 space-y-3">
+          <ScrollArea className="-mr-[15px] flex-1 min-h-0 space-y-2">
             {runs.map((run) => (
               <SavedRunListItem
                 key={run.id}

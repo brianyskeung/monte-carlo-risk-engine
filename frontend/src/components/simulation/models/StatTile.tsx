@@ -18,9 +18,11 @@ export default function StatTile({
   };
 
   return (
-    <div className="rounded-xl border border-stone-200/70 bg-bg/60 px-4 py-4">
-      <p className="text-xs font-medium text-text-muted">{label}</p>
-      <p className={`mt-2 text-2xl font-semibold ${toneClasses[tone]}`}>
+    <div className="min-w-0 rounded-xl border border-stone-200/70 bg-bg/60 px-4 py-3">
+      <p className="truncate text-2xs font-medium text-text-muted">{label}</p>
+      <p
+        className={`mt-1 text-xl font-semibold tabular-nums ${toneClasses[tone]}`}
+      >
         {value}
       </p>
       <p className="mt-1 truncate text-xs text-text-muted">{model}</p>

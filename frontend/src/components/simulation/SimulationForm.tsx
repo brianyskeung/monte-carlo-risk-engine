@@ -46,7 +46,7 @@ export default function SimulationForm({
           <AllocationPieChart
             allocations={allocations}
             assets={assets}
-            showLegend={false}
+            showLegend
           />
 
           <PortfolioSummary

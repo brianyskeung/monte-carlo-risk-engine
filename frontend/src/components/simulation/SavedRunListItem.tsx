@@ -19,7 +19,7 @@ export default function SavedRunListItem({
   onDelete,
 }: SavedRunListItemProps) {
   return (
-    <article className="group relative flex flex-col rounded-xl border border-black/5 bg-white p-3 shadow-sm transition-all hover:border-black/15 hover:shadow-md">
+    <article className="group relative flex flex-col rounded-xl border border-black/5 bg-bg/60 p-3 transition-all hover:border-mint/30 hover:bg-white hover:shadow-sm">
       <button
         className="absolute right-3 top-3 cursor-pointer rounded-md p-1 text-text-muted opacity-0 transition-opacity hover:text-mint focus:opacity-100 focus:outline-none group-hover:opacity-100"
         onClick={(e) => {
@@ -36,7 +36,7 @@ export default function SavedRunListItem({
         className="w-full cursor-pointer pr-6 text-left focus:outline-none"
         onClick={onOpen}
       >
-        <p className="truncate font-medium text-text-primary transition-colors group-hover:text-mint">
+        <p className="truncate text-sm font-medium text-text-primary transition-colors group-hover:text-mint">
           {run.name || run.tickers.join(" · ")}
         </p>
         {run.name && (
@@ -44,10 +44,10 @@ export default function SavedRunListItem({
             {run.tickers.join(" · ")}
           </p>
         )}
-        <p className="mt-1.5 text-xs text-text-muted">
+        <p className="mt-1.5 text-2xs text-text-muted">
           {formatDate(run.created_at)}
         </p>
-        <p className="mt-1 text-xs font-medium text-text-muted">
+        <p className="mt-0.5 text-2xs font-medium tabular-nums text-text-muted">
           {run.num_simulations.toLocaleString()} paths ·{" "}
           {run.forecasted_days} days
         </p>

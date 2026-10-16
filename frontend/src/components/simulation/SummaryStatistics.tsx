@@ -15,7 +15,7 @@ export default function SummaryStatistics({ results }: SummaryStatisticsProps) {
 
   if (models.length === 0) {
     return (
-      <div className="grid grid-cols-2 gap-3 normal-case">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <StatTile label="Highest Avg. Return" model="--" value="--" />
         <StatTile label="Lowest Avg. Return" model="--" value="--" />
         <StatTile label="Lowest VaR 95%" model="--" value="--" />
@@ -38,7 +38,7 @@ export default function SummaryStatistics({ results }: SummaryStatisticsProps) {
   );
 
   return (
-    <div className="grid grid-cols-2 gap-3 normal-case">
+    <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
       <StatTile
         label="Highest Avg. Return"
         model={highest.display_name}

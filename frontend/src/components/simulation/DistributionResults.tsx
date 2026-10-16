@@ -32,10 +32,14 @@ export default function DistributionResults({
   const [isMaximized, setIsMaximized] = useState(false);
 
   return (
-    <Card className="text-sm font-semibold text-stone-800 uppercase tracking-wider">
-      <div className="flex justify-between items-center text-sm font-medium text-text-muted mb-4">
-        <h3>Distribution Paths</h3>
-        <div className="flex items-center gap-3">
+    <Card>
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="text-xs font-semibold uppercase tracking-label text-text-muted">
+            Distribution Paths
+          </h3>
+        </div>
+        <div className="flex items-center gap-2">
           {onSaveRun && results && results.models.length > 0 && (
             <SaveRunButton
               onSaveRun={onSaveRun}
@@ -60,20 +64,26 @@ export default function DistributionResults({
       </div>
 
       {results && results.models.length > 0 ? (
-        <ScrollArea className="h-96">
+        <ScrollArea className="h-[26rem] -mr-[15px]">
           <div
-            className={`grid gap-6 ${results.models.length > 1 ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1"}`}
+            className={`grid gap-4 ${results.models.length > 1 ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1"}`}
           >
             {results.models.map((model) => (
-              <ModelResultPanel key={model.model_id} model={model} />
+              <ModelResultPanel
+                key={model.model_id}
+                model={model}
+                chartHeightClassName={
+                  results.models.length === 1 ? "h-72" : undefined
+                }
+              />
             ))}
           </div>
         </ScrollArea>
       ) : (
-        <div className="h-96 flex flex-col items-center justify-center border-2 border-dashed border-black/5 rounded-xl bg-bg/50">
+        <div className="h-[26rem] flex flex-col items-center justify-center rounded-xl border border-dashed border-black/10 bg-bg/60 px-6 text-center">
           {errorMessage && (
             <div className="mb-5 flex items-start gap-3 bg-red-50 border border-red-100 px-4 py-3 rounded-lg">
-              <div>
+              <div className="text-left">
                 <h3 className="text-sm font-semibold text-red-800 mb-0.5">
                   Simulation Failed
                 </h3>
