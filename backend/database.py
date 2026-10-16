@@ -18,6 +18,7 @@ DEFAULT_DATABASE_PATH = Path(__file__).parent / "data" / "simulation_runs.sqlite
 
 
 def _connect() -> Any:
+    """Opens a connection to Turso when configured, else to the local file."""
     url = os.getenv("TURSO_DATABASE_URL")
     if url:
         return libsql.connect(url, auth_token=os.getenv("TURSO_AUTH_TOKEN"))
@@ -28,6 +29,7 @@ def _connect() -> Any:
 
 
 def _row_to_dict(cursor: Any, row: Any) -> dict[str, Any] | None:
+    """Maps one result row onto its column names."""
     if row is None:
         return None
     columns = [column[0] for column in cursor.description]
@@ -35,12 +37,14 @@ def _row_to_dict(cursor: Any, row: Any) -> dict[str, Any] | None:
 
 
 def _rows_to_dicts(cursor: Any) -> list[dict[str, Any]]:
+    """Maps every remaining result row onto its column names."""
     columns = [column[0] for column in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 
 @contextmanager
 def get_connection() -> Generator[Any, None, None]:
+    """Connection scope that commits on success and rolls back on any error."""
     connection = _connect()
     connection.execute("PRAGMA foreign_keys = ON")
     try:
@@ -57,6 +61,7 @@ _schema_ready = False
 
 
 def initialize_database() -> None:
+    """Creates the schema if needed. Runs at most once per process."""
     global _schema_ready
     if _schema_ready:
         return
@@ -106,6 +111,7 @@ def initialize_database() -> None:
 
 
 def _ensure_name_column(connection: Any) -> None:
+    """Backfills the name column on databases created before it existed."""
     cursor = connection.execute("PRAGMA table_info(simulation_runs)")
     columns = {row[1] for row in cursor.fetchall()}
     if "name" not in columns:
@@ -144,6 +150,7 @@ def save_run(request: Any, results: dict[str, Any], name: str | None = None) -> 
         )
         run_id = cursor.lastrowid
 
+        # one row per model, each with its own percentile path points
         for model in results["models"]:
             summary = model["summary"]
             model_cursor = connection.cursor()
@@ -165,10 +172,13 @@ def save_run(request: Any, results: dict[str, Any], name: str | None = None) -> 
     return int(run_id)
 
 
+# SQLite caps bound parameters per statement, so long paths are inserted in
+# chunks of 900 rows (8 parameters each) rather than one statement per day.
 _PERCENTILE_PATH_CHUNK_SIZE = 900
 
 
 def _insert_percentile_paths(connection: Any, run_model_id: int, points: list[dict[str, Any]]) -> None:
+    """Bulk-inserts the chart points for one model of one run."""
     for offset in range(0, len(points), _PERCENTILE_PATH_CHUNK_SIZE):
         chunk = points[offset:offset + _PERCENTILE_PATH_CHUNK_SIZE]
         placeholders = ", ".join(["(?, ?, ?, ?, ?, ?, ?, ?)"] * len(chunk))
@@ -191,6 +201,7 @@ def _insert_percentile_paths(connection: Any, run_model_id: int, points: list[di
 
 
 def list_runs(limit: int, offset: int) -> dict[str, Any]:
+    """Returns a page of run metadata (no chart data) plus the total count."""
     initialize_database()
     with get_connection() as connection:
         total = connection.execute("SELECT COUNT(*) FROM simulation_runs").fetchone()[0]
@@ -207,6 +218,10 @@ def list_runs(limit: int, offset: int) -> dict[str, Any]:
 
 
 def get_run(run_id: int) -> dict[str, Any] | None:
+    """
+    Rebuilds one stored run into the same shape /api/simulate returns, so the
+    frontend can render it with the live-result components. None if missing.
+    """
     initialize_database()
     with get_connection() as connection:
         cursor = connection.execute("SELECT * FROM simulation_runs WHERE id = ?", (run_id,))
@@ -239,6 +254,7 @@ def get_run(run_id: int) -> dict[str, Any] | None:
 
 
 def delete_run(run_id: int) -> bool:
+    """Deletes a run (models and paths cascade). False if no such run."""
     initialize_database()
     with get_connection() as connection:
         connection.execute("DELETE FROM simulation_runs WHERE id = ?", (run_id,))
@@ -247,6 +263,7 @@ def delete_run(run_id: int) -> bool:
 
 
 def _serialize_run(row: dict[str, Any]) -> dict[str, Any]:
+    """Expands the JSON-encoded columns of a run row back into lists/dicts."""
     return {
         "id": row["id"], "created_at": row["created_at"], "name": row["name"],
         "tickers": json.loads(row["tickers_json"]), "weights": json.loads(row["weights_json"]),

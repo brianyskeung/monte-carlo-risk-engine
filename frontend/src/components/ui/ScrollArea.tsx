@@ -5,6 +5,7 @@ interface ScrollAreaProps {
   className?: string;
 }
 
+/** Vertically scrollable region using the app's custom scrollbar styling. */
 export default function ScrollArea({ children, className = "" }: ScrollAreaProps) {
   return (
     <div className={`scroll-area min-h-0 overflow-y-auto ${className}`}>

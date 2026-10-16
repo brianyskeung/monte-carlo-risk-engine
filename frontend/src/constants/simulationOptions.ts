@@ -1,11 +1,13 @@
 import type { ModelId } from "../types";
 
+/** A selectable simulation model as presented in the UI. */
 export interface ModelOption {
   id: ModelId;
   name: string;
   description: string;
 }
 
+/** Catalogue of models; drives the model pickers and the info modal. */
 export const MODEL_OPTIONS: ModelOption[] = [
   {
     id: "historical_bootstrap",
@@ -39,14 +41,17 @@ export const MODEL_OPTIONS: ModelOption[] = [
   },
 ];
 
+/** Display name for a model id, falling back to the raw id. */
 export function getModelLabel(modelId: ModelId): string {
   return MODEL_OPTIONS.find((model) => model.id === modelId)?.name ?? modelId;
 }
 
+/** Short model explanation, shown in the info modal. */
 export function getModelDescription(modelId: ModelId): string {
   return MODEL_OPTIONS.find((model) => model.id === modelId)?.description ?? "";
 }
 
+/** Readable labels for the yfinance lookback period codes. */
 export const LOOKBACK_LABELS: Record<string, string> = {
   "1mo": "1 month",
   "3mo": "3 months",
@@ -58,6 +63,7 @@ export const LOOKBACK_LABELS: Record<string, string> = {
   max: "Maximum available",
 };
 
+/** Label for a lookback code (e.g. "5y" -> "5 years"). */
 export function getLookbackLabel(period: string): string {
   return LOOKBACK_LABELS[period] ?? period;
 }

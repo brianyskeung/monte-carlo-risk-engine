@@ -11,6 +11,10 @@ interface AllocationRowProps {
   onRemove: () => void;
 }
 
+/**
+ * One editable holding: ticker field with autocomplete, a weight slider and
+ * number input (both capped at maximumWeight), and a remove button.
+ */
 export default function AllocationRow({
   allocation,
   maximumWeight,
@@ -27,6 +31,7 @@ export default function AllocationRow({
   const matches = useTickerSearch(isFocused ? allocation.ticker : "");
   const showMatches = isFocused && matches.length > 0;
 
+  /** Fills the row from a suggestion and dismisses the dropdown. */
   const selectMatch = (symbol: string) => {
     onTickerChange(symbol.toUpperCase());
     setIsFocused(false);
@@ -42,6 +47,7 @@ export default function AllocationRow({
             onTickerChange(event.target.value.toUpperCase())
           }
           onFocus={() => setIsFocused(true)}
+          // delay hiding the list so a click on a suggestion still lands
           onBlur={() => setTimeout(() => setIsFocused(false), 150)}
           placeholder="Ticker"
           autoComplete="off"

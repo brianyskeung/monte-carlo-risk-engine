@@ -23,6 +23,10 @@ class HestonModel(BaseSimulationModel):
     MAX_MEAN_REVERSION = 5.0
 
     def __init__(self, daily_returns: np.ndarray, tickers: list[str] = None):
+        """
+        Calibrates the variance process and the cross-asset price correlation
+        from historical daily returns.
+        """
         self.daily_returns = np.asarray(daily_returns, dtype=float)
 
         if self.daily_returns.ndim != 2:
@@ -59,6 +63,7 @@ class HestonModel(BaseSimulationModel):
 
     @staticmethod
     def _safe_cholesky(correlation: np.ndarray) -> np.ndarray:
+        """Cholesky factor of a correlation matrix, falling back to the identity."""
         # a correlation matrix estimated from little/degenerate data can fail
         # to be positive-definite; nudge it back with increasing jitter
         # rather than crashing the simulation
@@ -74,6 +79,13 @@ class HestonModel(BaseSimulationModel):
     def _calibrate(
         self,
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        """
+        Fits the per-asset variance process from a rolling realized-variance
+        series.
+
+        Returns, in order: initial variance, long-run variance, mean-reversion
+        speed (kappa), vol-of-vol (xi), leverage (rho) and drift.
+        """
         log_returns = self.daily_log_returns
         num_days, num_assets = log_returns.shape
         window = self.realized_vol_window
@@ -143,6 +155,7 @@ class HestonModel(BaseSimulationModel):
         )
 
     def generate_path(self, forecasted_days: int) -> np.ndarray:
+        """One path, shaped (forecasted_days, num_assets)."""
         return self.generate_paths(num_simulations=1, forecasted_days=forecasted_days)[0]
 
     def generate_paths(
@@ -150,6 +163,10 @@ class HestonModel(BaseSimulationModel):
         num_simulations: int,
         forecasted_days: int,
     ) -> np.ndarray:
+        """
+        Steps price and variance forward day by day for all paths at once.
+        Shape: (num_simulations, forecasted_days, num_assets)
+        """
         self.validate_num_simulations(num_simulations)
         self.validate_forecasted_days(forecasted_days)
 
@@ -157,6 +174,7 @@ class HestonModel(BaseSimulationModel):
         variance = np.tile(self.initial_variance, (num_simulations, 1))
         log_returns = np.empty((num_simulations, forecasted_days, num_assets))
 
+        # the variance of each day feeds the next, so days cannot be vectorised
         for day in range(forecasted_days):
             price_shocks = (
                 np.random.standard_normal((num_simulations, num_assets))

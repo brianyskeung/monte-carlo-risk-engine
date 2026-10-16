@@ -21,6 +21,10 @@ class JumpDiffusionModel(BaseSimulationModel):
     MIN_JUMP_OBSERVATIONS = 2
 
     def __init__(self, daily_returns: np.ndarray, tickers: list[str] = None):
+        """
+        Calibrates the diffusion (drift, covariance) and the per-asset jump
+        parameters from historical daily returns.
+        """
         self.daily_returns = np.asarray(daily_returns, dtype=float)
 
         if self.daily_returns.ndim != 2:
@@ -43,6 +47,13 @@ class JumpDiffusionModel(BaseSimulationModel):
         self.jump_intensity, self.jump_mean, self.jump_std = self._calibrate_jumps()
 
     def _calibrate_jumps(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """
+        Classifies outlier days as jumps and fits a normal jump size per asset.
+
+        Returns (intensity, mean, std) arrays, one entry per asset. Intensity
+        is the daily jump probability, and is zeroed for assets with too few
+        detected jumps to fit a distribution.
+        """
         num_assets = self.daily_log_returns.shape[1]
 
         asset_std = np.std(self.daily_log_returns, axis=0)
@@ -68,6 +79,7 @@ class JumpDiffusionModel(BaseSimulationModel):
         return jump_intensity, jump_mean, jump_std
 
     def generate_path(self, forecasted_days: int) -> np.ndarray:
+        """One path, shaped (forecasted_days, num_assets)."""
         return self.generate_paths(num_simulations=1, forecasted_days=forecasted_days)[0]
 
     def generate_paths(
@@ -75,6 +87,10 @@ class JumpDiffusionModel(BaseSimulationModel):
         num_simulations: int,
         forecasted_days: int,
     ) -> np.ndarray:
+        """
+        Correlated diffusion plus independent per-asset jumps.
+        Shape: (num_simulations, forecasted_days, num_assets)
+        """
         self.validate_num_simulations(num_simulations)
         self.validate_forecasted_days(forecasted_days)
 
@@ -84,6 +100,7 @@ class JumpDiffusionModel(BaseSimulationModel):
             size=(num_simulations, forecasted_days),
         )
 
+        # one Bernoulli draw per asset-day decides whether a jump lands
         shape = (num_simulations, forecasted_days, len(self.tickers))
         jump_occurs = np.random.random(shape) < self.jump_intensity
         jump_sizes = np.random.normal(self.jump_mean, self.jump_std, size=shape)

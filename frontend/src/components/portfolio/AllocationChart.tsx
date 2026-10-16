@@ -4,6 +4,7 @@ import type { Allocation, AssetInfoMap } from "../../types";
 import { formatAssetType } from "../../utils/formatting";
 import { getAllocationColor, getWeightRange } from "../../utils/allocationColors";
 
+/** Donut chart of portfolio weights with an optional holdings legend. */
 export default function AllocationPieChart({
   allocations,
   assets,
@@ -17,6 +18,7 @@ export default function AllocationPieChart({
     allocations.map((allocation) => Number(allocation.weight ?? 0)),
   );
 
+  // largest slice first, so the colour ramp reads dark-to-light around the ring
   const chartData = [...allocations]
     .sort((a, b) => Number(b.weight) - Number(a.weight))
     .map((allocation) => {

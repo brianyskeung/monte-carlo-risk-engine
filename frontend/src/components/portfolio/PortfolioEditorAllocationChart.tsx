@@ -4,6 +4,7 @@ import type { Allocation, AssetInfoMap } from "../../types";
 import { formatAssetType } from "../../utils/formatting";
 import { getAllocationColor, getWeightRange } from "../../utils/allocationColors";
 
+/** Larger donut chart with a full-height legend, shown beside the editor. */
 export default function PortfolioEditorAllocationChart({
   allocations,
   assets,
@@ -15,6 +16,7 @@ export default function PortfolioEditorAllocationChart({
     allocations.map((allocation) => Number(allocation.weight ?? 0)),
   );
 
+  // largest slice first, so the colour ramp reads dark-to-light around the ring
   const chartData = [...allocations]
     .sort((a, b) => Number(b.weight) - Number(a.weight))
     .map((allocation) => {

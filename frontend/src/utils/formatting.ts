@@ -1,20 +1,25 @@
+/** Formats a millisecond duration, switching to seconds past 1000 ms. */
 export function formatDurationMs(ms: number) {
   if (ms >= 1000) return `${(ms / 1000).toFixed(2)} s`;
   return `${ms.toFixed(2)} ms`;
 }
 
+/** Formats a decimal ratio as a signed percentage (0.0512 -> "+5.12%"). */
 export function formatPercent(value: number, decimals = 2) {
   const percent = value * 100;
   const sign = percent > 0 ? "+" : "";
   return `${sign}${percent.toFixed(decimals)}%`;
 }
 
-// loss_var_95 / loss_cvar_95 are stored as a positive loss magnitude;
-// negate so losses read as negative
+/**
+ * Formats a loss metric as a percentage. loss_var_95 / loss_cvar_95 are
+ * stored as positive loss magnitudes, so negate them to read as losses.
+ */
 export function formatLossPercent(lossMagnitude: number) {
   return formatPercent(-lossMagnitude);
 }
 
+/** Maps the sign of a value to the tone used for colouring numbers. */
 export function getReturnTone(
   value: number,
 ): "positive" | "negative" | "neutral" {
@@ -37,6 +42,7 @@ const ASSET_TYPE_LABELS: Record<string, string> = {
   UNKNOWN: "Unknown",
 };
 
+/** Readable label for a raw quote_type value. */
 export function formatAssetType(quoteType: string) {
   const normalized = quoteType.trim().toUpperCase();
   if (ASSET_TYPE_LABELS[normalized]) return ASSET_TYPE_LABELS[normalized];

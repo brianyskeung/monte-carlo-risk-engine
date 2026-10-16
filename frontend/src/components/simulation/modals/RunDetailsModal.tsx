@@ -15,15 +15,18 @@ interface RunDetailsModalProps {
   onOpenRun: () => void;
 }
 
+/** Renders a UTC timestamp from SQLite in the viewer's local timezone. */
 function formatDate(value: string) {
   return new Date(`${value.replace(" ", "T")}Z`).toLocaleString();
 }
 
+/** Read-only summary of a saved run's inputs, with an option to open it. */
 export default function RunDetailsModal({
   run,
   onClose,
   onOpenRun,
 }: RunDetailsModalProps) {
+  // close on Escape
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
@@ -33,6 +36,7 @@ export default function RunDetailsModal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
+  // heaviest holding first; stored weights are fractions, not percentages
   const sortedAllocations = Object.entries(run.weights).sort(
     ([, a], [, b]) => b - a,
   );

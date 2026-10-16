@@ -5,6 +5,7 @@ interface SectionHeaderProps {
   value: ReactNode;
 }
 
+/** Section label paired with a pill-shaped value (e.g. a running total). */
 export default function SectionHeader({ label, value }: SectionHeaderProps) {
   return (
     <div className="mb-3 flex items-center justify-between">

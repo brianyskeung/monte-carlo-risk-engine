@@ -9,6 +9,7 @@ interface SaveRunModalProps {
   onClose: () => void;
 }
 
+/** Prompts for an optional run name before persisting the current results. */
 export default function SaveRunModal({
   isSaving,
   saveError,
@@ -17,6 +18,7 @@ export default function SaveRunModal({
 }: SaveRunModalProps) {
   const [name, setName] = useState("");
 
+  // close on Escape
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();

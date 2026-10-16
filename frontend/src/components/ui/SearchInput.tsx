@@ -8,6 +8,7 @@ interface SearchInputProps {
   className?: string;
 }
 
+/** Text input with a leading search icon; requires an aria-label. */
 export default function SearchInput({
   value,
   onChange,

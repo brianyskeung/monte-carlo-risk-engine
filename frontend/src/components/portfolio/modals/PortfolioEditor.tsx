@@ -15,6 +15,10 @@ type PortfolioEditorProps = {
   onClose: () => void;
 };
 
+/**
+ * Full-screen portfolio editor. Edits are kept in a draft copy and only
+ * committed through onSave once the allocations pass validation.
+ */
 export default function PortfolioEditor({
   allocations,
   assets,
@@ -28,6 +32,7 @@ export default function PortfolioEditor({
     draftAllocations.map((allocation) => allocation.ticker),
   );
 
+  /** Validates the draft and commits it, or surfaces the error inline. */
   const handleSave = () => {
     const error = validatePortfolioAllocations(draftAllocations);
     if (error) {
@@ -39,6 +44,7 @@ export default function PortfolioEditor({
     onSave(draftAllocations);
   };
 
+  // close on Escape
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();

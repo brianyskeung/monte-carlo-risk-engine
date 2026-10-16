@@ -10,6 +10,10 @@ interface SummaryStatisticsProps {
   results: SimulationResults | null;
 }
 
+/**
+ * Compares every simulated model and tiles the best and worst figures.
+ * Renders placeholder tiles until a simulation has been run.
+ */
 export default function SummaryStatistics({ results }: SummaryStatisticsProps) {
   const models = results?.models ?? [];
 
@@ -24,6 +28,7 @@ export default function SummaryStatistics({ results }: SummaryStatisticsProps) {
     );
   }
 
+  // pick the winning model for each metric (lower VaR/CVaR loss is better)
   const highest = models.reduce((best, model) =>
     model.summary.expected_return > best.summary.expected_return ? model : best,
   );

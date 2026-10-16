@@ -9,6 +9,7 @@ interface SaveRunButtonProps {
   saveError?: string | null;
 }
 
+/** Save control: opens the naming dialog and reflects saving/saved state. */
 export default function SaveRunButton({
   onSaveRun,
   isSaving,
@@ -17,6 +18,7 @@ export default function SaveRunButton({
 }: SaveRunButtonProps) {
   const [saveModalOpen, setSaveModalOpen] = useState(false);
 
+  // dismiss the dialog once the run has been persisted
   useEffect(() => {
     if (isSaved) setSaveModalOpen(false);
   }, [isSaved]);

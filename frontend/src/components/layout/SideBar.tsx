@@ -1,10 +1,15 @@
 import { NavLink } from "react-router-dom";
 
+// nav destinations
 const items = [
   { to: "/", label: "Simulate" },
   { to: "/backtest", label: "Backtest" },
 ];
 
+/**
+ * Vertical page navigation. Not currently mounted anywhere -- Shell renders
+ * only TopBar -- kept for when a second page (Backtest) lands.
+ */
 export default function SideBar() {
   return (
     <nav className="w-64 flex flex-col py-6 px-4 bg-surface border-r border-black/5 shadow-sm">

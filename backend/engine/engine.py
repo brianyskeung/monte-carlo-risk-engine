@@ -2,10 +2,23 @@ import numpy as np
 
 
 class SimulationEngine:
+    """
+    Collapses a model's per-asset return paths into portfolio return paths.
+
+    The model supplies the randomness; the engine only validates the weight
+    allocation and applies it.
+    """
+
     def __init__(self, model):
         self.model = model
 
     def run(self, weights: dict[str, float], num_simulations: int, forecasted_days: int) -> np.ndarray:
+        """
+        Validates the weights, then weights the model's per-asset paths into one
+        portfolio return series per simulation.
+
+        Returns a 2D array of shape (num_simulations, forecasted_days).
+        """
         # validate ticker coverage
         for ticker in self.model.tickers:
             if ticker not in weights:
@@ -15,7 +28,7 @@ class SimulationEngine:
         unexpected_tickers = set(weights) - set(self.model.tickers)
 
         if unexpected_tickers:
-         raise ValueError(f"unexpected ticker allocation: {sorted(unexpected_tickers)}")
+            raise ValueError(f"unexpected ticker allocation: {sorted(unexpected_tickers)}")
 
         # construct ordered weights array matching model column sequence
         weights_array = np.array([weights[ticker] for ticker in self.model.tickers], dtype=float)

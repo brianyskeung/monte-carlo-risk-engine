@@ -14,6 +14,7 @@ interface PortfolioTooltipProps {
   }>;
 }
 
+/** Recharts tooltip describing the hovered allocation slice. */
 export default function PortfolioTooltip({
   active,
   assets,

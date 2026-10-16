@@ -6,6 +6,7 @@ interface ShellProps {
   children: ReactNode;
 }
 
+/** App frame: fixed top bar above a height-constrained, fitted main area. */
 export default function Shell({ children }: ShellProps) {
   return (
     <div className="flex flex-col h-screen bg-bg text-text-primary">

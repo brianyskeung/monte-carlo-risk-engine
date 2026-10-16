@@ -5,6 +5,7 @@ interface StatTileProps {
   tone?: "positive" | "negative" | "neutral";
 }
 
+/** Headline metric tile: label, value, and the model the value came from. */
 export default function StatTile({
   label,
   model,

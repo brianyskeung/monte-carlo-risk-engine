@@ -1,3 +1,5 @@
+"""Simulation models, re-exported so callers can import from `models`."""
+
 from models.base import BaseSimulationModel
 from models.bootstrap import HistoricalBootstrapModel
 from models.gbm import GeometricBrownianMotionModel

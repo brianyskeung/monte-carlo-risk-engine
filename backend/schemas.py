@@ -1,8 +1,12 @@
+"""Request bodies for the API. Validation lives in the Field constraints."""
+
 from typing import Any, Literal
 from pydantic import BaseModel, Field
 
 
 class SimulationRequest(BaseModel):
+    """Inputs for POST /api/simulate."""
+
     tickers: list[str] = Field(
         ..., min_length=1, description="List of ticker symbols"
     )
@@ -47,6 +51,8 @@ class SimulationRequest(BaseModel):
 
 
 class SaveRunRequest(SimulationRequest):
+    """A simulation request plus the results to persist alongside it."""
+
     data: dict[str, Any] = Field(
         ..., description="Simulation results produced by /api/simulate"
     )

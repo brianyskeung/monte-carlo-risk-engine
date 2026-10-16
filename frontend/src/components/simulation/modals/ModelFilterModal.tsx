@@ -14,6 +14,10 @@ interface ModelFilterModalProps {
   onClose: () => void;
 }
 
+/**
+ * Filters the saved-run list by the models a run used. An empty selection
+ * means no filtering, so unticking everything shows all runs.
+ */
 export default function ModelFilterModal({
   selectedModels,
   onChange,
@@ -21,6 +25,7 @@ export default function ModelFilterModal({
 }: ModelFilterModalProps) {
   const [query, setQuery] = useState("");
 
+  // close on Escape
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
@@ -30,6 +35,7 @@ export default function ModelFilterModal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
+  /** Adds or removes a model from the filter. */
   const toggleModel = (modelId: ModelId) => {
     if (selectedModels.includes(modelId)) {
       onChange(selectedModels.filter((selectedId) => selectedId !== modelId));

@@ -4,6 +4,7 @@ interface AdvancedStatItemProps {
   tone?: "positive" | "negative" | "neutral";
 }
 
+/** One label/value row in the advanced statistics list. */
 export default function AdvancedStatItem({
   label,
   value,

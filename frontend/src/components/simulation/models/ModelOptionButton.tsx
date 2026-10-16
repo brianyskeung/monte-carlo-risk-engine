@@ -9,6 +9,7 @@ interface ModelOptionButtonProps {
   onToggle: (modelId: ModelId) => void;
 }
 
+/** Checkbox-style row used to select a simulation model. */
 export default function ModelOptionButton({
   modelId,
   name,

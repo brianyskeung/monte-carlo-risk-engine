@@ -10,10 +10,12 @@ interface DistributionResultsModalProps {
   onClose: () => void;
 }
 
+/** Enlarged view of every simulated model's distribution chart. */
 export default function DistributionResultsModal({
   results,
   onClose,
 }: DistributionResultsModalProps) {
+  // close on Escape
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();

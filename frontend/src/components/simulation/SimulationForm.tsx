@@ -19,6 +19,10 @@ interface SimulationFormProps {
   className?: string;
 }
 
+/**
+ * Left-hand configuration panel: allocation chart, exposure summary, and the
+ * run parameters (forecast horizon, lookback window, number of paths).
+ */
 export default function SimulationForm({
   allocations,
   setAllocations,

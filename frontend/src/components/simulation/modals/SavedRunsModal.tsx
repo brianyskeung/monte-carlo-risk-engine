@@ -17,6 +17,7 @@ interface SavedRunsModalProps {
   onClose: () => void;
 }
 
+/** Searchable, model-filterable view of every saved run. */
 export default function SavedRunsModal({
   runs,
   error,
@@ -29,6 +30,7 @@ export default function SavedRunsModal({
   const [modelFilter, setModelFilter] = useState<ModelId[]>([]);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
+  // close on Escape
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
@@ -38,6 +40,8 @@ export default function SavedRunsModal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
+  // match the query against run name and tickers, then require every
+  // filtered model to be present in the run
   const filteredRuns = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
 

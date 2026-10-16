@@ -13,6 +13,10 @@ interface RunHistoryCardProps {
   refreshKey: number | null;
 }
 
+/**
+ * Saved-run sidebar: lists stored runs and handles opening, inspecting and
+ * deleting them. Reloads whenever refreshKey changes (i.e. a new run saved).
+ */
 export default function RunHistoryCard({
   onOpen,
   refreshKey,
@@ -22,6 +26,7 @@ export default function RunHistoryCard({
   const [detailsRun, setDetailsRun] = useState<SavedRun | null>(null);
   const [isListModalOpen, setIsListModalOpen] = useState(false);
 
+  /** Refreshes the run list from the API. */
   const loadRuns = async () => {
     try {
       const response = await axios.get(`${API_URL}/api/runs`);
@@ -36,6 +41,7 @@ export default function RunHistoryCard({
     void loadRuns();
   }, [refreshKey]);
 
+  /** Fetches a run including its chart data and hands it to the page. */
   const openRun = async (id: number) => {
     try {
       const response = await axios.get<SavedRunDetail>(
@@ -48,6 +54,7 @@ export default function RunHistoryCard({
     }
   };
 
+  /** Deletes a run and drops it from the list without a refetch. */
   const removeRun = async (id: number) => {
     try {
       await axios.delete(`${API_URL}/api/runs/${id}`);

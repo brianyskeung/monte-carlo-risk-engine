@@ -1,3 +1,5 @@
+"""FastAPI application: asset lookup, ticker search, simulation, saved runs."""
+
 import os
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,6 +19,7 @@ import time
 
 app = FastAPI(title="Monte Carlo Risk Engine API")
 
+# allow the local Vite dev server, plus the deployed frontend when configured
 origins = [
     "http://localhost:5173",
 ]
@@ -36,6 +39,7 @@ app.add_middleware(
 
 @app.get("/api/assets")
 def get_assets_endpoint(tickers: list[str] = Query(...)):
+    """Reference data (name, type, sector) for each requested ticker."""
     return {
         "assets": get_asset_info(tickers),
     }
@@ -43,6 +47,7 @@ def get_assets_endpoint(tickers: list[str] = Query(...)):
 
 @app.get("/api/tickers/search")
 def search_tickers_endpoint(q: str = Query(..., min_length=1), limit: int = Query(8, ge=1, le=20)):
+    """Autocomplete lookup for a partial ticker or company name."""
     return {
         "matches": search_tickers(q, limit=limit),
     }
@@ -50,6 +55,10 @@ def search_tickers_endpoint(q: str = Query(..., min_length=1), limit: int = Quer
 
 @app.post("/api/simulate")
 def run_simulation(request: SimulationRequest):
+    """
+    Runs every requested model over the same historical window and returns
+    each model's risk metrics, percentile paths and wall-clock runtime.
+    """
     # download market data
     try:
         daily_returns_df = get_historical_returns(
@@ -58,6 +67,7 @@ def run_simulation(request: SimulationRequest):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+    # model id -> (model class, display name shown in the UI)
     model_types = {
         "historical_bootstrap": (
             HistoricalBootstrapModel,
@@ -124,6 +134,7 @@ def run_simulation(request: SimulationRequest):
 
 @app.post("/api/runs")
 def save_run_endpoint(request: SaveRunRequest):
+    """Persists a completed simulation under an optional display name."""
     name = request.name.strip() if request.name else None
     try:
         run_id = save_run(request, request.data, name or None)
@@ -137,11 +148,13 @@ def save_run_endpoint(request: SaveRunRequest):
 
 @app.get("/api/runs")
 def get_runs(limit: int = Query(25, ge=1, le=100), offset: int = Query(0, ge=0)):
+    """A page of saved run metadata, newest first."""
     return list_runs(limit, offset)
 
 
 @app.get("/api/runs/{run_id}")
 def get_run_endpoint(run_id: int):
+    """One saved run, including the stored chart data needed to redraw it."""
     run = get_run(run_id)
     if run is None:
         raise HTTPException(status_code=404, detail="Simulation run not found")
@@ -150,6 +163,7 @@ def get_run_endpoint(run_id: int):
 
 @app.delete("/api/runs/{run_id}")
 def delete_run_endpoint(run_id: int):
+    """Deletes a saved run along with its stored chart data."""
     if not delete_run(run_id):
         raise HTTPException(status_code=404, detail="Simulation run not found")
     return {"status": "success"}

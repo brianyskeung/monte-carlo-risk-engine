@@ -7,6 +7,7 @@ interface ModelSelectorProps {
   onChange: (models: ModelId[]) => void;
 }
 
+/** Button showing the selected-model count; opens the selection modal. */
 export default function ModelSelector({
   selectedModels,
   onChange,

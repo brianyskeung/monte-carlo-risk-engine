@@ -19,6 +19,10 @@ interface DistributionResultsProps {
   saveError?: string | null;
 }
 
+/**
+ * Results card: one chart panel per simulated model, with controls to save
+ * the run, change the model selection, and open the enlarged view.
+ */
 export default function DistributionResults({
   results,
   selectedModels,

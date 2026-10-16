@@ -47,6 +47,10 @@ class HistoricalBootstrapModel(BaseSimulationModel):
     num_simulations: int,
     forecasted_days: int,
     ) -> np.ndarray:
+        """
+        Draws num_simulations independent paths at once.
+        Shape: (num_simulations, forecasted_days, num_assets)
+        """
         self.validate_num_simulations(num_simulations)
         self.validate_forecasted_days(forecasted_days)
 

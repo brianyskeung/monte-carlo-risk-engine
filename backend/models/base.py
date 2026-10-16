@@ -3,9 +3,19 @@ import numpy as np
 
 
 class BaseSimulationModel(ABC):
-    # abstract base class for all return path simulation models.
+    """
+    Abstract base for every return-path simulation model.
+
+    Subclasses calibrate themselves from historical data in __init__ and
+    produce *daily return percentages* (not prices, not log returns), with
+    assets kept in the same column order as the historical data.
+    """
 
     def __init__(self, num_assets: int, tickers: list[str] | None = None):
+        """
+        num_assets must match the column count of the historical data.
+        tickers label those columns, defaulting to ASSET_0, ASSET_1, ...
+        """
         if num_assets <= 0:
             raise ValueError("num_assets must be greater than 0")
 
@@ -20,11 +30,13 @@ class BaseSimulationModel(ABC):
 
     @staticmethod
     def validate_forecasted_days(forecasted_days: int) -> None:
+        """Rejects a non-positive forecast horizon."""
         if forecasted_days <= 0:
             raise ValueError("forecasted_days must be greater than 0")
 
     @staticmethod
     def validate_num_simulations(num_simulations: int) -> None:
+        """Rejects a non-positive simulation count."""
         if num_simulations <= 0:
             raise ValueError("num_simulations must be greater than 0")
 

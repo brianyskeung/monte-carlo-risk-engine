@@ -6,6 +6,7 @@ import type { Allocation, ModelId, SimulationResults } from "../types";
 const DEFAULT_MODELS: ModelId[] = ["historical_bootstrap"];
 const PORTFOLIO_STORAGE_KEY = "monte-carlo-risk-engine:portfolio";
 
+/** Reads the last-used portfolio from localStorage, ignoring malformed data. */
 function loadSavedAllocations(): Allocation[] {
   const defaultAllocations: Allocation[] = [];
 
@@ -31,6 +32,10 @@ function loadSavedAllocations(): Allocation[] {
   }
 }
 
+/**
+ * Owns all simulation state for the Simulate page: the portfolio, the run
+ * parameters, the latest results, and the save status of the last run.
+ */
 export default function useSimulation() {
   const [allocations, setAllocations] =
     useState<Allocation[]>(loadSavedAllocations);
@@ -51,10 +56,12 @@ export default function useSimulation() {
   const [isSaved, setIsSaved] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
+  // persist the portfolio so it survives a reload
   useEffect(() => {
     localStorage.setItem(PORTFOLIO_STORAGE_KEY, JSON.stringify(allocations));
   }, [allocations]);
 
+  /** Runs the selected models against the current portfolio. */
   const handleSimulate = async (e?: React.SyntheticEvent) => {
     if (e) e.preventDefault();
 
@@ -77,6 +84,7 @@ export default function useSimulation() {
         allocations.map(({ ticker, weight }) => [ticker, weight / 100]),
       );
 
+      // weights are entered as percentages but the API expects fractions
       const payload = {
         tickers: tickerArray,
         weights: weightsDict,
@@ -89,6 +97,7 @@ export default function useSimulation() {
       const response = await axios.post(`${API_URL}/api/simulate`, payload);
 
       setResults(response.data.data);
+      // keep the payload so the run can be saved with its exact inputs
       setLastRunPayload(payload);
     } catch (error: any) {
       if (error.response) {
@@ -103,6 +112,7 @@ export default function useSimulation() {
     }
   };
 
+  /** Persists the most recent results under an optional display name. */
   const handleSaveRun = async (name: string) => {
     if (!results || !lastRunPayload) return;
 

@@ -11,6 +11,10 @@ interface AdvancedStatsProps {
   percentilePaths: PathData[];
 }
 
+/**
+ * Terminal-day statistics for one model, shown beneath a fullscreen chart.
+ * Percentiles are read off the last point of the percentile paths.
+ */
 export default function AdvancedStats({
   summary,
   percentilePaths,

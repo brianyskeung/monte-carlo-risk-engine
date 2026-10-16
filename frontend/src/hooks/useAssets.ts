@@ -3,9 +3,14 @@ import axios from "axios";
 import { API_URL } from "../constants/api";
 import type { AssetInfoMap } from "../types";
 
+/**
+ * Fetches reference data (name, type, sector) for the given tickers and
+ * refetches whenever the normalised ticker list actually changes.
+ */
 export default function useAssets(tickers: string[]) {
   const [assets, setAssets] = useState<AssetInfoMap>({});
 
+  // a stable string key keeps the effect from refiring on every new array
   const tickerKey = tickers
     .map((ticker) => ticker.trim().toUpperCase())
     .filter(Boolean)

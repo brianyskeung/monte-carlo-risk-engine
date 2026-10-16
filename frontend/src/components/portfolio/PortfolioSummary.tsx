@@ -10,12 +10,17 @@ type PortfolioSummaryProps = {
   onSave: (allocations: Allocation[]) => void;
 };
 
+/**
+ * Exposure broken down by asset type, plus the entry point into the
+ * full portfolio editor.
+ */
 export default function PortfolioSummary({
   allocations,
   assets,
   onSave,
 }: PortfolioSummaryProps) {
   const [editorOpen, setEditorOpen] = useState(false);
+  // sum weights per quote_type (EQUITY, ETF, ...) for the exposure list
   const exposureByType = allocations.reduce<Record<string, number>>(
     (summary, allocation) => {
       const type = assets[allocation.ticker]?.quote_type ?? "OTHER";

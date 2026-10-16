@@ -8,10 +8,12 @@ interface SavedRunListItemProps {
   onDelete: () => void;
 }
 
+/** Renders a UTC timestamp from SQLite in the viewer's local timezone. */
 function formatDate(value: string) {
   return new Date(`${value.replace(" ", "T")}Z`).toLocaleString();
 }
 
+/** Compact saved-run row with open, details and delete actions. */
 export default function SavedRunListItem({
   run,
   onOpen,

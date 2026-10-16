@@ -3,9 +3,14 @@ import type { Allocation } from "../types";
 const TARGET_ALLOCATION = 100;
 const ALLOCATION_TOLERANCE = 0.0001;
 
+/**
+ * Checks a draft portfolio before it is saved: no duplicate tickers and
+ * weights that add up to 100%. Returns an error message, or null if valid.
+ */
 export function validatePortfolioAllocations(
   allocations: Allocation[],
 ): string | null {
+  // count occurrences of each ticker so duplicates can be reported by name
   const tickerCounts = allocations.reduce<Record<string, number>>(
     (counts, allocation) => {
       const ticker = allocation.ticker.trim().toUpperCase();

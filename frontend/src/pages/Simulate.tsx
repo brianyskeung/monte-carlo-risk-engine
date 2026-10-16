@@ -8,7 +8,12 @@ import RunHistoryCard from "../components/simulation/RunHistoryCard";
 import { useState } from "react";
 import type { SavedRunDetail } from "../types";
 
+/**
+ * Dashboard page: configuration form, per-model distribution results, and
+ * the saved-run history, laid out in a three-column grid on large screens.
+ */
 export default function Simulate() {
+  // while a saved run is open it is displayed instead of the live results
   const [savedRun, setSavedRun] = useState<SavedRunDetail | null>(null);
   const {
     allocations,
@@ -34,6 +39,7 @@ export default function Simulate() {
 
   const assets = useAssets(allocations.map(({ ticker }) => ticker));
 
+  /** Shows a stored run and syncs the model selector to the models it used. */
   const openSavedRun = (run: SavedRunDetail) => {
     setSavedRun(run);
     setSelectedModels(run.models);

@@ -5,6 +5,10 @@ import type { TickerMatch } from "../types";
 
 const DEBOUNCE_MS = 250;
 
+/**
+ * Debounced ticker autocomplete: returns matches for the current query and
+ * aborts any in-flight request when the query changes or the input unmounts.
+ */
 export default function useTickerSearch(query: string) {
   const [matches, setMatches] = useState<TickerMatch[]>([]);
   const trimmedQuery = query.trim();

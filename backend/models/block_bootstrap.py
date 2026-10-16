@@ -10,6 +10,7 @@ class BlockBootstrapModel(BaseSimulationModel):
     destroys, while still preserving multi-asset correlation within each block.
     """
 
+    # length in trading days of each resampled block
     BLOCK_SIZE = 5
 
     def __init__(self, daily_returns: np.ndarray, tickers: list[str] = None):
@@ -38,6 +39,10 @@ class BlockBootstrapModel(BaseSimulationModel):
         num_simulations: int,
         forecasted_days: int,
     ) -> np.ndarray:
+        """
+        Draws num_simulations independent paths by stitching random blocks.
+        Shape: (num_simulations, forecasted_days, num_assets)
+        """
         self.validate_num_simulations(num_simulations)
         self.validate_forecasted_days(forecasted_days)
 

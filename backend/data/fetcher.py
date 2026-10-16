@@ -1,3 +1,5 @@
+"""Market data access: historical prices, ticker search and asset metadata."""
+
 import yfinance as yf
 import pandas as pd
 
@@ -74,6 +76,11 @@ def search_tickers(query: str, limit: int = 8) -> list[dict]:
 
 
 def get_asset_info(tickers: list[str]) -> dict[str, dict]:
+    """
+    Looks up descriptive data for each ticker, keyed by uppercase symbol.
+    Symbols yfinance cannot resolve get a placeholder entry with
+    is_valid=False rather than failing the whole request.
+    """
     assets = {}
 
     for raw_ticker in tickers:

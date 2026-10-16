@@ -1,5 +1,6 @@
 
 
+/** Fixed application header: product mark and title. */
 export default function TopBar() {
   return (
     <header className="h-12 flex items-center justify-between px-4 sm:px-6 border-b border-black/5 bg-surface/70 backdrop-blur">

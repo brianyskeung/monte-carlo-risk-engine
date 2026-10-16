@@ -1,3 +1,5 @@
+"""Risk and return metrics derived from simulated portfolio return paths."""
+
 import numpy as np
 import pandas as pd
 

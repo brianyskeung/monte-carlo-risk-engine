@@ -13,6 +13,10 @@ interface ModelSelectionModalProps {
   onClose: () => void;
 }
 
+/**
+ * Chooses which models the next simulation runs. At least one model always
+ * stays selected, so the last one cannot be unticked.
+ */
 export default function ModelSelectionModal({
   selectedModels,
   onChange,
@@ -20,6 +24,7 @@ export default function ModelSelectionModal({
 }: ModelSelectionModalProps) {
   const [query, setQuery] = useState("");
 
+  // close on Escape
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
@@ -29,6 +34,7 @@ export default function ModelSelectionModal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
+  /** Adds or removes a model, refusing to drop the final selection. */
   const toggleModel = (modelId: ModelId) => {
     if (selectedModels.includes(modelId)) {
       if (selectedModels.length === 1) return;

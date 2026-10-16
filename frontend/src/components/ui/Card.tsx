@@ -6,6 +6,7 @@ interface CardProps {
   className?: string;
 }
 
+/** Rounded surface panel with an optional uppercase section title. */
 export default function Card({ title, children, className = "" }: CardProps) {
   return (
     <div

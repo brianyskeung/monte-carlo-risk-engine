@@ -10,6 +10,10 @@ interface ModalHeaderProps {
   titleClassName?: string;
 }
 
+/**
+ * Shared modal title row: heading, optional description and close button.
+ * titleId must match the dialog's aria-labelledby.
+ */
 export default function ModalHeader({
   title,
   titleId,

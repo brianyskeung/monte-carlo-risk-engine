@@ -9,6 +9,11 @@ interface FitToHeightProps {
 // content stacks and scrolls naturally instead of being zoom-scaled to fit.
 const COMPACT_MEDIA_QUERY = "(max-width: 1023px)";
 
+/**
+ * Scales its children down with CSS zoom so the dashboard always fits the
+ * viewport height on large screens. Below the compact breakpoint it simply
+ * scrolls instead. Re-measures on resize and on any DOM change inside.
+ */
 export default function FitToHeight({ children }: FitToHeightProps) {
   const outerRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
@@ -20,6 +25,8 @@ export default function FitToHeight({ children }: FitToHeightProps) {
 
     const mediaQuery = window.matchMedia(COMPACT_MEDIA_QUERY);
 
+    // compare natural content height against the available height, then
+    // zoom by the ratio when the content would otherwise overflow
     const recompute = () => {
       if (mediaQuery.matches) {
         inner.style.zoom = "1";

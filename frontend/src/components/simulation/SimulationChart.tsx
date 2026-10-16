@@ -20,6 +20,7 @@ interface SimulationChartProps {
   heightClassName?: string;
 }
 
+// percentile rows shown in the tooltip, best outcome first
 const TOOLTIP_ROWS: { key: keyof PathData; label: string; color: string }[] = [
   { key: "p95", label: "95th", color: "#10b981" },
   { key: "p75", label: "75th", color: "#6ee7b7" },
@@ -28,6 +29,7 @@ const TOOLTIP_ROWS: { key: keyof PathData; label: string; color: string }[] = [
   { key: "p5", label: "5th", color: "#ef4444" },
 ];
 
+/** Tooltip listing every percentile for the hovered day. */
 const CompactTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload || payload.length === 0) return null;
   const point = payload[0].payload as PathData;
@@ -64,9 +66,10 @@ const CompactTooltip = ({ active, payload, label }: any) => {
   );
 };
 
-{
-  /* Main Chart Component */
-}
+/**
+ * Percentile fan chart for one model: shaded 5-95 and 25-75 bands around the
+ * median, plus a fullscreen mode that also reveals advanced statistics.
+ */
 export default function SimulationChart({
   data,
   summary,
@@ -74,6 +77,7 @@ export default function SimulationChart({
 }: SimulationChartProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
+  // leave fullscreen on Escape
   useEffect(() => {
     if (!isFullscreen) return;
     const handleKeyDown = (event: KeyboardEvent) => {

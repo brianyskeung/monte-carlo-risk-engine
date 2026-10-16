@@ -2,6 +2,10 @@ import type { Allocation } from "../../types";
 import SectionHeader from "../ui/SectionHeader";
 import AllocationRow from "./AllocationRow";
 
+/**
+ * Editable list of holdings. Each row is capped at the headroom left by the
+ * other rows, so the portfolio can never be allocated past 100%.
+ */
 export default function Allocator({
   allocations,
 
@@ -11,6 +15,7 @@ export default function Allocator({
 
   setAllocations: (allocations: Allocation[]) => void;
 }) {
+  /** Clamps the new weight to the row's remaining headroom before storing it. */
   const updateWeight = (index: number, nextWeight: number) => {
     const maximumWeight = getMaximumWeight(index);
     const weight = Math.min(Math.max(0, nextWeight), maximumWeight);
@@ -24,6 +29,7 @@ export default function Allocator({
     setAllocations(updatedAllocations);
   };
 
+  /** Headroom for one row: 100% minus the weight of every other row. */
   const getMaximumWeight = (index: number) =>
     Math.max(
       0,
@@ -35,6 +41,7 @@ export default function Allocator({
         ),
     );
 
+  /** Replaces the ticker of one row, leaving its weight untouched. */
   const updateTicker = (index: number, ticker: string) => {
     const updatedAllocations = [...allocations];
     updatedAllocations[index] = {

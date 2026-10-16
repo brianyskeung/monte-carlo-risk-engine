@@ -7,6 +7,10 @@ class GeometricBrownianMotionModel(BaseSimulationModel):
     """Generates correlated asset-return paths using geometric Brownian motion."""
 
     def __init__(self, daily_returns: np.ndarray, tickers: list[str] = None):
+        """
+        Calibrates the drift vector and covariance matrix from historical
+        daily returns, shaped (historical_days, num_assets).
+        """
         self.daily_returns = np.asarray(daily_returns, dtype=float)
 
         if self.daily_returns.ndim != 2:
@@ -22,11 +26,13 @@ class GeometricBrownianMotionModel(BaseSimulationModel):
 
         super().__init__(self.daily_returns.shape[1], tickers)
 
+        # calibrate in log space: log returns are additive and closer to normal
         self.daily_log_returns = np.log1p(self.daily_returns)
         self.mean_log_returns = np.mean(self.daily_log_returns, axis=0)
         self.covariance = np.atleast_2d(np.cov(self.daily_log_returns, rowvar=False))
 
     def generate_path(self, forecasted_days: int) -> np.ndarray:
+        """One path of correlated daily returns, shaped (forecasted_days, num_assets)."""
         self.validate_forecasted_days(forecasted_days)
 
         simulated_log_returns = np.random.multivariate_normal(
@@ -41,6 +47,7 @@ class GeometricBrownianMotionModel(BaseSimulationModel):
         num_simulations: int,
         forecasted_days: int,
     ) -> np.ndarray:
+        """Many paths at once, shaped (num_simulations, forecasted_days, num_assets)."""
         self.validate_num_simulations(num_simulations)
         self.validate_forecasted_days(forecasted_days)
 

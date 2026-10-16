@@ -8,11 +8,13 @@ interface ModelInfoModalProps {
   onClose: () => void;
 }
 
+/** Small dialog describing a single simulation model. */
 export default function ModelInfoModal({
   title,
   description,
   onClose,
 }: ModelInfoModalProps) {
+  // close on Escape
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();

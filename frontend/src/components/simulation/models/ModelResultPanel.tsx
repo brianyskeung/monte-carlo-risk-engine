@@ -28,6 +28,7 @@ const LEGEND = [
   { label: "5th", swatch: "h-0 w-3 border-t border-dashed border-rose-500" },
 ];
 
+/** Small labelled figure under the chart, tinted by the sign of its value. */
 function InlineStat({ label, value }: { label: string; value: number }) {
   return (
     <div className="min-w-0">
@@ -43,6 +44,10 @@ function InlineStat({ label, value }: { label: string; value: number }) {
   );
 }
 
+/**
+ * One model's result: title with an info button, band legend, the fan chart,
+ * and a row of inline statistics taken from the terminal day.
+ */
 export default function ModelResultPanel({
   model,
   chartHeightClassName,

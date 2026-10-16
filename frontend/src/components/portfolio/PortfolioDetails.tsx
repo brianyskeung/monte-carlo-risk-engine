@@ -5,6 +5,7 @@ type PortfolioDetailsProps = {
   assets: AssetInfoMap;
 };
 
+/** Read-only panel summarising holdings, total allocation and sector mix. */
 export default function PortfolioDetails({
   allocations,
   assets,
@@ -14,6 +15,8 @@ export default function PortfolioDetails({
     0,
   );
   const topHolding = [...allocations].sort((a, b) => b.weight - a.weight)[0];
+  // roll weight and holding counts up by sector; assets without one (cash,
+  // crypto, some ETFs) are grouped together
   const sectorDetails = allocations.reduce<
     Record<string, { weight: number; holdings: number }>
   >((summary, allocation) => {
