@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Maximize2 } from "lucide-react";
 import { API_URL } from "../../constants/api";
+import { CLIENT_HEADERS } from "../../constants/clientId";
 import type { SavedRun, SavedRunDetail } from "../../types";
 import ScrollArea from "../ui/ScrollArea";
 import RunDetailsModal from "./modals/RunDetailsModal";
@@ -29,7 +30,9 @@ export default function RunHistoryCard({
   /** Refreshes the run list from the API. */
   const loadRuns = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/runs`);
+      const response = await axios.get(`${API_URL}/api/runs`, {
+        headers: CLIENT_HEADERS,
+      });
       setRuns(response.data.runs);
       setError(null);
     } catch {
@@ -46,6 +49,7 @@ export default function RunHistoryCard({
     try {
       const response = await axios.get<SavedRunDetail>(
         `${API_URL}/api/runs/${id}`,
+        { headers: CLIENT_HEADERS },
       );
       onOpen(response.data);
       setError(null);
@@ -57,7 +61,9 @@ export default function RunHistoryCard({
   /** Deletes a run and drops it from the list without a refetch. */
   const removeRun = async (id: number) => {
     try {
-      await axios.delete(`${API_URL}/api/runs/${id}`);
+      await axios.delete(`${API_URL}/api/runs/${id}`, {
+        headers: CLIENT_HEADERS,
+      });
       setRuns((current) => current.filter((run) => run.id !== id));
     } catch {
       setError("Could not delete this run.");

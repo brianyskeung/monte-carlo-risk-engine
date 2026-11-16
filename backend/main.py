@@ -1,7 +1,8 @@
 """FastAPI application: asset lookup, ticker search, simulation, saved runs."""
 
 import os
-from fastapi import FastAPI, HTTPException, Query
+from typing import Annotated
+from fastapi import FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from schemas import SaveRunRequest, SimulationRequest
 from data import get_asset_info, get_historical_returns, search_tickers
@@ -18,6 +19,18 @@ from database import delete_run, get_run, list_runs, save_run
 import time
 
 app = FastAPI(title="Monte Carlo Risk Engine API")
+
+# Anonymous per-browser id the frontend generates (crypto.randomUUID) and sends
+# on every saved-run request. Required on all /api/runs routes so each visitor
+# only ever sees and deletes their own runs.
+ClientId = Annotated[
+    str,
+    Header(
+        alias="X-Client-Id",
+        pattern=r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+        description="Anonymous client id (UUID) that owns saved runs",
+    ),
+]
 
 # allow the local Vite dev server, plus the deployed frontend when configured
 origins = [
@@ -133,11 +146,11 @@ def run_simulation(request: SimulationRequest):
 
 
 @app.post("/api/runs")
-def save_run_endpoint(request: SaveRunRequest):
-    """Persists a completed simulation under an optional display name."""
+def save_run_endpoint(request: SaveRunRequest, client_id: ClientId):
+    """Persists a completed simulation for this client under an optional display name."""
     name = request.name.strip() if request.name else None
     try:
-        run_id = save_run(request, request.data, name or None)
+        run_id = save_run(client_id, request, request.data, name or None)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     return {
@@ -147,23 +160,27 @@ def save_run_endpoint(request: SaveRunRequest):
 
 
 @app.get("/api/runs")
-def get_runs(limit: int = Query(25, ge=1, le=100), offset: int = Query(0, ge=0)):
-    """A page of saved run metadata, newest first."""
-    return list_runs(limit, offset)
+def get_runs(
+    client_id: ClientId,
+    limit: int = Query(25, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+):
+    """A page of this client's saved run metadata, newest first."""
+    return list_runs(client_id, limit, offset)
 
 
 @app.get("/api/runs/{run_id}")
-def get_run_endpoint(run_id: int):
-    """One saved run, including the stored chart data needed to redraw it."""
-    run = get_run(run_id)
+def get_run_endpoint(run_id: int, client_id: ClientId):
+    """One of this client's saved runs, including the chart data needed to redraw it."""
+    run = get_run(client_id, run_id)
     if run is None:
         raise HTTPException(status_code=404, detail="Simulation run not found")
     return run
 
 
 @app.delete("/api/runs/{run_id}")
-def delete_run_endpoint(run_id: int):
-    """Deletes a saved run along with its stored chart data."""
-    if not delete_run(run_id):
+def delete_run_endpoint(run_id: int, client_id: ClientId):
+    """Deletes one of this client's saved runs along with its stored chart data."""
+    if not delete_run(client_id, run_id):
         raise HTTPException(status_code=404, detail="Simulation run not found")
     return {"status": "success"}

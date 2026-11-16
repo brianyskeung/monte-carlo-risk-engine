@@ -16,7 +16,7 @@ an interactive risk analytics tool designed to model multi-asset portfolio traje
 - **ticker validation:** checks if a ticker is real and grabs its basic info for the frontend.
 - **asset metadata:** provides quote type, industry, sector, exchange, currency, and validity information for each ticker.
 - **local portfolio saving:** saves the current allocation list in the browser and restores it after refresh.
-- **run history:** automatically saves completed simulations and lets you reopen their metrics and percentile charts, search/filter saved runs by name, ticker, or model, and view full run details in a dedicated modal. saved run names must be unique.
+- **run history:** automatically saves completed simulations and lets you reopen their metrics and percentile charts, search/filter saved runs by name, ticker, or model, and view full run details in a dedicated modal. runs are private to your browser (anonymous client id, no account needed), and names must be unique within your own runs.
 
 ---
 
@@ -152,6 +152,8 @@ The frontend starts with an empty portfolio. Add at least one asset before runni
 #### saved runs
 
 A completed simulation is saved by explicitly `post`ing it (along with the response `data`) to `/api/runs`. Saved runs are persisted to a Turso (libSQL) database when `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` are set — this is what production (e.g. Vercel) uses, since local disk isn't persistent there. Without those set, it falls back to a local SQLite file at `backend/data/simulation_runs.sqlite3` (excluded from Git; set `SIMULATION_DB_PATH` to place it elsewhere).
+
+There are no accounts. On first load the frontend generates a random UUID, keeps it in `localStorage`, and sends it as an `X-Client-Id` header on every `/api/runs` request. The backend stores it as each run's `owner_id` and scopes every list, load, save and delete to it, so visitors only ever see their own runs. Requests without a valid UUID header are rejected with `422`, and another client's run returns `404`. Runs saved before ownership was added have no owner and are hidden.
 
 | endpoint                          | purpose                                              |
 | :-------------------------------- | :--------------------------------------------------- |

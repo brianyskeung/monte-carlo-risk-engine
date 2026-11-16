@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_URL } from "../constants/api";
+import { CLIENT_HEADERS } from "../constants/clientId";
 import type { Allocation, ModelId, SimulationResults } from "../types";
 
 const DEFAULT_MODELS: ModelId[] = ["historical_bootstrap"];
@@ -120,11 +121,15 @@ export default function useSimulation() {
     setSaveError(null);
 
     try {
-      const response = await axios.post(`${API_URL}/api/runs`, {
-        ...lastRunPayload,
-        data: results,
-        name: name.trim() || null,
-      });
+      const response = await axios.post(
+        `${API_URL}/api/runs`,
+        {
+          ...lastRunPayload,
+          data: results,
+          name: name.trim() || null,
+        },
+        { headers: CLIENT_HEADERS },
+      );
 
       setLastRunId(response.data.run_id);
       setIsSaved(true);
